@@ -28,16 +28,19 @@ include::./gs_virtualization_portworx_purestorage-flasharray-vars.adoc[]
 
 == Introduction
 
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Provide a motivation for the document in 2-4 sentences to identify:
-//   - what the document is about
-//   - why it may be of interest to the reader
-//   - what products are being highlighted
-// Include an approved SUSE | Partner logo lock-up if possible
-// Include any additional, relevant details
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+As organizations increasingly adopt cloud-native and containerized workloads, the demand for robust, enterprise-grade storage solutions in virtualized environments continues to grow.
+SUSE Virtualization, powered by Harvester and Kubernetes, delivers a flexible platform for running both virtual machines and modern containerized applications on a unified infrastructure.
+To unlock advanced storage features and ensure seamless data management across diverse environments, integrating Portworx Enterprise brings unparalleled benefits—ranging from high availability and data protection to hybrid cloud mobility and multi-cluster support.
 
-Your introduction and motivation for this guide
+In this document administrators and platform engineers learn how to deploy, configure, and validate a SUSE Virtualization environment with Portworx Enterprise and Pure Storage FlashArray, enabling them to deliver resilient, scalable, and efficient storage services for mission-critical workloads in virtualized and cloud-native environments.
+
+This integrated solution addresses a wide range of scenarios, including:
+
+* Application Modernization: Seamlessly migrating or running legacy VM workloads and stateful cloud-native applications on the same infrastructure.
+* Hybrid and Multi-Cloud Deployments: Enabling workload and data mobility across on-premises, public cloud, and edge locations.
+* Business Continuity and Disaster Recovery: Providing robust backup, granular restore, and cross-site failover for both VMs and containers.
+* Dev/Test and Self-Service Environments: Allowing developers to quickly provision persistent, production-grade storage for any workload type.
+* Data-Intensive Workloads: Supporting databases, analytics, and AI/ML apps that require high availability and consistent performance.
 
 
 
