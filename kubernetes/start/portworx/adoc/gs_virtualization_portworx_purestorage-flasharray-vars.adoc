@@ -88,14 +88,25 @@
 :pxe-version1: 3.4.0
 :pxe-website: https://portworx.com/products/portworx-enterprise/
 :pxe-docs: https://docs.portworx.com/portworx-enterprise
-:pxe-reqs: https://docs.portworx.com/portworx-enterprise/platform/kubernetes/flasharray/before-you-begin?utm_source=chatgpt.com#environment-prerequisites
+:pxe-reqs: {pxe-docs}/platform/kubernetes/flasharray/before-you-begin#environment-prerequisites
+:pxe-flasharray-user-access: {pxe-docs}/platform/kubernetes/flasharray/install/install-flasharray/install-flasharray-cd-da#set-up-user-access-in-flasharray
+:pxe-k8s-secret: {pxe-docs}/platform/kubernetes/flasharray/install/install-flasharray/fa-multi-tenancy#create-a-kubernetes-secret
+:pxe-central: https://central.portworx.com/
 :pxo: Portworx Operator
 :pxo-version1: 25.2.2
 
 :pfa-provider: Pure Storage
 :pfa: Pure FlashArray
+:pfa-long: Pure Storage FlashArray
 :pfa-website: https://www.purestorage.com/products/unified-block-file-storage.html
 
+:slmicro-provider: SUSE
+:slmicro: SUSE Linux Micro
+:slmicro-website: https://www.suse.com/products/micro/
+
+:rke2-provider: SUSE
+:rke2: RKE2
+:rke2-docs: https://documentation.suse.com/cloudnative/rke2/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

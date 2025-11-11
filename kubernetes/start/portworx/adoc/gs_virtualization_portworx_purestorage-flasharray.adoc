@@ -29,10 +29,10 @@ include::./gs_virtualization_portworx_purestorage-flasharray-vars.adoc[]
 == Introduction
 
 As organizations increasingly adopt cloud-native and containerized workloads, the demand for robust, enterprise-grade storage solutions in virtualized environments continues to grow.
-SUSE Virtualization, powered by Harvester and Kubernetes, delivers a flexible platform for running both virtual machines and modern containerized applications on a unified infrastructure.
-To unlock advanced storage features and ensure seamless data management across diverse environments, integrating Portworx Enterprise brings unparalleled benefits—ranging from high availability and data protection to hybrid cloud mobility and multi-cluster support.
+{svirt}, powered by Harvester and Kubernetes, delivers a flexible platform for running both virtual machines and modern containerized applications on a unified infrastructure.
+To unlock advanced storage features and ensure seamless data management across diverse environments, integrating {pxe} brings unparalleled benefits—ranging from high availability and data protection to hybrid cloud mobility and multi-cluster support.
 
-In this document administrators and platform engineers learn how to deploy, configure, and validate a SUSE Virtualization environment with Portworx Enterprise and Pure Storage FlashArray, enabling them to deliver resilient, scalable, and efficient storage services for mission-critical workloads in virtualized and cloud-native environments.
+In this document administrators and platform engineers learn how to deploy, configure, and validate a {svirt} environment with {pxe} and {pfa} Storage, enabling them to deliver resilient, scalable, and efficient storage services for mission-critical workloads in virtualized and cloud-native environments.
 
 This integrated solution addresses a wide range of scenarios, including:
 
@@ -46,59 +46,16 @@ This integrated solution addresses a wide range of scenarios, including:
 
 === Scope
 
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Specify what this guide covers in no more than 2 sentences.
-//   E.g., "You will learn how to ..."
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-The scope for your guide
+This document provides comprehensive instructions for installing {pxe} on a {svirt} cluster with a {pfa}.  It details the necessary steps for configuring multipathing, deploying the {pxo} and StorageCluster, and updating {svirt}'s storage configurations.
 
 
 === Audience
 
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Identify for whom this document is intended, perhaps with:
-//   - topics of interests (e.g., machine learning, security, etc.)
-//   - job roles (e.g., developer, administrator, platform architect, etc.)
-//   - required skills
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-The intended audience for your guide
+The intended audience for this guide are system administrators, platform engineers, DevOps engineers, and IT professionals responsible for designing, deploying, managing, and maintaining a modern infrastructure environment for container and virtual machine workloads.  A basic understanding of Kubernetes and storage concepts is assumed.
 
 
 
-=== Acknowledgements
-
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Acknowledge contributors not listed as authors.
-// Something like:
-//   The authors wish to acknowledge the contributions of the following
-//   individuals:
-//   * {contrib1-firstname} {contrib1-surname}, {contrib1-jobtitle}, {contrib1-orgname}
-//   * {contrib2-firstname} {contrib2-surname}, {contrib2-jobtitle}, {contrib2-orgname}
-// NOTE: If there are none, comment out this section.
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-Any acknowledgements you would like to make
-
-
-
-== Prerequisites
-
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Identify minimum requirements (prerequisites) the reader
-// would need in order to follow the steps of this guide.
-// - Use an unordered list.
-// - Use proper product names.
-// - Identify product versions.
-// - Link to existing resources whenever possible.
-// - Keep this section brief but elaborate as needed.
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-
-
-
-== Procedure
+== Overview
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 // Detail the steps of the installation procedure.
 // Replace 'Procedure' with one or more appropriate sections, such as:
@@ -122,10 +79,173 @@ Any acknowledgements you would like to make
 //
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+This practical guide illustrates how SUSE Virtualization can leverage a Pure Storage FlashArray to provide a robust, persistent, block storage for virtual machine and container workloads.  The environment is illustrated in the diagram below, showing a highly available, three-node SUSE Virtualization cluster connected to the Pure Storage FlashArray through a dedicated storage network.
+
+image::suse-virt_portworx_purestorage-flasharray_2400x1800.png[title="Architecture Diagram: SUSE Virtualization with Portworx and Pure Storage FlashArray", scaledwidth="90%", align="center"]
+
+
+{empty} +
+Key components of this architecture are:
+
+{svirt-website}[{svirt}]::
+{svirt} (formerly Harvester) is a modern, open, interoperable, hyperconverged infrastructure (HCI) solution built on Kubernetes.  {svirt} leverages other components (such as {slmicro-website}[{slmicro}] and {rke2-docs}[{rke2}]) to deliver a secure, resilient, and scalable platform for managing virtual machine and container workloads.
+Access the {svirt-docs}[{svirt} documentation] for detailed technical information, including {svirt-reqs}[Hardware and Network Requirements] and installation guidance.  This guide references {svirt} v1.5.1 and later.
+
+
+{pxe} and {pxo}::
+{pxe-website}[{pxe}] delivers elastic scalability, industry-leading availability, and self-service access to any storage infrastructure for the most widely used Kubernetes distribution.
+This fully-integrated storage solution offers automated capacity management, thin provisioning, and flexibility across hybrid, multi-cloud, and on-premises deployments.
+{pxe} installation, configuration, and updates are handled through the {pxo}.
+This guide references {pxe-docs}[{pxe}] 3.4.0 or later and Portworx Operator 25.2.2 or later.
+
+
+{pfa-long}::
+{pfa} delivers high-performance, scalable, all-flash storage.
+Your {pfa} must be configured to meet the {pxe-reqs}[{pxe} environment prerequisites] and be accessible from the {svirt} cluster nodes.
+
+{empty} +
+{empty}
+
+In the following pages, you will learn how to configure your {svirt} environment to leverage a {pfa} for virtual machine storage.
+This includes:
+
+* Preparing the {svirt} cluster nodes and the {pfa}
+* Deploying the {pxo} to install and configuring {pxe}
+* Defining the Portworx StorageClass
+* Creating a virtual machine with {pfa} persistent storage
 
 
 
+== Prepare the environment
 
+Before starting the installation, perform the following preparatory steps:
+
+. Enable multipath support on the {svirt} cluster nodes.
+
+.. Create a Harvester CloudInit resource file to deploy the required node-level configuration with the following contents:
++
+[source, yaml]
+----
+apiVersion: node.harvesterhci.io/v1beta1
+kind: CloudInit
+metadata:
+  name: pure-multipath
+spec:
+  contents: |
+    stages:
+      network:
+      - name: "Configure pure storage"
+        files:
+        - path: /etc/udev/rules.d/99-pure-storage.rules
+          permissions: 0644
+          content: |
+            #ACTION=="change", SUBSYSTEM=="scsi", ENV{SDEV_UA}=="INQUIRY_DATA_HAS_CHANGED", TEST=="rescan", ATTR{rescan}="x"
+            ACTION=="change", SUBSYSTEM=="scsi", ENV{SDEV_UA}=="CAPACITY_DATA_HAS_CHANGED", TEST=="rescan", ATTR{rescan}="x"
+            #ACTION=="change", SUBSYSTEM=="scsi", ENV{SDEV_UA}=="THIN_PROVISIONING_SOFT_THRESHOLD_REACHED", TEST=="rescan", ATTR{rescan}="x"
+            #ACTION=="change", SUBSYSTEM=="scsi", ENV{SDEV_UA}=="MODE_PARAMETERS_CHANGED", TEST=="rescan", ATTR{rescan}="x"
+            ACTION=="change", SUBSYSTEM=="scsi", ENV{SDEV_UA}=="REPORTED_LUNS_DATA_HAS_CHANGED", RUN+="scan-scsi-target $env{DEVPATH}"
+        - path: /etc/multipath.conf
+          content: |
+            defaults {
+              user_friendly_names no
+              enable_foreign "^$"
+                    polling_interval    10
+            }
+            devices {
+                device {
+                    vendor                      "NVME"
+                    product                     "Pure Storage FlashArray"
+                    path_selector               "queue-length 0"
+                    path_grouping_policy        group_by_prio
+                    prio                        ana
+                    failback                    immediate
+                    fast_io_fail_tmo            10
+                    user_friendly_names         no
+                    no_path_retry               0
+                    features                    0
+                    dev_loss_tmo                60
+                }
+                device {
+                    vendor                   "PURE"
+                    product                  "FlashArray"
+                    path_selector            "service-time 0"
+                    hardware_handler         "1 alua"
+                    path_grouping_policy     group_by_prio
+                    prio                     alua
+                    failback                 immediate
+                    path_checker             tur
+                    fast_io_fail_tmo         10
+                    user_friendly_names      no
+                    no_path_retry            0
+                    features                 0
+                    dev_loss_tmo             600
+                }
+            }
+            blacklist_exceptions {
+                    property "(SCSI_IDENT_|ID_WWN)"
+            }
+            blacklist {
+                  devnode "^pxd[0-9]*"
+                  devnode "^pxd*"
+                  device {
+                    vendor "VMware"
+                    product "Virtual disk"
+                  }
+            }
+          permissions: 0644
+      - name: "Start multipathd service"
+        systemctl:
+          enable:
+          - multipathd
+          start:
+          - multipathd
+  filename: 99_multipathd.yaml
+  matchSelector: {}
+
+----
+
+.. Apply the CloudInit resource resource to the {svirt} cluster.
++
+[source, console]
+----
+kubectl apply -f pure-multipath.yaml
+----
+
+.. Restart the {svirt} cluster nodes.
+
+
+. {pxe-flasharray-user-access}[Configure user access] in the Pure Storage FlashArray.
+
+
+. {pxe-k8s-secret}[Create a Kubernetes secret], named `px-pure-secret`, to securely store your {pfa} credentials.
+
+.. Create a file, named `pure.json`, containing your {pfa} credentials.
+
+.. Add the secret to your `portworx` namespace.
++
+[source, console]
+----
+kubectl create secret generic px-pure-secret --namespace portworx --from-file=pure.json
+----
+
+
+== Configure the {pxe}
+
+The {pxo} is designed to efficiently manage the installation and upgrade workflow of all {pxe} components, but it must be configured for your environment.
+
+. Log in to {pxe-central}[Portworx Central].
+
+. Select *Portworx Enterprise* -> *Generate Spec*, then select the *Portworx Version* and *Pure Storage FlashArray* for Platform.
+
+. Click *Customize* at the bottom of the menu.
+
+. Validate or fill in *Portworx Version* and *Kubernetes Version*.
+Enter a desired name for the cluster *Namespace*, such as 'portworx'.
+Then, select the Built-in etcd option.
+//ED: Add screenshot here
+
+
+. In the _Storage_ section,
 
 
 == Summary
