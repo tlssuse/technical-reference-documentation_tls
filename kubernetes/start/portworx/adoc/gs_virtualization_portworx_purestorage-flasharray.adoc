@@ -87,20 +87,20 @@ image::suse-virt_portworx_purestorage-flasharray_2400x1800.png[title="Architectu
 {empty} +
 Key components of this architecture are:
 
-{svirt-website}[{svirt}]::
-{svirt} (formerly Harvester) is a modern, open, interoperable, hyperconverged infrastructure (HCI) solution built on Kubernetes.  {svirt} leverages other components (such as {slmicro-website}[{slmicro}] and {rke2-docs}[{rke2}]) to deliver a secure, resilient, and scalable platform for managing virtual machine and container workloads.
-Access the {svirt-docs}[{svirt} documentation] for detailed technical information, including {svirt-reqs}[Hardware and Network Requirements] and installation guidance.  This guide references {svirt} v1.5.1 and later.
+{svirt}::
+{svirt-website}[{svirt}] (formerly Harvester) is a modern, open, interoperable, hyperconverged infrastructure (HCI) solution built on Kubernetes.  {svirt} leverages other components (such as {slmicro-website}[{slmicro}] and {rke2-docs}[{rke2}]) to deliver a secure, resilient, and scalable platform for managing virtual machine and container workloads.
+Access the {svirt-docs}[{svirt} documentation] for detailed technical information, including {svirt-reqs}[Hardware and Network Requirements] and installation guidance.  This guide references {svirt} {svirt-version1} and later.
 
 
 {pxe} and {pxo}::
 {pxe-website}[{pxe}] delivers elastic scalability, industry-leading availability, and self-service access to any storage infrastructure for the most widely used Kubernetes distribution.
 This fully-integrated storage solution offers automated capacity management, thin provisioning, and flexibility across hybrid, multi-cloud, and on-premises deployments.
 {pxe} installation, configuration, and updates are handled through the {pxo}.
-This guide references {pxe-docs}[{pxe}] 3.4.0 or later and Portworx Operator 25.2.2 or later.
+This guide references {pxe-docs}[{pxe}] {pxe-version1}} or later and {pxo} {pxo-version1} or later.
 
 
 {pfa-long}::
-{pfa} delivers high-performance, scalable, all-flash storage.
+{pfa-website}[{pfa}] delivers high-performance, scalable, all-flash storage.
 Your {pfa} must be configured to meet the {pxe-reqs}[{pxe} environment prerequisites] and be accessible from the {svirt} cluster nodes.
 
 {empty} +
