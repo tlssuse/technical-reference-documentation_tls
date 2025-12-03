@@ -91,6 +91,7 @@
 :pxe-reqs: {pxe-docs}/platform/kubernetes/flasharray/before-you-begin#environment-prerequisites
 :pxe-flasharray-user-access: {pxe-docs}/platform/kubernetes/flasharray/install/install-flasharray/install-flasharray-cd-da#set-up-user-access-in-flasharray
 :pxe-k8s-secret: {pxe-docs}/platform/kubernetes/flasharray/install/install-flasharray/fa-multi-tenancy#create-a-kubernetes-secret
+:pxe-manage-rwx-block: {pxe-docs}/platform/provision-storage/kubevirt-vms/manage-kubevirt-vms-rwx-block/suse-virtualization
 :pxe-central: https://central.portworx.com/
 :pxo: Portworx Operator
 :pxo-version1: 25.2.2
@@ -99,6 +100,7 @@
 :pfa: Pure FlashArray
 :pfa-long: Pure Storage FlashArray
 :pfa-website: https://www.purestorage.com/products/unified-block-file-storage.html
+:pfa-docs: https://support.purestorage.com/category/m_flasharray
 
 :slmicro-provider: SUSE
 :slmicro: SUSE Linux Micro

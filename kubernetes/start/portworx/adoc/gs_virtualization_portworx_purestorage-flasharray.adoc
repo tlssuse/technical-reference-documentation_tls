@@ -451,24 +451,29 @@ image::suse-portworx-modvirt_csi-driver-config-external.png[title="SUSE Virtuali
 
 Ensure that {pxe} is correctly integrated with {svirt} by verifying that a virtual machine (VM) can be provisioned with storage on the {pfa}.
 
-. Create a VM.
+=== Create a VM
 
-.. Log in to the {svirt} UI.
+[NOTE]
+====
+Editor: Consider simplifying this content by referencing the existing product documentation section and ONLY detailing the differences required to use Portworx.
+====
 
-.. Navigate to *Virtual Machines* and click *Create*.
+. Log in to the {svirt} UI.
 
-.. Select the namespace for your VM.
+. Navigate to *Virtual Machines* and click *Create*.
+
+. Select the namespace for your VM.
 +
 [NOTE]
 ====
 Only the 'harvester-public' namespace is visible to all users by default.
 ====
 
-.. Provide a name for your VM.
+. Provide a name for your VM.
 
-.. (Optional) Select a VM template (iso-image, raw-image, or windows-iso-image) to speed up provisioning.
+. (Optional) Select a VM template (iso-image, raw-image, or windows-iso-image) to speed up provisioning.
 
-.. On the *Basics* tab, configure the following options for your VM:
+. On the *Basics* tab, configure your VM with the following settings:
 +
 --
 * CPU: 2
@@ -487,13 +492,84 @@ In practice, you may allocate up to 254 vCPUs, but best practice is not to excee
 * (Optional) Other advanced settings: These include run strategy, OS type, cloud-init data, etc.
 --
 
-.. On the *Volumes* tab, select a VM image.
-
-.. Click *Add Volume*
+. On the *Volumes* tab, select or add volumes as follows:
 
 
+=== Verify VM Storage
+
+You can use the {svirt} UI or CLI to verify that the VM is backed by Pure Storage with the Portworx CSI.
+
+*Verify in the UI*
+
+. In the {svirt} UI, navigate to *Virtual Machines* > <Your VM> > *Volumes*.
+
+. Confirm that the attached disk is the ‘data-disk-storage’ StorageClass.
+
+[NOTE]
+====
+Editor: Add image
+====
 
 
+*Verify in the CLI*
+
+. Log in to the SUSE Virtualization management CLI as root.
+
+
+. List the PersistentVolumeClaims (PVCs) in the VM’s namespace.
++
+[source, console]
+----
+kubectl get pvc -n <namespace>
+----
++
+[source, console]
+----
+NAME          STATUS  VOLUME                                    CAPACITY  ACCESS MODES  STORAGECLASS       AGE
+vm1-rootdisk  Bound   pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21  40Gi      RWX           data-disk-storage  2m
+----
+
+. Confirm that the STORAGECLASS column shows ‘data-disk-storage’.
+//
++
+This indicates that the volume is using the StorageClass created earlier.
+
+. Confirm that the volume is provisioned by 'pxd.portworx.com'.
++
+[source, console]
+----
+kubectl describe pv pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21
+----
++
+[source, console]
+----
+Name:                 pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21
+StorageClass:         data-disk-storage
+Annotations:
+pv.kubernetes.io/provisioned-by: pxd.portworx.com
+Status: Bound
+Reclaim Policy:       Delete
+VolumeMode:           Block
+Source:
+    Type:             CSI (a Container Storage Interface (CSI) volume source)
+    Driver:           pxd.portworx.com
+    FSType:
+    VolumeHandle:     424582431912071110
+   ReadOnly:          false
+   VolumeAttributes:  attached=ATTACH_STATE_EXTERNAL
+                      error=
+                      parent=
+                      readonly=false
+                      secure=false
+                      shared=false
+                      shared_mode=BLOCK
+                      sharedv4=false
+                      state=VOLUME_STATE_DETACHED
+                      type=px-raw-volume
+----
+
+
+This verifies that your VM is backed by the {pfa} with {pxe}.
 
 
 
@@ -507,8 +583,15 @@ In practice, you may allocate up to 254 vCPUs, but best practice is not to excee
 // - Suggested next steps for the learning journey
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+Organizations are modernizing their applications and infrastructure, transitioning from traditional, virtual machine deployments to modern, cloud-native technologies, such as containers and Kubernetes.  SUSE Virtualization provides a flexible platform that enables container and virtual machine workloads to run side-by-side, on the same, unified infrastructure.  Portworx Enterprise by Pure Storage brings resilient, scalable, and efficient storage services for mission-critical workloads, supporting enterprise availability, mobility, and data protection needs.  Together, SUSE Virtualization and Portworx by Pure Storage present enterprises with a robust, flexible infrastructure platform to support their mission-critical, virtualized and cloud-native workloads.
+
+This guide provides an overview of this unified, infrastructure platform along with detailed steps for  configuring and validating the integration of SUSE Virtualization with Portworx Enterprise and a Pure Storage FlashArray to deliver a unified, infrastructure platform.
 
 
+Continue your learning journey by exploring the following technical resources:
+* {svirt-docs}[SUSE Virtualization documentation]
+* {pxe-manage-rwx-block}[Manage Portworx RWX Block Volumes on SUSE Virtualization]
+* {pfa-docs}[Pure Storage FlashArray]
 
 
 
