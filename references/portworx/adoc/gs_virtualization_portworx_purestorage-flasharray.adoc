@@ -238,7 +238,7 @@ This is accomplished by generating a Portworx spec.
 
 . Select *Portworx Enterprise* -> *Generate Spec*.
 
-. Choose the *Portworx Version* and 'Pure FlashArray' for *Platform*, then click *Customize*.
+. Choose the *Portworx Version* and `Pure FlashArray` for *Platform*, then click *Customize*.
 
 . On the *Basic* tab:
 +
@@ -249,35 +249,35 @@ image::suse-portworx-modvirt_px-spec_01_basic.png[title="Portworx: Generate Spec
 --
 * *Portworx Version*
 * *Kubernetes Version*
-* *Namespace* (for example, 'portworx')
+* *Namespace* (for example, `portworx`)
 --
 
-.. Select the 'Built-in' option for *etcd*.
+.. Select the `Built-in` option for *etcd*.
 
 .. Click *Next*.
 
 
 
-. On the _Storage_ tab, make the following choices:
+. On the *Storage* tab, make the following choices:
 +
 image::suse-portworx-modvirt_px-spec_02_storage.png[title="Portworx: Generate Spec - Storage", scaledwidth="90%", align="center"]
 
-.. Set *Select Cloud Platform* to 'Pure FlashArray'.
-.. Set *Select type of disk* to 'Create Using a Spec'
+.. Set *Select Cloud Platform* to `Pure FlashArray`.
+.. Set *Select type of disk* to `Create Using a Spec`
 .. Enable PX-StoreV2.
-.. Select 'Fiber Channel' for *Type of  storage area network*.
-.. Enter the desired *Size_ of the disk to be mapped to the SUSE Virtualization cluster.
-.. Update the *Max storage nodes per availability zone* to 3 (for your 3-node cluster).
+.. Select `Fiber Channel` for *Type of  storage area network*.
+.. Enter the desired *Size* of the disk to be mapped to the SUSE Virtualization cluster.
+.. Update the *Max storage nodes per availability zone* to `3` (for your 3-node cluster).
 .. Click *Next*.
 
 . On the *Network* tab, configure the Portworx service port, then click *Next*.
 //
 +
-Note that the default port is 9001.
+Note that the default port is `9001`.
 +
 image::suse-portworx-modvirt_px-spec_03_network.png[title="Portworx: Generate Spec - Network", scaledwidth="90%", align="center"]
 
-. On the *Customize* tab, select 'Rancher Kubernetes Engine (RKE)' then click *Finish*.
+. On the *Customize* tab, select `Rancher Kubernetes Engine (RKE)` then click *Finish*.
 +
 image::suse-portworx-modvirt_px-spec_04_customize.png[title="Portworx: Generate Spec - Customize", scaledwidth="90%", align="center"]
 
@@ -289,9 +289,8 @@ Save these commands, as you will need them in the following section.
 
 == Deploy the {pxo} and Portworx StorageCluster
 
-The {pxo} will efficiently manage the installation and upgrade workflow of all {pxe} components.
-To deploy the {pxo}, you will use the first of the Kubectl commands you generated in <<Generate the Portworx spec>>.
-Now, you use the Kubectl commands of the generated Portworx spec you created in the previous section to deploy the {pxo}.
+The {pxo} efficiently manages the installation and upgrade workflow of all {pxe} components.
+To deploy the {pxo}, you use the first of the Kubectl commands you generated in <<Generate the Portworx spec>> as detailed below.
 
 . Log in to the SUSE Virtualization management node command-line interface (CLI) with root access.
 
@@ -405,7 +404,7 @@ You should see:
 storageclass.storage.k8s.io/data-disk-storage created
 ----
 
-[NOTE]
+[TIP]
 ====
 You may see a “request is invalid” error, such as:
 [source, console]
@@ -424,6 +423,11 @@ kubectl patch storageclass harvester-longhorn -p '{"metadata": {"annotations":{"
 ----
 
 . Re-apply the Portworx StorageClass.
++
+[source, console]
+----
+kubectl apply -f portworx-storageclass.yaml
+----
 ====
 
 
@@ -434,11 +438,11 @@ kubectl patch storageclass harvester-longhorn -p '{"metadata": {"annotations":{"
 
 . Navigate to *Advanced* > *Settings*.
 
-. Locate 'csi-driver-config' and select *⋮ > *Edit Setting*.
+. Locate `csi-driver-config` and select *⋮* > *Edit Setting*.
 
-. Set the *Provisioner* to ‘pxd.portworx.com’.
+. Set the *Provisioner* to `pxd.portworx.com`.
 
-. Set the *Volume Snapshot Class Name* to ‘px-csi-snapclass’.
+. Set the *Volume Snapshot Class Name* to `px-csi-snapclass`.
 //
 +
 This setting points to the name of the VolumeSnapshotClass used for creating volume snapshots or VM snapshots.
@@ -466,24 +470,24 @@ Editor: Consider simplifying this content by referencing the existing product do
 +
 [NOTE]
 ====
-Only the 'harvester-public' namespace is visible to all users by default.
+Only the `harvester-public` namespace is visible to all users by default.
 ====
 
 . Provide a name for your VM.
 
-. (Optional) Select a VM template (iso-image, raw-image, or windows-iso-image) to speed up provisioning.
+. (Optional) Select a VM template (`iso-image`, `raw-image`, or `windows-iso-image`) to speed up provisioning.
 
 . On the *Basics* tab, configure your VM with the following settings:
 +
 --
-* CPU: 2
+* CPU: `2`
 +
 [NOTE]
 ====
 In practice, you may allocate up to 254 vCPUs, but best practice is not to exceed physical threads.
 ====
 
-* Memory: 4 GB
+* Memory: `4 GB`
 
 * SSHKey: Select an existing key or upload a new one (required if you need SSH access).
 
@@ -492,7 +496,15 @@ In practice, you may allocate up to 254 vCPUs, but best practice is not to excee
 * (Optional) Other advanced settings: These include run strategy, OS type, cloud-init data, etc.
 --
 
-. On the *Volumes* tab, select or add volumes as follows:
+. On the *Volumes* tab, select or add disks.
+
+.. Note the writable root disk is created by default.
+
+.. Click *Add Disk*.
+
+.. Choose `cd-rom` as the disk type.
+
+..
 
 
 === Verify VM Storage
