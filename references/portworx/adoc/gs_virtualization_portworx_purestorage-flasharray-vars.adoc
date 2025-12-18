@@ -38,8 +38,8 @@
 //   :rev1-description: Original version
 // Set docdate to the most recent revision.
 //-
-:rev2-date: YYYY-MM-DD
-:rev2-description: Original version
+:rev2-date: 2025-12-18
+:rev2-description: Updated to SUSE Virtualization v1.6.1
 :rev1-date: 2025-10-15
 :rev1-description: Original version
 :docdate: {rev2-date}
@@ -78,14 +78,16 @@
 // -
 :svirt-provider: SUSE
 :svirt: SUSE Virtualization
-:svirt-version1: v1.5.1
+:svirt-version1: v1.6.1
 :svirt-website: https://www.suse.com/products/rancher/virtualization/
-:svirt-docs: https://documentation.suse.com/cloudnative/virtualization/v1.5/en/introduction/overview.html
-:svirt-reqs: https://documentation.suse.com/cloudnative/virtualization/v1.5/en/installation-setup/requirements.html
+:svirt-docs: https://documentation.suse.com/cloudnative/virtualization/v1.6/en/
+:svirt-docs-intro: {svirt-docs}introduction/overview.html
+:svirt-docs-reqs: {svirt-docs}installation-setup/requirements.html
+:svirt-docs-create-vm: {svirt-docs}virtual-machines/create-vm.html
 
 :pxe-provider: Portworx by Pure Storage
 :pxe: Portworx Enterprise
-:pxe-version1: 3.4.0
+:pxe-version1: 3.5
 :pxe-website: https://portworx.com/products/portworx-enterprise/
 :pxe-docs: https://docs.portworx.com/portworx-enterprise
 :pxe-reqs: {pxe-docs}/platform/kubernetes/flasharray/before-you-begin#environment-prerequisites
@@ -94,7 +96,7 @@
 :pxe-manage-rwx-block: {pxe-docs}/platform/provision-storage/kubevirt-vms/manage-kubevirt-vms-rwx-block/suse-virtualization
 :pxe-central: https://central.portworx.com/
 :pxo: Portworx Operator
-:pxo-version1: 25.2.2
+:pxo-version1: 25.5.0
 
 :pfa-provider: Pure Storage
 :pfa: Pure FlashArray

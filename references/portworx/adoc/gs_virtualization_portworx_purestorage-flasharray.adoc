@@ -89,7 +89,7 @@ Key components of this architecture are:
 
 {svirt}::
 {svirt-website}[{svirt}] (formerly Harvester) is a modern, open, interoperable, hyperconverged infrastructure (HCI) solution built on Kubernetes.  {svirt} leverages other components (such as {slmicro-website}[{slmicro}] and {rke2-docs}[{rke2}]) to deliver a secure, resilient, and scalable platform for managing virtual machine and container workloads.
-Access the {svirt-docs}[{svirt} documentation] for detailed technical information, including {svirt-reqs}[Hardware and Network Requirements] and installation guidance.  This guide references {svirt} {svirt-version1} and later.
+Access the {svirt-docs-intro}[{svirt} documentation] for detailed technical information, including {svirt-docs-reqs}[Hardware and Network Requirements] and installation guidance.  This guide references {svirt} {svirt-version1} and later.
 
 
 {pxe} and {pxo}::
@@ -455,80 +455,36 @@ image::suse-portworx-modvirt_csi-driver-config-external.png[title="SUSE Virtuali
 
 Ensure that {pxe} is correctly integrated with {svirt} by verifying that a virtual machine (VM) can be provisioned with storage on the {pfa}.
 
-=== Create a VM
-
-[NOTE]
-====
-Editor: Consider simplifying this content by referencing the existing product documentation section and ONLY detailing the differences required to use Portworx.
-====
-
-. Log in to the {svirt} UI.
-
-. Navigate to *Virtual Machines* and click *Create*.
-
-. Select the namespace for your VM.
+. Create a VM with Portworx-provisioned storage.
+//
 +
-[NOTE]
-====
-Only the `harvester-public` namespace is visible to all users by default.
-====
+For guidance, refer to the {svirt-docs-create-vm}[SUSE Virtualization: Create a Virtual Machine].
+//
+Be sure to select the StorageClass provisioned by Portworx (`data-disk-storage`) for your VM disk volume.
 
-. Provide a name for your VM.
-
-. (Optional) Select a VM template (`iso-image`, `raw-image`, or `windows-iso-image`) to speed up provisioning.
-
-. On the *Basics* tab, configure your VM with the following settings:
+. When your VM is ready, verify that the VM is backed by Pure Storage with the Portworx CSI.
+//
 +
---
-* CPU: `2`
+You can use the {svirt} UI or CLI to verify this.
+
+.. Verify in the UI.
 +
-[NOTE]
-====
-In practice, you may allocate up to 254 vCPUs, but best practice is not to exceed physical threads.
-====
-
-* Memory: `4 GB`
-
-* SSHKey: Select an existing key or upload a new one (required if you need SSH access).
-
-* (Optional) Overcommit configuration: You may set CPU, memory, and storage overcommit ratios to allow scheduling of additional VMs even when physical resources are fully utilized.
-
-* (Optional) Other advanced settings: These include run strategy, OS type, cloud-init data, etc.
---
-
-. On the *Volumes* tab, select or add disks.
-
-.. Note the writable root disk is created by default.
-
-.. Click *Add Disk*.
-
-.. Choose `cd-rom` as the disk type.
-
-..
-
-
-=== Verify VM Storage
-
-You can use the {svirt} UI or CLI to verify that the VM is backed by Pure Storage with the Portworx CSI.
-
-*Verify in the UI*
-
-. In the {svirt} UI, navigate to *Virtual Machines* > <Your VM> > *Volumes*.
-
-. Confirm that the attached disk is the ‘data-disk-storage’ StorageClass.
-
 [NOTE]
 ====
 Editor: Add image
 ====
 
+... In the {svirt} UI, navigate to *Virtual Machines* > <Your VM> > *Volumes*.
 
-*Verify in the CLI*
-
-. Log in to the SUSE Virtualization management CLI as root.
+... Confirm that the attached disk is the `data-disk-storage` StorageClass.
 
 
-. List the PersistentVolumeClaims (PVCs) in the VM’s namespace.
+
+.. Verify in the CLI.
+
+... Log in to the SUSE Virtualization management CLI.
+
+... List the PersistentVolumeClaims (PVCs) in the VM’s namespace.
 +
 [source, console]
 ----
@@ -541,12 +497,12 @@ NAME          STATUS  VOLUME                                    CAPACITY  ACCESS
 vm1-rootdisk  Bound   pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21  40Gi      RWX           data-disk-storage  2m
 ----
 
-. Confirm that the STORAGECLASS column shows ‘data-disk-storage’.
+... Confirm that the STORAGECLASS column shows `data-disk-storage`.
 //
 +
 This indicates that the volume is using the StorageClass created earlier.
 
-. Confirm that the volume is provisioned by 'pxd.portworx.com'.
+... Confirm that the volume is provisioned by 'pxd.portworx.com'.
 +
 [source, console]
 ----
@@ -581,7 +537,7 @@ Source:
 ----
 
 
-This verifies that your VM is backed by the {pfa} with {pxe}.
+With these confirmations, you have verified that your VM is backed by the {pfa} with {pxe}.
 
 
 
@@ -601,7 +557,7 @@ This guide provides an overview of this unified, infrastructure platform along w
 
 
 Continue your learning journey by exploring the following technical resources:
-* {svirt-docs}[SUSE Virtualization documentation]
+* {svirt-docs-intro}[SUSE Virtualization documentation]
 * {pxe-manage-rwx-block}[Manage Portworx RWX Block Volumes on SUSE Virtualization]
 * {pfa-docs}[Pure Storage FlashArray]
 
