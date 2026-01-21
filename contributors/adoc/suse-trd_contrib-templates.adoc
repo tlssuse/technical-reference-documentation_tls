@@ -1,0 +1,716 @@
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Section: Templates and framework - getting started guides
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+Getting started guides are relatively simple documents, but they do require multiple files located in a specific directory structure.
+You can create this structure and the requisite files manually, but the `gssetup.sh` script is available to help automate the process.
+
+
+==== Generating the framework
+
+. Open a local terminal and change to the directory containing your clone.
++
+[source, console]
+----
+cd ~/git/GITHUB_USER/technical-reference-documentation
+----
+
+. If you have not done so already, create a branch for your project.
++
+[source, console]
+----
+git branch my-tuxy-project
+----
+
+. Check out your project branch.
++
+[source, console]
+----
+git checkout my-tuxy-project
+----
+
+. Change to either the `kubernetes/start/` or `linux/start/` subdirectory.
+//
++
+For example:
++
+[source, console]
+----
+cd kubernetes/start
+----
++
+[TIP]
+====
+Linux is likely a part of every solution, but, if any portion of SUSE's Enterprise Container Management portfolio is involved, the documentation should be created in the `kubernetes` directory tree.
+====
+
+. Execute the setup script to generate directory structures and basic files from templates.
++
+[source, console]
+----
+./bin/gssetup.sh
+----
+
+. Verify that you have performed the prerequisite actions presented in the banner, then press _ENTER_ to continue.
++
+[listing]
+----
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+= Set up workspace for new TRD getting started guide        =
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+ This script will prompt you for information about your
+ guide, then use your responses to create the directories
+ and template files for your guide
+
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - Before proceeding make sure you have:
+  - 1. created a local branch: `git branch myproject`
+  - 2. checked out your new branch: `git checkout myproject`
+  - 3. changed to the 'kubernetes/start' or
+  -    'linux/start' directory (as appropriate)
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Are you ready to proceed?
+Press ENTER to continue or CTRL+C to cancel.
+----
++
+[NOTE]
+====
+The setup script makes the following checks:
+
+* that you do not have the _main_ branch checked out
+* that your current working directory is either `kubernetes/start` or `linux/start`
+====
+
+. Identify the primary SUSE product name.
++
+[listing]
+----
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- Gathering some information
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+- - - - - -
+- Identify the featured SUSE products by entering
+- one product abbreviation at a time.
+- When done, press ENTER with no value.
+-
+- TIP: Start at the top of the software stack.
+-      For example: 'rancher' then 'rke2' then 'sles'
+-
+- Additional options:
+-   'list': display accepted abbreviations.
+-   'clear': clear the product list and start over.
+-   Press CTRL+C to cancel and exit the script.
+- - - - - -
+
+>> SUSE product : rancher
+----
++
+[NOTE]
+====
+Accepted SUSE product abbreviations are listed in the table below.
+
+[cols="1,3"]
+|===
+|Abbreviation | Product name
+
+|sles |SUSE Linux Enterprise Server
+|slessap |SUSE Linux Enterprise Server for SAP applications
+|slehpc |SUSE Linux Enterprise High Performance Computing
+|slemicro |SUSE Linux Enterprise Micro
+|slmicro |SUSE Linux Micro
+|slelp |SUSE Linux Enterprise Live Patching
+|slert |SUSE Linux Enterprise Real Time
+|sleha |SUSE Linux Enterprise High Availability
+|slebci |SUSE Linux Enterprise Base Container Images
+|suma |SUSE Manager
+|smls |SUSE Multi-Linux Manager
+|rancher | SUSE Rancher Prime
+|neuvector | SUSE Security (previously NeuVector Prime by SUSE)
+|harvester | SUSE Virtualization (previously Harvester by SUSE)
+|rke | Rancher Kubernetes Engine
+|rke2 | Rancher Kubernetes Engine 2
+|k3s | K3s by SUSE
+|longhorn | SUSE Storage (previously Longhorn by SUSE)
+|===
+
+====
+
+
+. Identify a primary partner.
++
+[listing]
+----
+- - - - - -
+- Enter the name of the primary partner.
+-
+- TIP: Select one partner whose product is at the top
+-      of the software stack and provides the key
+-      functionality for the featured use case.
+- - - - - -
+
+>> Primary partner : tuxy
+----
++
+[NOTE]
+====
+In general, the product at the highest layer of the software stack is key for addressing the use case.
+Enter the name of the provider of this product as the primary partner.
+
+The primary partner name is used to help organize the documentation in the repository's directory structure and also appears in the names of some source files as well as in the URL of the published guide.
+If it is necessary to include additional partner names, this can be done in a manual process after running this script.
+====
+
+. Identify the primary partner's product.
++
+[listing]
+----
+- - - - - -
+- Enter the name of the primary partner's product.
+-
+-   TIP: If the primary partner and the product
+-        share the same name, you can leave the
+-        partner product blank to avoid repetition.
+-
+- - - - - -
+
+>> Primary partner's product : penguin
+----
++
+[NOTE]
+====
+The primary partner product name appears in file names and the URL of the published guide.
+If you need to include multiple products by the primary partner, list each one separated by a hyphen (`-`).
+====
+
+. Optionally enter a use case or description.
++
+[listing]
+----
+- - - - - -
+- OPTIONAL
+-
+- If a solution can address multiple use cases,
+- it may be useful to create a separate guide to
+- address unique concerns of each use case.
+- Since the product stack is insufficient to distinguish
+- each guide, some additional text can be added to the
+- file name.
+-
+-   TIP: It is preferable to leave this blank.
+-        If needed, use fewer than 20 characters for the
+-        additional text.
+- - - - - -
+
+>> Distinctive text :
+----
++
+[NOTE]
+====
+This descriptive text appears in file names and the URL of the published guide.
+
+It can be useful to distinguish guides targeting different use cases with the same solution stack.
+
+You can also use this distinctive text to list an additional partner and product, but be sure to separate these with a hyphen (`-`).
+
+In most cases, you should leave this entry blank.
+====
+
+. Review the proposed structure and naming.
++
+[listing]
+----
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - Preparing to create the following structure:
+  -
+  -   /home/terry/git/technical-reference-documentation/kubernetes
+  -   └── start
+  -       └── tuxy
+  -           ├── DC-gs_rancher_tuxy-penguin
+  -           ├── adoc
+  -           │   ├── gs_rancher_tuxy-penguin.adoc
+  -           │   ├── gs_rancher_tuxy-penguin-docinfo.xml
+  -           ├── images -> media
+  -           └── media
+  -               └── src
+  -                   ├── png
+  -                   └── svg
+  -
+  - NOTE: Several symbolic links will also be created.
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+>> Press ENTER to create document structure or CTRL+C to cancel.
+
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+= Workspace for your new guide has been set up.
+=
+= Access your workspace in:
+=   /home/terry/git/tls/technical-reference-documentation/kubernetes/start/tuxy
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+----
++
+[NOTE]
+====
+No directories or files are created until you press _ENTER_.
+If you press _CTRL+C_, you cancel the planned operations and return to the command line.
+====
+
+. Confirm that the structure has been created as intended.
++
+[source, console]
+----
+cd tuxy
+tree .
+----
++
+[listing]
+----
+tree .
+.
+├── adoc
+│   ├── common_docinfo_vars.adoc -> ../../../../common/adoc/common_docinfo_vars.adoc
+│   ├── common_gfdl1.2_i.adoc -> ../../../../common/adoc/common_gfdl1.2_i.adoc
+│   ├── common_sbp_legal_notice.adoc -> ../../../../common/adoc/common_sbp_legal_notice.adoc
+│   ├── common_trd_legal_notice.adoc -> ../../../../common/adoc/common_trd_legal_notice.adoc
+│   ├── gs_rancher_tuxy-penguin.adoc
+│   └── gs_rancher_tuxy-penguin-docinfo.xml
+├── DC-gs_rancher_tuxy-penguin
+├── images -> media
+└── media
+    └── src
+        ├── png
+        └── svg
+            └── suse.svg -> ../../../../../../common/images/src/svg/suse.svg
+
+7 directories, 8 files
+----
+
+
+==== Understanding the templates
+
+The `gssetup.sh` script creates the standard directory structure, symbolic links to common files, and the three principal files you will edit for your document.
+These three files include copious comments to help you understand how to use them.
+The following sections provide some highlights.
+
+
+===== Doc Config (DC) file
+
+The DC file (`DC-gs_rancher_tuxy-penguin` in the example) is located in the root of the generated partner directory.
+It specifies parameters that define how the document will be rendered.
+
+As a contributor, you only need to be concerned with two of these parameters:
+
+DRAFT=yes::
+//
++
+Specifies that the document is in draft mode and watermarks the document accordingly.
++
+[IMPORTANT]
+====
+When you are ready to submit your document for final review, you must comment out this parameter by preceding it with a hash mark:
+
+[listing]
+----
+#DRAFT=yes
+----
+====
+
+MAIN="gs_rancher_tuxy-penguin.adoc"::
+//
++
+Specifies the AsciiDoc file with the main contents of your guide.
++
+[NOTE]
+====
+This parameter is set by the `gssetup.sh` script.
+You only need to change it if you rename the main document file.
+====
+
+
+===== DocBook metadata (docinfo) file
+
+The docinfo file (`gs_rancher_tuxy-penguin-docinfo.xml`, in the example) is located in the adoc subdirectory.
+It defines metadata about your document, such as title and subtitle, brief descriptions, featured products and partners, authors, and even which logo to feature on the cover page.
+You only need to edit the docinfo file if you need to add metadata tags that are not already defined.
+
+[IMPORTANT]
+====
+The docinfo file references attributes (variables) defined in your AsciiDoc file.
+These appear in the docinfo file as words (or any sequence of characters, like "scomp1-version") enclosed in curly braces ( `{` and `}` ).
+
+All referenced attributes must be defined in your AsciiDoc file.
+Otherwise, your document will fail to render.
+====
+
+
+The docinfo template provides metadata tags for only one SUSE product, but you can easily add metadata for additional SUSE products.
+
+[listing, xml]
+----
+<meta name="productname"> <1>
+  <productname version="{scomp1-version}">{scomp1}</productname> <2>
+</meta>
+<meta name="platform">{scomp1-full}</meta> <3>
+----
+
+<1> The `<meta name="productname"> </meta>` tag pair encloses the list of named SUSE products.
+
+<2> List each product with a separate `<productname> </productname>` entry.
++
+--
+For example, to include a second SUSE product, you would add a new tag pair below the first:
+[listing, xml]
+----
+  <productname version="{scomp2-version}">{scomp2}</productname>
+----
+where:
+
+* `scomp2` must be defined in your AsciiDoc file with the short name (or official abbreviation) for the SUSE product
+* `scomp2-version` must be defined in your AsciiDoc file with the relevant versions or versions of the SUSE product
+--
+
+<3> The primary SUSE product is identified with the `<meta name="platform"> </meta>` tag pair.
+//
++
+The `scomp1-full` attribute, defined in your AsciiDoc file, must be the full SUSE product name.
+
+
+List technical partners (those companies or organizations) supplying components featured in the solution with:
+
+[listing, xml]
+----
+<meta name="techpartner">
+  <phrase>{pcomp1-provider}</phrase>
+</meta>
+----
+
+
+Identify the document author or authors in the `<authorgroup> </authorgroup>`.
+
+[listing, xml]
+----
+<authorgroup>
+  <author> <1>
+    <personname> <2>
+      <firstname>{author1-firstname}</firstname>
+      <surname>{author1-surname}</surname>
+    </personname>
+    <affiliation> <3>
+      <jobtitle>{author1-jobtitle}</jobtitle>
+      <orgname>{author1-orgname}</orgname>
+    </affiliation>
+  </author>
+</authorgroup>
+
+----
+
+<1> Each author's information is enclosed in `<author> </author>` tag pairs.
+To add another author, replicate the contents in a new `<author> </author>` tag pair and update the attribute references.
+
+<2> Include first (or given) name and surname (family name).
+
+<3> Include company, organization, or project affiliation along with job, position, or role title.
+
+[NOTE]
+====
+The authors identified in this section are displayed on the rendered document.
+
+You can also acknowledge the contributions of editors and others in an "Acknowledgement" section of your AsciiDoc file.
+====
+
+The last section of the docinfo file you may want to edit identifies the logo that appears on the cover image.
+
+[listing, xml]
+----
+<cover role="logos">
+  <mediaobject>
+    <imageobject role="fo">
+      <imagedata fileref="suse.svg" width="5em"/>
+    </imageobject>
+    <imageobject role="html">
+      <imagedata fileref="suse.svg" width="152px"/>
+    </imageobject>
+  </mediaobject>
+</cover>
+----
+
+The default logo is the official SUSE company logo, which is always appropriate for all {product1_full}.
+If you wish, you can specify a logo "lock-up" or "mash-up" by updating the "fileref" option with the name of the appropriate image file.
+
+[NOTE]
+====
+You must have documented approval from the partner before using the logo and the usage must follow SUSE and partner branding guidelines.
+====
+
+
+
+===== Main AsciiDoc (asciidoc) content file
+
+The text of your document is contained in one or more https://asciidoc.org/[AsciiDoc] (adoc) files, located in the `adoc` subdirectory.
+For a getting started guide, you typically put all your content in a single adoc file (`gs_rancher_tuxy-penguin.adoc` in the example).
+This is the file specified in the DC file with the `MAIN` parameter.
+
+[TIP]
+====
+There are many reasons you might want to split your contents into multiple adoc files, such as to organize more complex documents or to make it easier for multiple contributors to work independently on different sections.
+If you choose to split your document, you will need to use the AsciiDoc https://docs.asciidoctor.org/asciidoc/latest/directives/include/[include directive] to link all the files so the content is properly merged in a single rendered document.
+====
+
+
+*Document attributes and variables*
+
+https://docs.asciidoctor.org/asciidoc/latest/attributes/document-attributes/[Document attributes] are name-value pairs you declare in your adoc file.
+Attributes enable you to configure the AsciiDoc processor, declare document metadata, and define reusable content that you can reference elsewhere within the document like variables in a programming language.
+
+You define an attribute with the following pattern:
+
+[listing, asciidoc]
+----
+:name-of-attribute: value of attribute
+----
+
+* The attribute name is preceded and followed by a colon (:).
+Attribute names should begin with a letter and may include numbers, hyphens, and underscores.
+
+* The value of the attribute can include any text up to a new line character.
++
+[TIP]
+====
+There must be a space between the closing colon of the attribute name and the first character of the value text.
+====
+
+
+The adoc template provides a guide for defining your document attributes and variables.
+
+Some attributes are required, such as:
+[listing, asciidoc]
+----
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ORGANIZATION
+//   Do NOT modify this section.
+// -
+:trd: Technical Reference Documentation <1>
+:type: Getting Started <2>
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+----
+<1> Declares this document as part of SUSE Technical Reference Documentation.
+<2> Declares this document to be a getting started guide.
+
+You also specify the document revision date in a variable:
+[listing, asciidoc]
+----
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// DOCUMENT REVISION DATE
+//-
+:revision-date: YYYY-MM-DD <1>
+:docdate: {revision-date} <2>
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+----
+<1> Be sure to enter the date you revised the document in the specified format.
+<2> The `docdate` attribute, which is used by some processes, simply references the value of the `revision-date` attribute.
+
+
+Your document title and subtitle are defined with:
+[listing, asciidoc]
+----
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// DOCUMENT TITLE AND SUBTITLE
+:title: (<75 characters) Your Guide Title
+:subtitle: (<75 characters) Your Guide Subtitle
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+----
+See <<Document title and subtitle>> for additional guidance.
+
+
+You also define document attributes for the technical components featured in your guide.
+This allows you to define product names, versions, website URLs, and more, then reference these throughout your guide to reduce typing, ensure consistency, and minimize errors.
+
+[listing, asciidoc]
+----
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// TECHNICAL COMPONENTS
+
+:comp1-provider: SUSE <1>
+:comp1: component 1 short name <2>
+:comp1-full: component 1 long name <3>
+:comp1-version: component 1 relevant versions <4>
+:comp1-website: component 1 product website URL <5>
+:comp1-docs: component 1 product documentation URL <6>
+
+:comp2-provider: component 2 provider name <7>
+:comp2: component 2 short name
+:comp2-full: component 2 full name
+:comp2-version: component 2 relevant versions
+:comp2-website: component  product website URL
+:comp2-docs: component 2 product documentation URL
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+----
+<1> Identify the company or organization providing the component.
+<2> Provide an official short name for referring to the component.
+SUSE products have short names, such as SLES, SMLM, Rancher, and so on.
+Other providers may have official short names.
+Be sure to verify for proper branding.
+<3> Provide the official full name of the component product.
+Some SUSE products include: SUSE Linux Enterprise Server, SUSE Manager, Rancher Prime by SUSE, NeuVector Prime by SUSE, and so on.
+<4> Provide the relevant version or versions of the component.
+Guides are developed with a specific version, such as '15 SP5' for SLES or '2.7.9' for Rancher.
+However, the guide may be applicable to multiple versions of the component.
+This should be indicated whenever possible, either by listing all relevant versions ('15 SP4, 15 SP5', '2.7.8, 2.7.9') or by indicating a range ('15 SP4+', '2.7.X').
+<5> Provide a product (or project) website URL (for example, 'https://www.suse.com/products/server/').
+By setting the URL in a document attribute, you can easily update it in one place, if needed, and reference it throughout your document.
+<6> Provide the URL to the component's technical documentation.
+<7> Replicate the attribute declarations for each of the major components.
+
+
+Document descriptions express the purpose, value, and contents of your guide.
+
+[listing, asciidoc]
+----
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// DOCUMENT DESCRIPTIONS
+
+:usecase: (<55 characters) use case <1>
+
+:description: (<150 characters) description <2>
+
+:description-short: (<55 characters) social media description <3>
+
+:executive-summary: (<300 characters) brief summary <4>
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+----
+<1> Provide a brief statement of the use case addressed by your guide, such as "database-as-a-service" or "Kubernetes multi-tenancy".
+<2> Give a brief description of the guide.
+This can reference `usecase` or other attributes you have already defined.
+<3> Shorten the description so that it might be used in a social media post.
+<4> Provide an executive summary of your guide.
+The executive summary is the only one of these descriptions that is automatically printed in the published document.
+
+
+Identify yourself and other authors.
+For each include first and last names, job title, affiliation (company, organization, project, etc.).
+For additional authors, you must also update the contents of the `<authorgroup></authorgroup>` section of the docinfo file for the authors to be listed.
+
+[listing, asciidoc]
+----
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// CONTRIBUTORS
+:author1-firstname: first (given) name
+:author1-surname: surname
+:author1-jobtitle: job title
+:author1-orgname: organization affiliation
+//:author2-firstname: first (given) name
+//:author2-surname: surname
+//:author2-jobtitle: job title
+//:author2-orgname: organization affiliation
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+----
+
+[TIP]
+====
+To identify other contributors and editors, use the same format for the variable names, but replace 'author' with 'contrib' or 'editor'.
+It is common to mention contributors and editors in an "Acknowledgements" section of your guide.
+====
+
+
+Document attributes can be incredibly useful for maintaining consistency, reducing errors, and saving a little typing.
+A portion of this part of the guide is available for you to define any additional attributes you need.
+
+[listing, asciidoc]
+----
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// MISCELLANEOUS
+//   Define any additional variables here for use within the document.
+// -
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+----
+
+
+===== Contents
+
+After defining document attributes, you can begin developing your content.
+The adoc template generated by the `gssetup.sh` script provides an outline for a general getting started guide.
+You will find that the template is copiously documented with guidance and suggestions.
+
+In general a getting started guide is structured as follows:
+
+* *Title page*
+//
++
+In addition to title and subtitle, products and authors are also listed.
+
+* *Disclaimer page*
+//
++
+The disclaimer is provided, along with the title, subtitle, revision date, and the executive summary.
+
+* *Contents*
+//
++
+A table of contents is created from the top-level sections of your document.
+
+* *Introduction*
++
+--
+The first actual contents of your guide is an introduction that briefly but clearly describes:
+
+* what the solution is, including the participating providers and products
+* the motivation, purpose, or use case is being addressed
+--
++
+The Introduction contains a few important subsections:
+
+** *Scope*
+//
++
+This is a clear list or statement of what the guide covers and (sometimes) what it does not cover.
+
+** *Audience*
+//
++
+Identify who would be most interested or helped by the information provided.
+This intended audience is typically by industry standard roles, such as systems administrator, cloud-native developer, infrastructure architect.
+You should list the knowledge and skills the reader should have to successfully follow the guide.
+
+** *Acknowledgements*
+//
++
+Acknowledge others who contributed to the development of the guide.
+
+
+* *Prerequisites*
+//
++
+List the resources the reader will need in order to follow the procedures detailed in the guide.
+You typically use an unordered list for these resources.
+For each, include product name, versions, link to product website, and any other information to help the reader set up the environment.
+
+* *Procedure*
+//
++
+Your guide should detail the procedure the reader should follow to prepare, install, configure, and validate the components of the solution.
+Each of these phases can be rendered into its own section, such as:
++
+--
+* Setting up your environment
+* Installing the components
+* Configuring and tuning your installation
+* Validating your deployment
+--
++
+[TIP]
+====
+Dividing a complex series of steps into subsections can make it easier for the reader to follow.
+For example, an 'Installing the solution' section might have subsections for installing each component.
+====
+
+
+* *Summary*
+//
++
+Briefly review the solution, motivation, and what was covered in the guide.
+You may also consider offering suggested next steps for the reader to continue the learning journey.
