@@ -72,34 +72,24 @@ If you have an interest in contributing a new document, you first should become 
 
 === Scope
 
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Specify what this guide covers in no more than 2 sentences.
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+In this document, you learn how to contribute to {trd-long}.
+Topics include:
 
-This guide outlines style, tools, and workflows for successful contributions to {trd}.
+* {trd}'s GitHub repository structure
+* workflows: from setup to submission
+* SUSE documentation style
+* documentation-as-code (AsciiDoc and DocBook)
+* tools (DAPS and DAPS2Docker)
+
 
 
 === Audience
 
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Identify for whom this document is intended, perhaps with:
-//   - topics of interests (e.g., machine learning, security, etc.)
-//   - job roles (e.g., developer, administrator, platform architect, etc.)
-//   - required skills
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-This document is intended for architects, engineers, and technical writers who would like to contribute to {trd}.
+This guide is intended for those interesting in contributing high-quality, technical documentation to {trd-long}.
 
 
 
 == Prerequisites
-
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Identify any prerequisites the reader would need
-// in order to follow the steps of this guide.
-// - Link to existing resources whenever possible.
-// - Keep this section brief but elaborate as needed.
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
 Contributors to {trd-alt} need the following:
@@ -170,28 +160,27 @@ The repository's top-level directory structure is:
 └── references                 # current source collection of solution documentation
 ----
 
-Contributors work exclusively inside the `references` directory.
+Contributors work exclusively inside the `references` directory, which is further subdivided to organize documentation by featured partners, such as CloudCasa, Hitachi, Portworx, and so on.
+`references` contains two other elements:
+
+* `suse`: subdirectory containing documentation involving combinations of SUSE products
+* `bin`: symbolic link to some useful scripts that help automate workspace setup
+
 
 [listing]
 ----
-references/
+references
 ├── bin -> ../common/bin
+├── cloudcasa
+...
+├── hitachi
+...
 ├── portworx
+...
 └── suse
 ----
 
 
-=== Getting started guide structure
-
-// subsection: repository and document structure for GSGs
-include::suse-trd_contrib-gs-structure.adoc[]
-
-
-=== Reference Implementation and Reference Configuration structure
-
-Coming soon.
-// subsection: repository and document structure for RIs and RCs
-// include::suse-trd_contrib-rirc-structure.adoc[] - from Bryan
 
 
 
