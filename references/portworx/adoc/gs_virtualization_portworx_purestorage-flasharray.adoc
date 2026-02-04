@@ -22,7 +22,7 @@ include::./gs_virtualization_portworx_purestorage-flasharray-vars.adoc[]
 
 
 
-= {title}: {subtitle}
+= {doctitle}: {docsubtitle}
 
 
 

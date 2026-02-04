@@ -144,11 +144,11 @@
 //             :comp1: SUSE Linux Enterprise Server
 //             :comp2: JupyterLab
 //             you can reference them to define new variables, like:
-//             :title: Simplify deployment of {comp2} with {comp1}
+//             :doctitle: Simplify deployment of {comp2} with {comp1}
 // -
-:title: Modern Virtualization with SUSE Virtualization and Portworx Enterprise by Pure Storage
+:doctitle: Modern Virtualization with SUSE Virtualization and Portworx Enterprise by Pure Storage
 
-:subtitle: Integrating a Pure Storage FlashArray with SUSE Virtualization
+:docsubtitle: Integrating a Pure Storage FlashArray with SUSE Virtualization
 
 :usecase: modern virtualization
 
