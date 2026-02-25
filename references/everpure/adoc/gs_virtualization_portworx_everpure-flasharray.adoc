@@ -28,20 +28,26 @@ include::./gs_virtualization_portworx_everpure-flasharray-vars.adoc[]
 
 == Introduction
 
+Organizations are modernizing their IT infrastructure to gain the benefits of cloud-native technologies, like containers and Kubernetes.
+Often, however, they still need to support legacy workloads in traditional, virtual machine infrastructure.
+This can lead to duplicate hardware infrastructure and siloed operations.
+What organizations need is an enterprise platform that unifies traditional and cloud-native infrastructure.
 
-As organizations increasingly adopt cloud-native and containerized workloads, the demand for robust, enterprise-grade storage solutions in virtualized environments continues to grow.
-{svirt-brand}, powered by Kubernetes, delivers a flexible platform for running both virtual machines and modern containerized applications on a unified infrastructure.
-Unlock advanced storage features and ensure seamless data management across diverse environments, integrating {pxe-brand} brings unparalleled benefits—ranging from high availability and data protection to hybrid cloud mobility and multi-cluster support.
-When combined with {pfa-brand} storage, you can
+{svirt-brand}, built on a modern, Kubernetes stack, solves this challenge by enabling organizations to run both virtual machines and containerized applications on the same infrastructure platform.
+When combined with {pxe-brand}, enterprises can unlock advanced storage capabilities, ensuring seamless data management across diverse environments, enabling high availability and data protection, and supporting hybrid-cloud mobility and multi-cluster environments.
 
 In this document administrators and platform engineers learn how to deploy, configure, and validate a {svirt} environment with {pxe} and {pfa} Storage, enabling them to deliver resilient, scalable, and efficient storage services for mission-critical workloads in virtualized and cloud-native environments.
 
 This integrated solution addresses a wide range of scenarios, including:
 
 * Application Modernization: Seamlessly migrating or running legacy VM workloads and stateful cloud-native applications on the same infrastructure.
+
 * Hybrid and Multi-Cloud Deployments: Enabling workload and data mobility across on-premises, public cloud, and edge locations.
+
 * Business Continuity and Disaster Recovery: Providing robust backup, granular restore, and cross-site failover for both VMs and containers.
+
 * Dev/Test and Self-Service Environments: Allowing developers to quickly provision persistent, production-grade storage for any workload type.
+
 * Data-Intensive Workloads: Supporting databases, analytics, and AI/ML apps that require high availability and consistent performance.
 
 
