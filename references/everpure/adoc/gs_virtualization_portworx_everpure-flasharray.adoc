@@ -1,6 +1,6 @@
 :docinfo:
 include::./common_docinfo_vars.adoc[]
-include::./gs_virtualization_portworx_purestorage-flasharray-vars.adoc[]
+include::./gs_virtualization_portworx_everpure-flasharray-vars.adoc[]
 [#art-{article-id}]
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -28,9 +28,11 @@ include::./gs_virtualization_portworx_purestorage-flasharray-vars.adoc[]
 
 == Introduction
 
+
 As organizations increasingly adopt cloud-native and containerized workloads, the demand for robust, enterprise-grade storage solutions in virtualized environments continues to grow.
-{svirt}, powered by Harvester and Kubernetes, delivers a flexible platform for running both virtual machines and modern containerized applications on a unified infrastructure.
-To unlock advanced storage features and ensure seamless data management across diverse environments, integrating {pxe} brings unparalleled benefits—ranging from high availability and data protection to hybrid cloud mobility and multi-cluster support.
+{svirt-brand}, powered by Kubernetes, delivers a flexible platform for running both virtual machines and modern containerized applications on a unified infrastructure.
+Unlock advanced storage features and ensure seamless data management across diverse environments, integrating {pxe-brand} brings unparalleled benefits—ranging from high availability and data protection to hybrid cloud mobility and multi-cluster support.
+When combined with {pfa-brand} storage, you can
 
 In this document administrators and platform engineers learn how to deploy, configure, and validate a {svirt} environment with {pxe} and {pfa} Storage, enabling them to deliver resilient, scalable, and efficient storage services for mission-critical workloads in virtualized and cloud-native environments.
 

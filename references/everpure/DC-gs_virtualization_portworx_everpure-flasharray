@@ -13,7 +13,7 @@ ROLE="trd"
 ##
 
 # Main Document 
-MAIN="gs_virtualization_portworx_purestorage-flasharray.adoc"
+MAIN="gs_virtualization_portworx_everpure-flasharray.adoc"
 
 # Format Type
 ADOC_TYPE="article"

@@ -22,7 +22,7 @@
 //   This is typically a series of words (often from the document title)
 //   separated by hyphens (-).
 //   (e.g., "rancher-kubflow-deployment")
-:article-id: suse-virt-portworx-purestorage
+:article-id: suse-virt-portworx-everpure
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -38,7 +38,7 @@
 //   :rev1-description: Original version
 // Set docdate to the most recent revision.
 //-
-:rev2-date: 2025-12-18
+:rev2-date: 2025-02-28
 :rev2-description: Updated to SUSE Virtualization v1.6.1
 :rev1-date: 2025-10-15
 :rev1-description: Original version
@@ -77,7 +77,9 @@
 //
 // -
 :svirt-provider: SUSE
-:svirt: SUSE Virtualization
+:svirt-brand: {svirt-provider}® Virtualization
+:svirt-long: {svirt-provider} Virtualization
+:svirt: {svirt-long}
 :svirt-version1: v1.6.1
 :svirt-website: https://www.suse.com/products/rancher/virtualization/
 :svirt-docs: https://documentation.suse.com/cloudnative/virtualization/v1.6/en/
@@ -85,8 +87,17 @@
 :svirt-docs-reqs: {svirt-docs}installation-setup/requirements.html
 :svirt-docs-create-vm: {svirt-docs}virtual-machines/create-vm.html
 
-:pxe-provider: Portworx by Pure Storage
-:pxe: Portworx Enterprise
+:pfa: FlashArray
+:pfa-provider: Everpure
+:pfa-brand: {pfa-provider}™ {pfa}™
+:pfa-long: {pfa-provider} {pfa}
+:pfa-website: https://www.purestorage.com/products/unified-block-file-storage.html
+:pfa-docs: https://support.purestorage.com/category/m_flasharray
+
+:pxe: Portworx
+:pxe-provider: {pfa-provider}
+:pxe-brand: {pxe}® by {pxe-provider}™
+:pxe-long: {pxe} by {pxe-provider}
 :pxe-version1: 3.5
 :pxe-website: https://portworx.com/products/portworx-enterprise/
 :pxe-docs: https://docs.portworx.com/portworx-enterprise
@@ -98,17 +109,13 @@
 :pxo: Portworx Operator
 :pxo-version1: 25.5.0
 
-:pfa-provider: Pure Storage
-:pfa: Pure FlashArray
-:pfa-long: Pure Storage FlashArray
-:pfa-website: https://www.purestorage.com/products/unified-block-file-storage.html
-:pfa-docs: https://support.purestorage.com/category/m_flasharray
-
 :slmicro-provider: SUSE
+:slmicro-brand: {slmicro-provider}® Linux Micro
 :slmicro: SUSE Linux Micro
 :slmicro-website: https://www.suse.com/products/micro/
 
 :rke2-provider: SUSE
+:rke2-brand: {rke2-provider}® RKE2
 :rke2: RKE2
 :rke2-docs: https://documentation.suse.com/cloudnative/rke2/
 
@@ -146,17 +153,17 @@
 //             you can reference them to define new variables, like:
 //             :doctitle: Simplify deployment of {comp2} with {comp1}
 // -
-:doctitle: Modern Virtualization with SUSE Virtualization and Portworx Enterprise by Pure Storage
+:doctitle: Modern Virtualization with {svirt-long} and {pxe-long}
 
-:docsubtitle: Integrating a Pure Storage FlashArray with SUSE Virtualization
+:docsubtitle: Integrating {pfa-long} with {svirt} for VM storage
 
 :usecase: modern virtualization
 
-:description: Deploy a modern, cloud-native environment supporting container and virtual machine workloads with SUSE Virtualization, Portworx Enterprise and a Pure FlashArray
+:description: Deploy a modern, cloud-native environment supporting container and virtual machine workloads with {svirt-long} and {pxe-long}.
 
-:description-social: Modern Virtualization with SUSE and Portworx by Pure Storage
+:description-social: Modern Virtualization with {svirt} and {pxe-long}
 
-:executive-summary: Integrate SUSE Virtualization with Portworx Enterprise and Pure Storage FlashArrays for a flexible platform that enables running both containers and VMs with unparalleled high availability and data protection to hybrid-cloud mobility and multi-cluster support.
+:executive-summary: Integrate {svirt-brand} with {pxe-brand} to provide a flexible, enterprise platform that enables running both containers and VMs with unparalleled high availability, data protection, hybrid-cloud mobility, and multi-cluster support.
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -220,11 +227,11 @@
 :author4-firstname: Bhumitra
 :author4-surname: Nager
 :author4-jobtitle: Member of Technical Staff
-:author4-orgname: Portworx by Pure Storage
+:author4-orgname: {pxe-provider}
 :author5-firstname: James
 :author5-surname: McShane
 :author5-jobtitle: Consulting Cloud Native Architect
-:author5-orgname: Portworx by Pure Storage
+:author5-orgname: {pxe-provider}
 //:contrib1-firstname: first (given) name
 //:editor1-firstname: first (given) name
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

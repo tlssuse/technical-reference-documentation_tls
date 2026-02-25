@@ -64,16 +64,16 @@
      - Multiple versions of the same component must be listed separately.
 -->
 <meta name="productname">
-  <productname version="{svirt-version1}">{svirt}</productname>
-  <productname version="{pxe-version1}">{pxe}</productname>
-  <productname>{pfa}</productname>
+  <productname version="">{svirt-long}</productname>
+  <productname version="">{pxe-long}</productname>
+  <productname>{pfa-long}</productname>
 </meta>
 
 
 <!-- Component listings for Google Analytics
      - Provide a comma-delimited list of components and their respective versions.
 -->
-<productname>{svirt} {svirt-version1}, {pxe} {pxe-version1}, {pfa}</productname>
+<productname>{svirt-long}, {pxe-long}, {pfa-long}</productname>
 
 
 
@@ -82,7 +82,7 @@
      - However, in the meantime, mirror the component content
        of the productname metadata above.
 -->
-<meta name="platform">{svirt} {svirt-version1}</meta>
+<meta name="platform">{svirt}</meta>
 
 
 <!-- Partner metadata
