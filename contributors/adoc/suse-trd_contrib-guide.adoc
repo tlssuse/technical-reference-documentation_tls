@@ -1,6 +1,6 @@
 :docinfo:
 include::./common_docinfo_vars.adoc[]
-include::./suse-trd_contrib-guide_vars.adoc[]
+include::./suse-trd_contrib-guide-vars.adoc[]
 [#art-{article-id}]
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -17,7 +17,7 @@ include::./suse-trd_contrib-guide_vars.adoc[]
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
-= {title}: {subtitle}
+= {doctitle}: {docsubtitle}
 
 
 
@@ -34,52 +34,35 @@ include::./suse-trd_contrib-guide_vars.adoc[]
 // Include any additional, relevant details
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-{trd-portal}[{trd-long}] ({trd})is an open collection of high quality guidance for solutions that address real-world use cases with featured SUSE, partner, and community components.
-Documents are modular and rendered from multiple source files.
-These source files are freely available and open source licensed in the {trd-repo}[GitHub repository].
+{trd-portal}[{trd-brand}] ({trd}) is the open collection of contributed, high quality, technical guidance for solutions that address real-world use cases with SUSE, partner, and community components.
+The {trd} collection is implemented as code, with source files managed and maintained in the {trd-repo}[{trd} GitHub repository].
+Both rendered documentation and source code are open source licensed and freely available.
 
+[NOTE]
+====
+Contributions to {trd-long} are expected to meet SUSE's high standards for quality.
+However, as voluntary contributions, SUSE makes no guarantee for their accuracy, completeness, or appropriateness for specific situations or environments.
+====
 
-{trd} can be generally divided into four types:
-
-* *Getting Started Guide*
-//
-+
-Solution introduction with step-by-step guidance for installation and configuration for a use case.
-
-* *Reference Implementation*
-//
-+
-Introductory architectural approach and basis for deployment of solution with the SUSE portfolio.
-
-* *Reference Configuration*
-//
-+
-Reference Implementation with specified partner hardware and software components.
-
-* *Enterprise Architecture*
-//
-+
-Architectural overview of solution from an enterprise landscape perspective.
-
-
-Community engagement with {trd} is encouraged.
-In addition to accessing
-You can easily submit quick fixes and even section updates through _Report an issue_ links in the HTML version of any document.
-
-If you have an interest in contributing a new document, you first should become familiar with the style, tools, and workflows of a successful contributor.
-
+Contributions to {trd} come from SUSE, partners, and the wider community.
+These are welcome and encouraged.
+Minor fixes for existing documentation can be submitted easily through the _Report an issue_ links in the HTML version of any document.
+For a new document, a successful contributor will require deeper familiarity with the {trd-long} style, structure, tools, and workflows.
 
 
 === Scope
 
-In this document, you learn how to contribute to {trd-long}.
-Topics include:
+This guide aims to provide contributors with a basic introduction and reference resource for developing and submitting {trd-alt} to the collection.
 
-* {trd}'s GitHub repository structure
-* workflows: from setup to submission
-* SUSE documentation style
-* documentation-as-code (AsciiDoc and DocBook)
-* tools (DAPS and DAPS2Docker)
+
+In this document, you learn about:
+
+* Types of documentation in the collection
+* The GitHub repository structure
+* Workflows: from setup to submission
+* SUSE Documentation Style
+* Documentation-as-Code, featuring AsciiDoc and DocBook
+* Tooling (DAPS and DAPS2Docker)
 
 
 
@@ -126,6 +109,29 @@ See <<DAPS>> for more information.
 * PDF viewer and Web browser (for reviewing rendered documents)
 
 
+== Types of {trd-long}
+
+{trd-alt} can be divided into three types:
+
+* *Getting Started Guide*
+//
++
+A solution introduction with step-by-step guidance for installation and configuration for a use case.
+
+* *Reference Implementation*
+//
++
+An architectural reference with deployment guidance for a solution involving elements of the SUSE portfolio.
+
+* *Reference Configuration*
+//
++
+An architectural reference with deployment guidance for a solution featuring SUSE and partner components.
+
+
+
+
+
 == Terminology
 
 include::suse-trd_contrib-terminology.adoc[]
@@ -154,7 +160,7 @@ The repository's top-level directory structure is:
 ----
 .
 ├── common                     # common content files, templates, and scripts
-├── contributors               # {title} source files
+├── contributors               # {doctitle} source files
 ├── kubernetes                 # older source collection of Kubernetes-focused solution documentation
 ├── linux                      # older source collection of Linux-focused solution documentation
 └── references                 # current source collection of solution documentation

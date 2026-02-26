@@ -436,7 +436,7 @@ The last section of the docinfo file you may want to edit identifies the logo th
 </cover>
 ----
 
-The default logo is the official SUSE company logo, which is always appropriate for all {product1_full}.
+The default logo is the official SUSE company logo, which is always appropriate for all {trd-long}.
 If you wish, you can specify a logo "lock-up" or "mash-up" by updating the "fileref" option with the name of the appropriate image file.
 
 [NOTE]

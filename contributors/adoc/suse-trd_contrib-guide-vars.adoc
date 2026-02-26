@@ -35,11 +35,12 @@
 //   :rev1-description: Original version
 // Set docdate to the most recent revision.
 //-
-:rev2-date: 2026-01-31
+:rev2-date: 2026-02-28
 :rev2-description: Refactor for simplified structure
 :rev1-date: 2023-12-18
 :rev1-description: Original publication
-:docdate: {rev2-date}
+:rev-date: {rev2-date}
+:rev-description: {rev2-description}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
@@ -53,6 +54,7 @@
 //   version upgrades, URL changes, etc.
 // -
 :trd-provider: SUSE
+:trd-brand: SUSE® Technical Reference Documentation
 :trd-long: SUSE Technical Reference Documentation
 :trd: SUSE TRD
 :trd-alt: SUSE Technical References
@@ -96,17 +98,17 @@
 //        will appear as:
 //          "Simplify deployment of JupyterLab with SUSE Linux Enterprise Server"
 // -
-:title: {trd-long} Contributor's Guide
+:doctitle: {trd-long} Contributors' Guide
 
-:subtitle: How to contribute to {trd}
+:docsubtitle: How to contribute to {trd-alt}
 
 :usecase: Documentation
 
-:description: Guidance for contributing to {trd-alt}
+:description: Guidance for contributing to {trd-long}, the open collection of high-quality technical guidance for solutions that address real-world use cases with SUSE and third-party technologies.
 
-:description-social: Contributing {trd-alt}
+:description-social: Contributing to {trd-alt}
 
-:executive-summary: Learn how to contribute to {trd-long}, an open collection of high-quality technical guidance for solutions that address real-world use cases with SUSE and third-party technologies.
+:executive-summary: Learn how to contribute to {trd-long}, the open collection of high-quality technical guidance for solutions that address real-world use cases with SUSE and third-party technologies.
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -147,18 +149,11 @@
 //   Specify information about authors, editors, and other
 //   contributors here.
 // -
-:author1_firstname: Terry
-:author1_surname: Smith
-:author1_jobtitle: Ecosystem Solution Innovation Director
-:author1_orgname: SUSE
-:contrib1_firstname: Bryan
-:contrib1_surname: Gartner
-:contrib1_jobtitle: Senior Technology Strategist
-:contrib1_orgname: SUSE
-:contrib2_firstname: Bryan
-:contrib2_surname: Gartner
-:contrib2_jobtitle: Documentation Strategist
-:contrib2_orgname: SUSE
+:author1-firstname: Terry
+:author1-surname: Smith
+:author1-jobtitle: Ecosystem Solutions Innovation Director
+:author1-orgname: SUSE
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
