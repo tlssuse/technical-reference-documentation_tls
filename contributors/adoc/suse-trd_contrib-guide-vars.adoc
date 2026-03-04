@@ -163,10 +163,12 @@
 // -
 :asciidoc-url: https://asciidoc.org/
 :asciidoc-docs: https://docs.asciidoctor.org/asciidoc/latest/
+:docbook-url: https://docbook.org
 :daps-install-url: https://opensuse.github.io/daps/doc/cha.daps.user.inst.html#sec.daps.user.inst
 :daps2docker-url: https://github.com/openSUSE/daps2docker
 :suse-xsl-url: https://github.com/openSUSE/suse-xsl
 :git-line-endings-url: https://docs.github.com/en/get-started/git-basics/configuring-git-to-handle-line-endings?versionId=free-pro-team%40latest&productId=get-started&platform=windows
 :github-url: https://github.com/
-
+:daps-vscode-url: https://marketplace.visualstudio.com/items?itemName=opensuse.daps
+:vscode-url: https://code.visualstudio.com/
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

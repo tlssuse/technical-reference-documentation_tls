@@ -57,12 +57,13 @@ This guide aims to provide contributors with a basic introduction and reference 
 
 In this document, you learn about:
 
-* Types of documentation in the collection
-* The GitHub repository structure
+* Prerequisites
+* Documentation types
+* GitHub repository structure
+* Document templates
 * Workflows: from setup to submission
 * SUSE Documentation Style
-* Documentation-as-Code, featuring AsciiDoc and DocBook
-* Tooling (DAPS and DAPS2Docker)
+* AsciiDoc introduction
 
 
 
@@ -74,8 +75,15 @@ This guide is intended for those interesting in contributing high-quality, techn
 
 == Prerequisites
 
+{trd-alt} are documentation-as-code.
+They are built from a collection of {asciidoc-url}[AsciiDoc] and {docbook-url}[DocBook] source files that are rendered into published formats, such as HTML and PDF.
+Development often begins in a favorite word processor or shared document editing environment, making it easier to contribute content without learning to code.
+But, ultimately, these documents must be implemented in code.
 
-Contributors to {trd-alt} need the following:
+Those who only intend to contribute content outside the documentation-as-code environment are still encouraged to become familiar with <<Documentation types>> and SUSE Documentation <<SUSE Documentation Style>>.
+
+
+Those who will be working in the documentation-as-code environment will need the following:
 
 * A plain text editor
 +
@@ -91,10 +99,9 @@ See also {git-line-endings-url}[Configuring Git to handle line endings].
 * Basic understanding of the {asciidoc-url}[AsciiDoc] markup language
 //
 +
-See <<AsciiDoc>>.
+See <<AsciiDoc>> for a brief overview of the markup language used to create {trd-alt} with some examples.
 
 * DAPS toolchain (for rendering documents)
-//
 +
 --
 You have two options for DAPS:
@@ -104,12 +111,15 @@ You have two options for DAPS:
 * Use the {daps2docker-url}[DAPS2Docker] container implementation.
 --
 +
-See <<DAPS>> for more information.
+[TIP]
+====
+For those using {vscode-url}[Visual Studio Code (VS Code)] as their preferred integrated development editor (IDE), the {daps-vscode-url}[vscode-daps plugin] can make it easier to run selected DAPS commands from within the VSCode editor.
+====
 
-* PDF viewer and Web browser (for reviewing rendered documents)
+* PDF viewer and Web browser (for reviewing rendered documents).
 
 
-== Types of {trd-long}
+== Documentation types
 
 {trd-alt} can be divided into three types:
 
@@ -188,9 +198,12 @@ references
 
 
 
+== Project workspace setup
+
+// Integrate GS content here around refsetup.sh
 
 
-== Templates and framework
+== Templates
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 // Outline use of setup scripts and templates
@@ -202,31 +215,19 @@ But you can use the provided automation tools to generate a framework for you, i
 
 
 
-=== Getting started guides
-
-include::suse-trd_contrib-gs-templates.adoc[]
-
-
-=== Reference implementations and reference configurations
-
-Coming soon.
-// include::suse-trd_contrib-rirc-templates.adoc[]
 
 
 
-== Style
+
+== SUSE Documentation Style
 
 include::suse-trd_contrib-style.adoc[]
 
 
-== AsciiDoc
+== AsciiDoc introduction
 
 include::suse-trd_contrib-asciidoc.adoc[]
 
-
-== DAPS
-
-include::suse-trd_contrib-daps.adoc[]
 
 
 == Summary
