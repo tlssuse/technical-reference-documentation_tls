@@ -50,6 +50,12 @@ Minor fixes for existing documentation can be submitted easily through the _Repo
 For a new document, a successful contributor will require deeper familiarity with the {trd-long} style, structure, tools, and workflows.
 
 
+=== Audience
+
+This guide is intended for those interesting in contributing high-quality, technical documentation to {trd-long}.
+
+
+
 === Scope
 
 This guide aims to provide contributors with a basic introduction and reference resource for developing and submitting {trd-alt} to the collection.
@@ -57,19 +63,14 @@ This guide aims to provide contributors with a basic introduction and reference 
 
 In this document, you learn about:
 
-* Prerequisites
-* Documentation types
-* GitHub repository structure
-* Document templates
-* Workflows: from setup to submission
-* SUSE Documentation Style
-* AsciiDoc introduction
-
-
-
-=== Audience
-
-This guide is intended for those interesting in contributing high-quality, technical documentation to {trd-long}.
+* <<Prerequisites>>
+* <<Documentation types>>
+* <<Workflows>>
+* <<Repository structure>>
+* <<Workspace setup>>
+* <<Document templates>>
+* <<Writing style>>
+* <<AsciiDoc coding>>
 
 
 
@@ -80,7 +81,7 @@ They are built from a collection of {asciidoc-url}[AsciiDoc] and {docbook-url}[D
 Development often begins in a favorite word processor or shared document editing environment, making it easier to contribute content without learning to code.
 But, ultimately, these documents must be implemented in code.
 
-Those who only intend to contribute content outside the documentation-as-code environment are still encouraged to become familiar with <<Documentation types>> and SUSE Documentation <<SUSE Documentation Style>>.
+Those who only intend to contribute content outside the documentation-as-code environment are still encouraged to become familiar with documentation types and SUSE Documentation Style.
 
 
 Those who will be working in the documentation-as-code environment will need the following:
@@ -99,7 +100,7 @@ See also {git-line-endings-url}[Configuring Git to handle line endings].
 * Basic understanding of the {asciidoc-url}[AsciiDoc] markup language
 //
 +
-See <<AsciiDoc>> for a brief overview of the markup language used to create {trd-alt} with some examples.
+See AsciiDoc introduction for a brief overview of the markup language used to create {trd-alt} with some examples.
 
 * DAPS toolchain (for rendering documents)
 +
@@ -117,6 +118,7 @@ For those using {vscode-url}[Visual Studio Code (VS Code)] as their preferred in
 ====
 
 * PDF viewer and Web browser (for reviewing rendered documents).
+
 
 
 == Documentation types
@@ -141,69 +143,19 @@ An architectural reference with deployment guidance for a solution featuring SUS
 
 
 
+== Workflows
 
-== Terminology
-
-include::suse-trd_contrib-terminology.adoc[]
-
+//include::suse-trd_contrib-workflow.adoc[]
 
 
-== Workflow
-
-include::suse-trd_contrib-workflow.adoc[]
 
 
 
 == Repository structure
 
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Describe the general file and directory structure
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+include::suse-trd_contrib-repo-structure.adoc[]
 
-{trd} is both a {trd-portal}[website] with links to published documents and a {trd-repo}[GitHub repository] of their source files.
-As a contributor, you need a general understanding of the structure of the source repository.
-
-
-The repository's top-level directory structure is:
-
-[listing]
-----
-.
-├── common                     # common content files, templates, and scripts
-├── contributors               # {doctitle} source files
-├── kubernetes                 # older source collection of Kubernetes-focused solution documentation
-├── linux                      # older source collection of Linux-focused solution documentation
-└── references                 # current source collection of solution documentation
-----
-
-Contributors work exclusively inside the `references` directory, which is further subdivided to organize documentation by featured partners, such as CloudCasa, Hitachi, Portworx, and so on.
-`references` contains two other elements:
-
-* `suse`: subdirectory containing documentation involving combinations of SUSE products
-* `bin`: symbolic link to some useful scripts that help automate workspace setup
-
-
-[listing]
-----
-references
-├── bin -> ../common/bin
-├── cloudcasa
-...
-├── hitachi
-...
-├── portworx
-...
-└── suse
-----
-
-
-
-== Project workspace setup
-
-// Integrate GS content here around refsetup.sh
-
-
-== Templates
+== Document templates
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 // Outline use of setup scripts and templates
@@ -216,17 +168,22 @@ But you can use the provided automation tools to generate a framework for you, i
 
 
 
+== Workspace setup
+
+// Integrate GS content here around refsetup.sh
 
 
 
-== SUSE Documentation Style
 
-include::suse-trd_contrib-style.adoc[]
+== Writing style
+
+//include::suse-trd_contrib-style.adoc[]
 
 
-== AsciiDoc introduction
+== AsciiDoc coding
 
-include::suse-trd_contrib-asciidoc.adoc[]
+//include::suse-trd_contrib-asciidoc.adoc[]
+
 
 
 
@@ -242,6 +199,11 @@ include::suse-trd_contrib-asciidoc.adoc[]
 {trd-long} is a repository of high quality documentation for solutions that address real-world use cases with featured SUSE, partner, and community components.
 
 This document provides an overview of the tools, techniques, workflows, and styles that you will use to make successful contributions to {trd}.
+
+
+== Terminology
+
+//include::suse-trd_contrib-terminology.adoc[]
 
 
 
