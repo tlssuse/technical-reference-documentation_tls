@@ -2,11 +2,12 @@
 // Section: Source repository structure
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-{trd-long} is both a {trd-portal}[Web portal] for accessing published documents and a {trd-repo}[source repository] for managing document source files.
-As a contributor, you need a general understanding of the structure of the source repository.
+The {trd-repo}[{trd-long} source repository] is a Git repository, hosted on GitHub to facilitate management and collaboration.
+A Git repository is a directory or folder in a file system along with metadata and tooling for tracking and managing file revisions.
+One of your first steps as a contributor is to clone the repository to your local system, where you will edit the source files for your document.
+Thus, it is helpful to have a general understanding of the repository's structure and contents.
 
-
-A high-level directory view of the repository is illustrated by the listing below.
+The top-level of the {trd} repository contains the following directories:
 
 [listing]
 ----
@@ -17,78 +18,50 @@ A high-level directory view of the repository is illustrated by the listing belo
 ├── linux <4>
 └── references <5>
 ----
-<1> shared content, scripts, and templates
-<2> source files for this contributors' guide
-<3> source files for archived references focused on Kubernetes
-<4> source files for archived references focused on Linux
-<5> *source files for new and published references*
+<1> `common` contains shared content, scripts, and templates.
+<2> `contributors` contains source files for this contributors' guide.
+<3> `kubernetes` contains archived, Kubernetes-focused references.
+<4> `linux` contains archived, Linux-focused references.
+<5> `references` contains *source files for current references*.
 
 
-
-Contributors interact almost exclusively with the `references` directory, as this is where source files are maintained.
-
-
-
-[listing]
-----
-references                    # contains source files for published references
-├── bin -> ../common/bin      # symbolic link to a shared scripts directory
-├── partner-a                 # contains source files for all documents featuring the named partner
-├── partner-b                 # contains source files for all documents featuring the named partner
-...
-├── partner-z                 # contains source files for all documents featuring the named partner
-└── suse                      # contains source files for SUSE-specific references
-----
-
-
-
-A getting started guide features a combination of components by one or more "entities," such as SUSE, a partner company, or an open source project.
-The source files used to generate these guides are maintained under the _linux/start_ or _kubernetes/start_ directories, depending on the primary implementation focus.
-Guide files are further organized into directories named for a featured entity.
-This is typically the provider of the component at the highest layer of the technology stack and closest to the user's workload or use case.
-Thus, for example, you find directories for Kubeflow, MongoDB, Ondat, and so on.
-
-[listing]
-----
-start
-├── bin
-├── kubeflow
-├── minio
-├── mongodb
-├── ondat
-├── suse
-├── sysdig
-├── upbound
-└── veeam
-----
+As a contributor, your work will focus inside the `references` directory.
+It is subdivided into directories (or subdirectories) that are named for a featured partner or project.
+For example, a technical reference focused on Project Jupyter, might be named, `jupyter`.
+In these directories, the source files for all technical references (and their revisions) featuring the named partner or project are maintained.
 
 [NOTE]
 ====
-The _bin_ directory contains scripts to help contributors perform various tasks.
+If a technical reference features more than one partner or project, one is selected for the directory name.
+Additional partners or projects can be highlighted in the names of your source files.
 ====
 
-Inside an "entity" directory, you find further structure.
-For example:
+Two other items appear in the `references` directory.
+They are a `suse` directory, for those technical references that only feature SUSE components, and a symbolic link, `bin`, to a directory containing helpful programs.
+
+
+Take a look next inside a partner or project directory.
+Here, you find a collection similar to the listing below.
 
 [listing]
 ----
-veeam
-├── DC-gs_rancher_veeam-kasten <1>
-├── adoc <2>
-│   ├── common_gfdl1.2_i.adoc -> ../../../../common/adoc/common_gfdl1.2_i.adoc
-│   ├── ...
-│   ├── gs_rancher_veeam-kasten.adoc <3>
-│   └── gs_rancher_veeam-kasten-docinfo.xml <4>
+partner
+├── adoc
+│   ├── common_docinfo_vars.adoc -> ../../../common/adoc/common_docinfo_vars.adoc
+│   ├── common_gfdl1.2_i.adoc -> ../../../common/adoc/common_gfdl1.2_i.adoc
+│   ├── common_sbp_legal_notice.adoc -> ../../../common/adoc/common_sbp_legal_notice.adoc
+│   ├── common_trd_legal_notice.adoc -> ../../../common/adoc/common_trd_legal_notice.adoc
+│   ├── gs_virtualization_partner-product.adoc
+│   ├── gs_virtualization_partner-product-docinfo.xml
+│   └── gs_virtualization_partner-product-vars.adoc
+├── DC-gs_virtualization_partner-product
 ├── images -> media
-└── media <5>
+└── media <7>
     └── src
         ├── png
-        │   ├── rancher_veeam-kasten_k10_dashboard-welcome.png
-        │   ├── ...
-        │   └── rancher_veeam-kasten_architecture-1.png
+        ├── get-vol-snapshots.png
         └── svg
-            ├── logo-lockup_rancher-by-suse_kasten-by-veeam_hor_dark.svg
-            └── suse.svg -> ../../../../../../common/images/src/svg/suse.svg
+            └── suse.svg -> ../../../../../common/images/src/svg/suse.svg
 ----
 <1> *Doc Config (DC) file*: There is one DC file for each documentation deliverable in which you specify parameters that define the name of the main content file, the rendering stylesheet, the revision date, and so on.
 <2> *_adoc_ directory*: Contains your AsciiDoc content files and your DocBook metadata file.
