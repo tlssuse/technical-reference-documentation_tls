@@ -2,12 +2,12 @@
 // Section: Source repository structure
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-The {trd-repo}[{trd-long} source repository] is a Git repository, hosted on GitHub to facilitate management and collaboration.
+The {trd-repo}[{trd-long} source Git repository] is hosted on GitHub to facilitate management and collaboration.
 A Git repository is a directory or folder in a file system along with metadata and tooling for tracking and managing file revisions.
 One of your first steps as a contributor is to clone the repository to your local system, where you will edit the source files for your document.
 Thus, it is helpful to have a general understanding of the repository's structure and contents.
 
-The top-level of the {trd} repository contains the following directories:
+The top-level directory structure of the {trd} source repository is illustrated in the listing below.
 
 [listing]
 ----
@@ -15,28 +15,57 @@ The top-level of the {trd} repository contains the following directories:
 ├── common <1>
 ├── contributors <2>
 ├── kubernetes <3>
-├── linux <4>
-└── references <5>
+├── linux
+└── references <4>
 ----
 <1> `common` contains shared content, scripts, and templates.
 <2> `contributors` contains source files for this contributors' guide.
-<3> `kubernetes` contains archived, Kubernetes-focused references.
-<4> `linux` contains archived, Linux-focused references.
-<5> `references` contains *source files for current references*.
+<3> `kubernetes` and `linux` contain archived reference sources.
+<4> `references` contains *source files for current references*.
 
 
-As a contributor, your work will focus inside the `references` directory.
-It is subdivided into directories (or subdirectories) that are named for a featured partner or project.
-For example, a technical reference focused on Project Jupyter, might be named, `jupyter`.
-In these directories, the source files for all technical references (and their revisions) featuring the named partner or project are maintained.
+As a contributor, your efforts will be focused inside the `references` directory.
+Here, you find subdirectories that identify the featured technology partner or community project.
+For example, the source files for a reference featuring JupyterHub, which is part of Project Jupyter, would be found in the `jupyter` directory.
 
-[NOTE]
+
+[listing]
+----
+references
+├── bin -> ../common/bin
+...
+├── everpure
+...
+├── jupyter
+...
+├── hitachi
+...
+├── kubeflow
+...
+├── supermicro
+...
+├── suse
+...
+├── veeam
+...
+----
+
+
+
+Directories inside `references` are named to identify a featured component provider (such as SUSE itself, a technology partner, or a community project).
+For example, the source files for technical references that feature a component by Project Jupyter would be found in a directory named `jupyter`.
+
+Technical references featuring only SUSE components appear in the `suse` directory.
+
+[TIP]
 ====
-If a technical reference features more than one partner or project, one is selected for the directory name.
-Additional partners or projects can be highlighted in the names of your source files.
+If a technical reference features more than one component provider, select one for the directory name.
+Since the names of source files
+If important, additional component providers can be mentioned in the names of your source files.
 ====
 
-Two other items appear in the `references` directory.
+Use the `suse` directory for solutions featuring only SUSE components.
+An example of this may be a reference configuration for
 They are a `suse` directory, for those technical references that only feature SUSE components, and a symbolic link, `bin`, to a directory containing helpful programs.
 
 
@@ -63,13 +92,14 @@ partner
         └── svg
             └── suse.svg -> ../../../../../common/images/src/svg/suse.svg
 ----
-<1> *Doc Config (DC) file*: There is one DC file for each documentation deliverable in which you specify parameters that define the name of the main content file, the rendering stylesheet, the revision date, and so on.
-<2> *_adoc_ directory*: Contains your AsciiDoc content files and your DocBook metadata file.
-<3> *Main content file*: This plain text file, formatted with the https://asciidoc.org/[AsciiDoc] markup language, is where you write most of the text of your document.
+
+*Doc Config (DC) file*: There is one DC file for each documentation deliverable in which you specify parameters that define the name of the main content file, the rendering stylesheet, the revision date, and so on.
+*_adoc_ directory*: Contains your AsciiDoc content files and your DocBook metadata file.
+*Main content file*: This plain text file, formatted with the https://asciidoc.org/[AsciiDoc] markup language, is where you write most of the text of your document.
 You can use the `include` directive to merge content from other AsciiDoc files during the rendering process.
-<4> *DocBook metadata (docinfo.xml) file*: This file specifies metadata about your document, including title, author information, cover logo file, and executive summary.
+*DocBook metadata (docinfo.xml) file*: This file specifies metadata about your document, including title, author information, cover logo file, and executive summary.
 Much of this information is actually defined as document attributes (variables) in your main content file and referenced here to save you from having to type the same information twice.
-<5> *_media_ directory*: You can include logos, diagrams, screenshots, and other images in your guides.
+*_media_ directory*: You can include logos, diagrams, screenshots, and other images in your guides.
 These media files are stored in subdirectories by file type under _media/src_.
 Many image file types are supported, but preference is given to:
 +
