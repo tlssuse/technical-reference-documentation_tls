@@ -51,23 +51,16 @@ references
 ----
 
 
-
-Directories inside `references` are named to identify a featured component provider (such as SUSE itself, a technology partner, or a community project).
-For example, the source files for technical references that feature a component by Project Jupyter would be found in a directory named `jupyter`.
-
-Technical references featuring only SUSE components appear in the `suse` directory.
+The `references` directory also includes a `suse` directory (containing document sources that feature only SUSE components) and a symbolic link to a `bin` directory (containing helpful scripts for contributors).
 
 [TIP]
 ====
-If a technical reference features more than one component provider, select one for the directory name.
-Since the names of source files
-If important, additional component providers can be mentioned in the names of your source files.
+For a technical reference featuring more than one component provider, select only one for the directory name.
+As a general rule, the selected partner provides the component at the top of the software stack that delivers a unique, highlighted capability.
+If important, additional component providers can be noted in the names of your source files.
 ====
 
-Use the `suse` directory for solutions featuring only SUSE components.
-An example of this may be a reference configuration for
-They are a `suse` directory, for those technical references that only feature SUSE components, and a symbolic link, `bin`, to a directory containing helpful programs.
-
+If an appropriate directory for your technical references does not already exist, you can create one during the workspace setup process.
 
 Take a look next inside a partner or project directory.
 Here, you find a collection similar to the listing below.
