@@ -25,9 +25,6 @@ The top-level directory structure of the {trd} source repository is illustrated 
 
 
 As a contributor, your efforts will be focused inside the `references` directory.
-Here, you find subdirectories that identify the featured technology partner or community project.
-For example, the source files for a reference featuring JupyterHub, which is part of Project Jupyter, would be found in the `jupyter` directory.
-
 
 [listing]
 ----
@@ -50,8 +47,11 @@ references
 ...
 ----
 
+Here, you find subdirectories that identify the featured technology partner or community project.
+For example, the source files for a reference featuring JupyterHub, which is part of Project Jupyter, would be found in the `jupyter` directory.
+If an appropriate directory for your technical references does not already exist, you can create one during the workspace setup process.
+There is also a `suse` directory (containing document sources that feature only SUSE components) and a symbolic link to a `bin` directory (containing helpful scripts for contributors).
 
-The `references` directory also includes a `suse` directory (containing document sources that feature only SUSE components) and a symbolic link to a `bin` directory (containing helpful scripts for contributors).
 
 [TIP]
 ====
@@ -60,40 +60,73 @@ As a general rule, the selected partner provides the component at the top of the
 If important, additional component providers can be noted in the names of your source files.
 ====
 
-If an appropriate directory for your technical references does not already exist, you can create one during the workspace setup process.
 
-Take a look next inside a partner or project directory.
-Here, you find a collection similar to the listing below.
+Your work as a contributor is inside a provider directory.
+The structure and contents of an example provider directory are illustrated below.
 
 [listing]
 ----
-partner
-├── adoc
-│   ├── common_docinfo_vars.adoc -> ../../../common/adoc/common_docinfo_vars.adoc
-│   ├── common_gfdl1.2_i.adoc -> ../../../common/adoc/common_gfdl1.2_i.adoc
-│   ├── common_sbp_legal_notice.adoc -> ../../../common/adoc/common_sbp_legal_notice.adoc
-│   ├── common_trd_legal_notice.adoc -> ../../../common/adoc/common_trd_legal_notice.adoc
-│   ├── gs_virtualization_partner-product.adoc
-│   ├── gs_virtualization_partner-product-docinfo.xml
-│   └── gs_virtualization_partner-product-vars.adoc
-├── DC-gs_virtualization_partner-product
+provider
+├── DC-gs_suse-prod_partner-product <1>
+├── adoc <2>
+│   ├── common_docinfo_vars.adoc -> ../../../common/adoc/common_docinfo_vars.adoc <3>
+│   ├── common_gfdl1.2_i.adoc -> ../../../common/adoc/common_gfdl1.2_i.adoc
+│   ├── common_sbp_legal_notice.adoc -> ../../../common/adoc/common_sbp_legal_notice.adoc
+│   ├── common_trd_legal_notice.adoc -> ../../../common/adoc/common_trd_legal_notice.adoc
+│   ├── gs_suse-prod_partner-product.adoc <4>
+│   ├── gs_suse-prod_partner-product-docinfo.xml <5>
+│   └── gs_suse-prod_partner-product-vars.adoc <6>
 ├── images -> media
 └── media <7>
     └── src
         ├── png
-        ├── get-vol-snapshots.png
+        │   └──  get-vol-snapshots.png
         └── svg
             └── suse.svg -> ../../../../../common/images/src/svg/suse.svg
 ----
+<1> Doc Config (DC) file
+//
++
+There is only one DC file per technical reference.
+It specifies the location of the main content, the stylesheet to use for formatting, the draft state, and more.
+You typically only need to edit this file once, when you are ready to publish and you turn off draft mode.
 
-*Doc Config (DC) file*: There is one DC file for each documentation deliverable in which you specify parameters that define the name of the main content file, the rendering stylesheet, the revision date, and so on.
-*_adoc_ directory*: Contains your AsciiDoc content files and your DocBook metadata file.
-*Main content file*: This plain text file, formatted with the https://asciidoc.org/[AsciiDoc] markup language, is where you write most of the text of your document.
-You can use the `include` directive to merge content from other AsciiDoc files during the rendering process.
-*DocBook metadata (docinfo.xml) file*: This file specifies metadata about your document, including title, author information, cover logo file, and executive summary.
-Much of this information is actually defined as document attributes (variables) in your main content file and referenced here to save you from having to type the same information twice.
-*_media_ directory*: You can include logos, diagrams, screenshots, and other images in your guides.
-These media files are stored in subdirectories by file type under _media/src_.
+<2> `adoc` directory
+//
++
+The `adoc` directory contains content and metadata files, as described below.
+
+<3> Common files
+//
++
+Your published document automatically includes standard content contained in these symbolically linked files.
+
+<4> Main content file
+//
++
+Your main content file, in AsciiDoc markup language, is where you add the content you wish to see in the published document.
+
+<5> DocBook metadata (docinfo.xml) file
+//
++
+The DocBook metadata file, in XML format, provides information about your document.
+You typically only need to make minor edits to the provided templates.
+
+<6> Vars file
+//
++
+The vars file contains variable (or document attribute) definitions.
+These include the product names and versions, website and documentation URLs, document title, author names, and more.
+These variables are then substituted for text in the main content file and DocBook metadata file to ensure consistency throughout your document.
+Additionally, using variables makes it easier to make future updates, such as if a product name or website URL change.
+
+<7> `media` directory
+//
++
+The `media` directory contains all media files, such as diagrams and screenshots, you wish to appear in your published document.
+Media files must be organized by file type under `media/src`.
+//
++
 Many image file types are supported, but preference is given to:
 +
 --
@@ -111,9 +144,6 @@ Choose image resolutions to minimize these artifacts.
 +
 [NOTE]
 ====
-In the "entity" directory, _images_ is a symbolic link to the _media_ directory, and is used to maintain compatibility with existing processes and tooling.
+Legacy processes referenced an `images` directory.
+Today, `images` is simply a symbolic link to the `media` directory and is maintained for compatibility.
 ====
-
-
-
-

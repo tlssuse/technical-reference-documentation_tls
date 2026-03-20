@@ -2,44 +2,71 @@
 // Section: Workflow
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-The {trd} {trd-repo}[GitHub repository] is an organized collection of source files for each document.
-You can learn more about types of source files and how they are organized in <<Repository structure>>.
+The source files {trd-alt}s are available in the {trd} {trd-repo}[source repository], hosted on GitHub.
+See <<Repository structure>> for more information about the repository's organization and contents.
 
-Contributors use a Git workflow with the following major steps:
+Contributors use a Git workflow to work with the source repository.
+This includes the following major steps:
 
 . Fork the {trd} repository.
+//
++
+You create a copy of the upstream {trd} repository under your GitHub account.
 
-. Clone the fork.
+. Clone your fork.
+//
++
+You download your fork to your local system.
 
-. Make a branch.
+. Set up your workspace.
+//
++
+You create the structure and template source files for your project.
+//
++
+For details, see <<Workspace setup>>.
 
-. Create content.
+. Develop your content.
+//
++
+You develop your content in the template source files, regularly committing changes to your fork.
 
-. Submit a pull request.
+. Sync your fork with the upstream {trd} repository.
+//
++
+You ensure you have merged all the latest updates in the upstream 'main' branch to your local clone and your fork on GitHub.
+
+. Submit your pull request.
+//
++
+You submit a pull request (PR) in GitHub to merge your project branch into the 'main' branch of the upstream {trd} repository.
+
+. Follow instructions by the SUSE Documentation team.
+//
+You respond to any instructions by the SUSE Documentation team.
 
 
 Each of these steps is explored in more detail in the following sections.
 
 
 
-=== Fork the {trd} repository
+=== Forking the {trd} repository
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 // Overview of how to create a fork of the upstream repository
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
 
 The first step is to create a fork of the {trd} repository into your own GitHub account.
 This only needs to be done once.
 
 [NOTE]
 ====
-If you work for SUSE or a partner company, use your company-sanctioned GitHub account.
+If you work for SUSE or a partner company, you should use your company-sanctioned GitHub account.
 ====
 
 . Open your Web browser and log into your GitHub account.
 
-. Navigate to the {trd} {trd-repo}[GitHub repository].
+. Navigate to the {trd} {trd-repo}[source repository].
 
 . Fork this repository into your own account.
 
@@ -47,43 +74,19 @@ If you work for SUSE or a partner company, use your company-sanctioned GitHub ac
 +
 image::suse-trd_github_fork_01.png[Fork the SUSE TRD GitHub repo, scaledwidth="85%"]
 
-.. In the _Create a new fork_ dialog, you can keep the defaults.
+.. In the _Create a new fork_ dialog, give your repository a different name to distinguish make it easier to distinguish from upstream and also include a description.
 +
 image::suse-trd_github_fork_02.png[Fork the SUSE TRD GitHub repo, scaledwidth="85%"]
 
 .. Click __Create fork__.
 
-. If you are working with others on your document, you can invite them to collaborate in your repository fork.
-+
-image::suse-trd_github_collaborators-settings.png[Add GitHub collaborators, scaledwidth="65%"]
-+
-[NOTE]
-====
-Alternatively, others can fork your fork and follow a similar workflow and submit content and suggestions to you through pull requests.
-====
-
-.. Navigate to your fork.
-
-.. Click __Settings__ > __Collaborators__ > __Add people__.
-
-.. Enter the GitHub username, full name, or email address of your collaborator into the search field, then select the individual you wish to add.
-+
-[WARNING]
-====
-Be sure to verify that you select the correct individual.
-
-SUSE employees should use approved GitHub accounts associated with their SUSE email addresses.
-Partner contributors should use GitHub accounts associated with their employer email account.
-====
-
-.. Click __Add to this repository__.
 
 
-=== Clone the fork
+=== Cloning the fork
 
 Create a clone of your fork so you can work on your local system.
-When you clone a Git repository to your local system, you download a full copy of all the repository data at that point in time.
-This includes not just source files but Git metadata too, including branches, commit history, and more.
+When you clone a Git repository to your local system, you download a full copy of the repository data at that point in time.
+This includes not just source files but Git metadata, too.
 
 . Launch a terminal on your local system.
 
@@ -94,27 +97,28 @@ For example,
 +
 [source, console]
 ----
-mkdir -p ~/git/GITHUB_USER
-cd ~/git/GITHUB_USER
+mkdir -p ~/git/GITHUB-USER
+cd ~/git/GITHUB-USER
 ----
-where `GITHUB_USER` is your GitHub username.
+where `GITHUB-USER` is your GitHub username.
 +
 [NOTE]
 ====
-All forks of a Git repository share the same directory structure.
-Creating the additional directory layer gives you the flexibility to host clones of other forks of the _upstream_ repository or even of the _upstream_ repository itself.
+This directory structure is recommended for good housekeeping but is not strictly required.
 ====
 
 . Clone your fork.
 +
 [source, console]
 ----
-git clone git@github.com:GITHUB_USER/technical-reference-documentation.git
+git clone git@github.com:GITHUB-USER/YOUR-REPO-NAME.git
 ----
++
+where `YOUR-REPO-NAME` is the name you gave to your repository fork.
 +
 [TIP]
 ====
-Find the URL of your fork in the GitHub UI.
+To find the URL of your fork in the GitHub UI:
 
 . Log into GitHub and go to your fork.
 
@@ -131,10 +135,10 @@ Find the URL of your fork in the GitHub UI.
 +
 [source, console]
 ----
-cd technical-reference-documentation
+cd YOUR-REPO-NAME
 ----
 
-. Add the {trd} repository as your _upstream_ remote.
+. Add the {trd} repository as your upstream remote.
 +
 [source, console]
 ----
@@ -143,7 +147,8 @@ git remote add upstream git@github.com:SUSE/technical-reference-documentation.gi
 +
 [NOTE]
 ====
-Your clone's primary remote is named _origin_ and it represents the fork in your GitHub account.
+In addition to a remote called 'upstream', you also have a remote called 'origin'.
+The 'origin' remote is the fork repository in your GitHub account.
 ====
 
 . Verify your remotes.
@@ -155,29 +160,41 @@ git remote -v
 +
 [listing]
 ----
-origin  git@github.com:GITHUB_USER/technical-reference-documentation.git (fetch)
-origin  git@github.com:GITHUB_USER/technical-reference-documentation.git (push)
+origin  git@github.com:GITHUB-USER/YOUR-REPO-NAME.git (fetch)
+origin  git@github.com:GITHUB-USER/YOUR-REPO-NAME.git (push)
 upstream        git@github.com:SUSE/technical-reference-documentation.git (fetch)
 upstream        git@github.com:SUSE/technical-reference-documentation.git (push)
 ----
+
+
+
+=== Creating a branch
+
+Branches help you keep your project work separate from other projects.
+All {trd} development work must be performed in a branch.
+When your document is ready, you will submit a pull request (PR) to merge your branch into the 'main' branch of the upstream {trd} repository.
+
+. From a terminal, change to the `references` directory in your local clone.
+//
 +
-[NOTE]
-====
-GITHUB_USER in this example would be replaced with your GitHub username.
-====
+For example:
++
+[source, console]
+----
+cd ~/git/GITHUB-USER/YOUR-REPO-NAME/references
+----
 
-
-=== Make a branch
-
-Branches help you keep your work separate from that of others.
-Think of a branch as an independent, project work area.
-You create your document in a branch of your fork.
-Later, you submit a pull request to merge this branch into the 'main' _upstream_ branch.
+. Check out your the 'main' branch in your local clone.
++
+[source, console]
+----
+git checkout main
+----
 
 . Create a branch for your project.
 //
 +
-For example,
+For example:
 +
 [source, console]
 ----
@@ -190,7 +207,7 @@ git branch my-tuxy-project
 ----
 git checkout my-tuxy-project
 ----
-
++
 [TIP]
 ====
 You can create and check out a branch at the same time with:
@@ -215,15 +232,12 @@ git branch --show-current
 ====
 
 
-=== Configure the framework
+=== Setting up the project structure
 
-Your documentation project consists of multiple types of files, placed in specific locations within the directory structure of the {trd} repository.
-Setting up this structure for your project can seem challenging.
-Fortunately, there are automation tools to help you quickly generate a compliant framework with templates for the required source files.
-See <<Templates and framework>> to learn more.
+*Add content here*
 
 
-=== Create content
+=== Developing your content
 
 Good documentation often results from collaborative efforts and multiple editing sessions.
 The following workflow can help you manage this process.
@@ -233,7 +247,7 @@ For example:
 +
 [source, console]
 ----
-cd ~/git/GITHUB_USER/technical-reference-documentation
+cd ~/git/GITHUB-USER/YOUR-REPO-NAME/references
 ----
 
 . Check out your project's branch.
@@ -272,7 +286,7 @@ Fix any merge errors before proceeding.
 //
 +
 A typical content session involves editing source files and copying assets (such as image files) into appropriate project directories.
-Be sure to refer to <<Style>> and <<AsciiDoc>> to learn more about writing style and content formatting.
+Be sure to refer to <<Writing style>> and <<AsciiDoc>> to learn more about writing style and content formatting.
 
 . Render your document with DAPS to verify content, layout, and style.
 +
@@ -335,9 +349,9 @@ Pause frequently to commit and push edits to your _origin_ remote.
 ====
 
 
-=== Submit a pull request
+=== Submitting your project
 
-Before you submit your document, be sure to update your fork with changes in the 'main' branch of the {trd} GitHub repository.
+Before you submit your documentation project, be sure to update your fork with changes in the 'main' branch of the upstream {trd} repository.
 
 . Open a local terminal and change to your clone directory.
 //

@@ -1,0 +1,47 @@
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Section: Workflow
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+The source files {trd-alt}s are available in the {trd} {trd-repo}[source repository], hosted on GitHub.
+See <<Repository structure>> for more information about the repository's organization and contents.
+
+Contributors use a Git workflow to work with the source repository.
+This includes the following major steps:
+
+. Fork the {trd} repository.
+//
++
+You create a copy of the upstream {trd} repository under your GitHub account.
+
+. Clone your fork.
+//
++
+You download your fork to your local system.
+
+. Set up your workspace.
+//
++
+You create the structure and template source files for your project.
+
+. Develop your content.
+//
++
+You develop your content in the template source files, regularly committing changes to your fork.
+
+. Sync your fork with the upstream {trd} repository.
+//
++
+You ensure you have merged all the latest updates in the upstream 'main' branch to your local clone and your fork on GitHub.
+
+. Submit your pull request.
+//
++
+You submit a pull request (PR) in GitHub to merge your project branch into the 'main' branch of the upstream {trd} repository.
+
+. Follow instructions by the SUSE Documentation team.
+//
+You respond to any instructions by the SUSE Documentation team.
+
+
+Each of these steps is explored in greater detail in <<Workspace setup>>.
+
