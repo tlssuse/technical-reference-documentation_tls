@@ -1,0 +1,273 @@
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Section: Project development
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+=== Creating a branch
+
+Branches help you keep your project work separate from other projects.
+All {trd} development work must be performed in a branch.
+When your document is ready, you will submit a pull request (PR) to merge your branch into the 'main' branch of the upstream {trd} repository.
+
+. From a terminal, change to the `references` directory in your local clone.
+//
++
+For example:
++
+[source, console]
+----
+cd ~/git/GITHUB-USER/YOUR-REPO-NAME/references
+----
+
+. Check out your the 'main' branch in your local clone.
++
+[source, console]
+----
+git checkout main
+----
+
+. Create a branch for your project.
+//
++
+For example:
++
+[source, console]
+----
+git branch my-tuxy-project
+----
+
+. To work in this branch, you have to check it out.
++
+[source, console]
+----
+git checkout my-tuxy-project
+----
++
+[TIP]
+====
+You can create and check out a branch at the same time with:
+
+[source, console]
+----
+git checkout -b my-tuxy-project
+----
+
+====
+
+[IMPORTANT]
+====
+It is a good practice to make sure your branch is active at the start of each editing session.
+You can verify your current branch with:
+
+[source, console]
+----
+git branch --show-current
+----
+
+====
+
+
+=== Setting up the project structure
+
+*Add content here*
+
+
+=== Developing your content
+
+Good documentation often results from collaborative efforts and multiple editing sessions.
+The following workflow can help you manage this process.
+
+. Enter the local directory containing the clone of your GitHub fork.
+For example:
++
+[source, console]
+----
+cd ~/git/GITHUB-USER/YOUR-REPO-NAME/references
+----
+
+. Check out your project's branch.
++
+[source, console]
+----
+git checkout my-tuxy-project
+----
++
+[TIP]
+====
+Always remember to work in your branch.
+====
+
+. Update the clone from your _origin_ remote.
+//
++
+This allows you to integrate any edits or other content from your contributors, helping you minimize merge conflicts later.
++
+[source, console]
+----
+git pull origin
+----
++
+[NOTE]
+====
+It is not necessary to specify the _origin_ remote, since it is configured as your default for tracking.
+====
++
+[IMPORTANT]
+====
+Fix any merge errors before proceeding.
+====
+
+. Create your content.
+//
++
+A typical content session involves editing source files and copying assets (such as image files) into appropriate project directories.
+Be sure to refer to <<Writing style>> and <<AsciiDoc>> to learn more about writing style and content formatting.
+
+. Render your document with DAPS to verify content, layout, and style.
++
+[NOTE]
+====
+You may get validation errors if you have invalid AsciiDoc syntax.
+You must then find and correct these errors.
+====
+
+. Commit your changes locally.
+//
++
+For example:
++
+[source, console]
+----
+git add .
+git commit -m "updated section 5; added screenshot"
+----
++
+[TIP]
+====
+Always include a commit message as a reminder to yourself and to let your collaboration team know what changes you made in this commit.
+====
+
+. Push the commit to your _origin_ remote.
++
+[source, console]
+----
+git push origin
+----
++
+[NOTE]
+====
+The first time you push a commit on your branch, you will see a warning like:
+
+[listing]
+----
+fatal: The current branch my-tuxy-project has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin my-tuxy-project
+
+To have this happen automatically for branches without a tracking
+upstream, see 'push.autoSetupRemote' in 'git help config'.
+----
+
+Simply follow the instructions to fix the issue.
+
+You only need to do this once.
+====
+
+. Repeat these steps until you are finished with new content.
+
+
+[TIP]
+====
+It is a good idea to break up long content creation sessions.
+Pause frequently to commit and push edits to your _origin_ remote.
+====
+
+
+=== Submitting your project
+
+Before you submit your documentation project, be sure to update your fork with changes in the 'main' branch of the upstream {trd} repository.
+
+. Open a local terminal and change to your clone directory.
+//
++
+For example:
++
+[source, console]
+----
+cd ~/git/GITHUB_USER/technical-reference-documentation
+----
+
+. Check out your 'main' branch.
++
+[source, console]
+----
+git checkout main
+----
+
+. Update your clone with changes in the _upstream_ remote.
++
+[source, console]
+----
+git pull upstream main
+----
+
+. Synchronize these updates to your _origin_ remote.
++
+[source, console]
+----
+git push origin
+----
+
+
+With your document in good shape and your fork synchronized, it is time to submit your document for official review.
+To do this, you submit a pull request (PR) from the GitHub UI.
+
+. Log into your GitHub account.
+
+. Select your fork of the _upstream_ repository.
+
+. Select your branch and click __Compare & pull request__.
++
+image::suse-trd_github_pr_01.png[GitHub PR Creation - select branch, scaledwidth="85%"]
+
+. Verify that your branch is able to be merged and click __Create pull request__.
+//
++
+You can add any helpful notes to the reviewer in the provided space.
++
+image::suse-trd_github_pr_02.png[GitHub PR Creation - compare changes, scaledwidth="85%"]
+
+. Follow the status of your pull request in the GitHub __Pull requests__ page of the upstream repository.
+//
++
+Respond to comments and suggestions in the __Conversation__ tab.
++
+image::suse-trd_github_pr_03.png[GitHub PR Creation - review, scaledwidth="85%"]
+
+. When your document is ready, verify that is published to the {trd} {trd-portal}[website].
+
+. After your document has been published, clean up your work area.
+
+.. Delete your previous branch.
++
+[source, console]
+----
+git checkout main
+git branch -d my-tuxy-project
+----
+
+.. Merge upstream changes to your local fork.
++
+[source, console]
+----
+git pull upstream main
+----
+
+.. Synchronize your fork.
++
+[source, console]
+----
+git push origin
+----
+
+

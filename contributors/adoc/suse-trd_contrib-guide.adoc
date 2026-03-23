@@ -23,17 +23,6 @@ include::./suse-trd_contrib-guide-vars.adoc[]
 
 == Introduction
 
-=== Motivation
-
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Provide a motivation for the document in 2-4 sentences to identify:
-//   - what the document is about
-//   - why it may be of interest to the reader (e.g., a use case)
-//   - what products are being highlighted
-// Include an approved SUSE | Partner logo lock-up if possible
-// Include any additional, relevant details
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
 {trd-portal}[{trd-brand}] ({trd}) is the open collection of contributed, high quality, technical guidance for solutions that address real-world use cases with SUSE, partner, and community components.
 The {trd} collection is implemented as code, with source files managed and maintained in the {trd-repo}[{trd} GitHub repository].
 Both rendered documentation and source code are open source licensed and freely available.
@@ -65,9 +54,10 @@ In this document, you learn about:
 
 * <<Prerequisites>>
 * <<Documentation types>>
-* <<Workflows>>
-* <<Repository structure>>
+* <<Workflow>>
 * <<Workspace setup>>
+* <<Repository structure>>
+* <<Project development>>
 * <<Document templates>>
 * <<Writing style>>
 * <<AsciiDoc>>
@@ -143,9 +133,15 @@ An architectural reference with deployment guidance for a solution featuring SUS
 
 
 
-== Workflows
+== Workflow
 
-include::suse-trd_contrib-workflows.adoc[]
+include::suse-trd_contrib-workflow.adoc[]
+
+
+
+== Workspace setup
+
+include::suse-trd_contrib-workspace-setup.adoc[]
 
 
 
@@ -155,9 +151,9 @@ include::suse-trd_contrib-repo-structure.adoc[]
 
 
 
-== Workspace setup
+== Project development
 
-include::suse-trd_contrib-workspace-setup.adoc[]
+include::suse-trd_contrib-project-devel.adoc[]
 
 
 

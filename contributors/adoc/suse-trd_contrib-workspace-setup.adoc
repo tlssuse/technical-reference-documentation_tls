@@ -1,68 +1,30 @@
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Section: Workflow
+// Section: Workspace setup
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-The source files {trd-alt}s are available in the {trd} {trd-repo}[source repository], hosted on GitHub.
-See <<Repository structure>> for more information about the repository's organization and contents.
 
-Contributors use a Git workflow to work with the source repository.
-This includes the following major steps:
+{trd-alt} are rendered from source files maintained on GitHub in the {trd-repo}[{trd} source repository].
+You do not work directly with the repository.
+Instead, you work in your own workspace.
+This workspace consists of two parts:
 
-. Fork the {trd} repository.
-//
-+
-You create a copy of the upstream {trd} repository under your GitHub account.
+. a _fork_ or copy of the repository in your own GitHub account
+. a _clone_ of your fork downloaded to your local system
 
-. Clone your fork.
-//
-+
-You download your fork to your local system.
-
-. Set up your workspace.
-//
-+
-You create the structure and template source files for your project.
-//
-+
-For details, see <<Workspace setup>>.
-
-. Develop your content.
-//
-+
-You develop your content in the template source files, regularly committing changes to your fork.
-
-. Sync your fork with the upstream {trd} repository.
-//
-+
-You ensure you have merged all the latest updates in the upstream 'main' branch to your local clone and your fork on GitHub.
-
-. Submit your pull request.
-//
-+
-You submit a pull request (PR) in GitHub to merge your project branch into the 'main' branch of the upstream {trd} repository.
-
-. Follow instructions by the SUSE Documentation team.
-//
-You respond to any instructions by the SUSE Documentation team.
-
-
-Each of these steps is explored in more detail in the following sections.
-
+You typically only need to set up your workspace once.
+The steps for doing this are detailed below.
 
 
 === Forking the {trd} repository
 
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Overview of how to create a fork of the upstream repository
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-The first step is to create a fork of the {trd} repository into your own GitHub account.
-This only needs to be done once.
+The first step to setting up your workspace is to create a _fork_ of the _upstream_ {trd} source repository into your own GitHub account.
 
 [NOTE]
 ====
 If you work for SUSE or a partner company, you should use your company-sanctioned GitHub account.
 ====
+
+Create your fork of the upstream source repository by following the steps detailed below.
 
 . Open your Web browser and log into your GitHub account.
 
@@ -84,9 +46,10 @@ image::suse-trd_github_fork_02.png[Fork the SUSE TRD GitHub repo, scaledwidth="8
 
 === Cloning the fork
 
-Create a clone of your fork so you can work on your local system.
-When you clone a Git repository to your local system, you download a full copy of the repository data at that point in time.
+After creating your fork, you need to _clone_ it on your local system.
+When you clone a Git repository, you download a full copy of the repository data at that point in time.
 This includes not just source files but Git metadata, too.
+Clone your fork by following the steps detailed below.
 
 . Launch a terminal on your local system.
 
@@ -138,7 +101,7 @@ To find the URL of your fork in the GitHub UI:
 cd YOUR-REPO-NAME
 ----
 
-. Add the {trd} repository as your upstream remote.
+. Configure the {trd} source repository as your 'upstream' remote.
 +
 [source, console]
 ----
@@ -147,8 +110,9 @@ git remote add upstream git@github.com:SUSE/technical-reference-documentation.gi
 +
 [NOTE]
 ====
-In addition to a remote called 'upstream', you also have a remote called 'origin'.
-The 'origin' remote is the fork repository in your GitHub account.
+Git uses the concept of _remotes_ to communicate with repositories beyond the clone on your local system.
+When you created your local clone, your fork on GitHub was assigned the name 'origin'.
+And, because the {trd} source repository is upstream of your fork, you assign it the name 'upstream' here.
 ====
 
 . Verify your remotes.
@@ -167,273 +131,13 @@ upstream        git@github.com:SUSE/technical-reference-documentation.git (push)
 ----
 
 
-
-=== Creating a branch
-
-Branches help you keep your project work separate from other projects.
-All {trd} development work must be performed in a branch.
-When your document is ready, you will submit a pull request (PR) to merge your branch into the 'main' branch of the upstream {trd} repository.
-
-. From a terminal, change to the `references` directory in your local clone.
-//
-+
-For example:
-+
-[source, console]
-----
-cd ~/git/GITHUB-USER/YOUR-REPO-NAME/references
-----
-
-. Check out your the 'main' branch in your local clone.
-+
-[source, console]
-----
-git checkout main
-----
-
-. Create a branch for your project.
-//
-+
-For example:
-+
-[source, console]
-----
-git branch my-tuxy-project
-----
-
-. To work in this branch, you have to check it out.
-+
-[source, console]
-----
-git checkout my-tuxy-project
-----
-+
-[TIP]
-====
-You can create and check out a branch at the same time with:
-
-[source, console]
-----
-git checkout -b my-tuxy-project
-----
-
-====
-
 [IMPORTANT]
 ====
-It is a good practice to make sure your branch is active at the start of each editing session.
-You can verify your current branch with:
+Your workspace typically only needs to be set up once, but it must be maintained.
+Two critical maintenance activities include:
 
-[source, console]
-----
-git branch --show-current
-----
+* keeping your workspace up-to-date with the upstream and origin repositories
+* trimming branches
 
+These topics are discussed elsewhere in this guide.
 ====
-
-
-=== Setting up the project structure
-
-*Add content here*
-
-
-=== Developing your content
-
-Good documentation often results from collaborative efforts and multiple editing sessions.
-The following workflow can help you manage this process.
-
-. Enter the local directory containing the clone of your GitHub fork.
-For example:
-+
-[source, console]
-----
-cd ~/git/GITHUB-USER/YOUR-REPO-NAME/references
-----
-
-. Check out your project's branch.
-+
-[source, console]
-----
-git checkout my-tuxy-project
-----
-+
-[TIP]
-====
-Always remember to work in your branch.
-====
-
-. Update the clone from your _origin_ remote.
-//
-+
-This allows you to integrate any edits or other content from your contributors, helping you minimize merge conflicts later.
-+
-[source, console]
-----
-git pull origin
-----
-+
-[NOTE]
-====
-It is not necessary to specify the _origin_ remote, since it is configured as your default for tracking.
-====
-+
-[IMPORTANT]
-====
-Fix any merge errors before proceeding.
-====
-
-. Create your content.
-//
-+
-A typical content session involves editing source files and copying assets (such as image files) into appropriate project directories.
-Be sure to refer to <<Writing style>> and <<AsciiDoc>> to learn more about writing style and content formatting.
-
-. Render your document with DAPS to verify content, layout, and style.
-+
-[NOTE]
-====
-You may get validation errors if you have invalid AsciiDoc syntax.
-You must then find and correct these errors.
-====
-
-. Commit your changes locally.
-//
-+
-For example:
-+
-[source, console]
-----
-git add .
-git commit -m "updated section 5; added screenshot"
-----
-+
-[TIP]
-====
-Always include a commit message as a reminder to yourself and to let your collaboration team know what changes you made in this commit.
-====
-
-. Push the commit to your _origin_ remote.
-+
-[source, console]
-----
-git push origin
-----
-+
-[NOTE]
-====
-The first time you push a commit on your branch, you will see a warning like:
-
-[listing]
-----
-fatal: The current branch my-tuxy-project has no upstream branch.
-To push the current branch and set the remote as upstream, use
-
-    git push --set-upstream origin my-tuxy-project
-
-To have this happen automatically for branches without a tracking
-upstream, see 'push.autoSetupRemote' in 'git help config'.
-----
-
-Simply follow the instructions to fix the issue.
-
-You only need to do this once.
-====
-
-. Repeat these steps until you are finished with new content.
-
-
-[TIP]
-====
-It is a good idea to break up long content creation sessions.
-Pause frequently to commit and push edits to your _origin_ remote.
-====
-
-
-=== Submitting your project
-
-Before you submit your documentation project, be sure to update your fork with changes in the 'main' branch of the upstream {trd} repository.
-
-. Open a local terminal and change to your clone directory.
-//
-+
-For example:
-+
-[source, console]
-----
-cd ~/git/GITHUB_USER/technical-reference-documentation
-----
-
-. Check out your 'main' branch.
-+
-[source, console]
-----
-git checkout main
-----
-
-. Update your clone with changes in the _upstream_ remote.
-+
-[source, console]
-----
-git pull upstream main
-----
-
-. Synchronize these updates to your _origin_ remote.
-+
-[source, console]
-----
-git push origin
-----
-
-
-With your document in good shape and your fork synchronized, it is time to submit your document for official review.
-To do this, you submit a pull request (PR) from the GitHub UI.
-
-. Log into your GitHub account.
-
-. Select your fork of the _upstream_ repository.
-
-. Select your branch and click __Compare & pull request__.
-+
-image::suse-trd_github_pr_01.png[GitHub PR Creation - select branch, scaledwidth="85%"]
-
-. Verify that your branch is able to be merged and click __Create pull request__.
-//
-+
-You can add any helpful notes to the reviewer in the provided space.
-+
-image::suse-trd_github_pr_02.png[GitHub PR Creation - compare changes, scaledwidth="85%"]
-
-. Follow the status of your pull request in the GitHub __Pull requests__ page of the upstream repository.
-//
-+
-Respond to comments and suggestions in the __Conversation__ tab.
-+
-image::suse-trd_github_pr_03.png[GitHub PR Creation - review, scaledwidth="85%"]
-
-. When your document is ready, verify that is published to the {trd} {trd-portal}[website].
-
-. After your document has been published, clean up your work area.
-
-.. Delete your previous branch.
-+
-[source, console]
-----
-git checkout main
-git branch -d my-tuxy-project
-----
-
-.. Merge upstream changes to your local fork.
-+
-[source, console]
-----
-git pull upstream main
-----
-
-.. Synchronize your fork.
-+
-[source, console]
-----
-git push origin
-----
-
-
