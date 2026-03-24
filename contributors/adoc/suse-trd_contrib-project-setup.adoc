@@ -1,12 +1,13 @@
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Section: Project development
+// Section: Project setup
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-=== Creating a branch
-
+All {trd} development work must be performed in a unique, Git branch.
+This rule applies whether you are creating a new document or editing an existing one.
 Branches help you keep your project work separate from other projects.
-All {trd} development work must be performed in a branch.
-When your document is ready, you will submit a pull request (PR) to merge your branch into the 'main' branch of the upstream {trd} repository.
+
+
+=== Creating a branch
 
 . From a terminal, change to the `references` directory in your local clone.
 //
@@ -23,6 +24,21 @@ cd ~/git/GITHUB-USER/YOUR-REPO-NAME/references
 [source, console]
 ----
 git checkout main
+----
+
+. Make sure your main branch is up-to-date with the 'main' branch of the upstream repository.
++
+[source console]
+----
+git fetch upstream main
+git merge upstream/main
+----
++
+or
++
+[source, console]
+----
+git pull upstream main
 ----
 
 . Create a branch for your project.
@@ -64,6 +80,8 @@ git branch --show-current
 ----
 
 ====
+
+
 
 
 === Setting up the project structure

@@ -11,8 +11,12 @@ This workspace consists of two parts:
 . a _fork_ or copy of the repository in your own GitHub account
 . a _clone_ of your fork downloaded to your local system
 
+These steps are detailed below.
+
+[NOTE]
+====
 You typically only need to set up your workspace once.
-The steps for doing this are detailed below.
+====
 
 
 === Forking the {trd} repository

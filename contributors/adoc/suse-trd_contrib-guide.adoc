@@ -57,7 +57,8 @@ In this document, you learn about:
 * <<Workflow>>
 * <<Workspace setup>>
 * <<Repository structure>>
-* <<Project development>>
+* <<Project setup>>
+* <<Project submission>>
 * <<Document templates>>
 * <<Writing style>>
 * <<AsciiDoc>>
@@ -151,9 +152,12 @@ include::suse-trd_contrib-repo-structure.adoc[]
 
 
 
-== Project development
+== Project setup
 
-include::suse-trd_contrib-project-devel.adoc[]
+include::suse-trd_contrib-project-setup.adoc[]
+
+
+== Project submission
 
 
 
