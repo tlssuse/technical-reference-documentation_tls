@@ -2,9 +2,25 @@
 // Section: Project setup
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+When you have your workspace set up, you are ready to start a new documentation project.
+This involves two main activities:
+
+. creating a Git branch to contain your project
+//
++
 All {trd} development work must be performed in a unique, Git branch.
 This rule applies whether you are creating a new document or editing an existing one.
 Branches help you keep your project work separate from other projects.
+
+. creating the source file and directory structure for your project
+//
++
+Your technical reference is built from multiple source files, which must be located in the directory structure described in <<Repository structure>>.
+You can use the `refsetup.sh` script to automatically create the required structure along with standard file templates.
+
+
+Details for both activities are providing in the following sections.
+
 
 
 === Creating a branch
@@ -51,7 +67,7 @@ For example:
 git branch my-tuxy-project
 ----
 
-. To work in this branch, you have to check it out.
+. To work in this branch, you have to switch to it using the `git checkout` command.
 +
 [source, console]
 ----
@@ -68,7 +84,7 @@ git checkout -b my-tuxy-project
 ----
 
 ====
-
++
 [IMPORTANT]
 ====
 It is a good practice to make sure your branch is active at the start of each editing session.
@@ -81,211 +97,234 @@ git branch --show-current
 
 ====
 
-
+With your branch ready, you can move on to creating the file and directory structure for your project.
 
 
 === Setting up the project structure
 
-*Add content here*
-
-
-=== Developing your content
-
-Good documentation often results from collaborative efforts and multiple editing sessions.
-The following workflow can help you manage this process.
-
-. Enter the local directory containing the clone of your GitHub fork.
-For example:
+. If you have not already done so, change to the `references` directory in your local clone of the source repository.
 +
 [source, console]
 ----
-cd ~/git/GITHUB-USER/YOUR-REPO-NAME/references
+cd /home/geeko/git/geeko/trd-geeko/references
 ----
 
-. Check out your project's branch.
+
+. If you have not switched to your project branch, do so.
 +
 [source, console]
 ----
 git checkout my-tuxy-project
 ----
+
+. Excecute the `refsetup.sh` script located in the `bin` directory.
++
+[source, console]
+----
+./bin/refsetup.sh
+----
++
+This interactive script prompts you for information about your project and uses this to create the project directory structure with source files based on the standard templates.
 +
 [TIP]
 ====
-Always remember to work in your branch.
-====
-
-. Update the clone from your _origin_ remote.
-//
-+
-This allows you to integrate any edits or other content from your contributors, helping you minimize merge conflicts later.
-+
-[source, console]
-----
-git pull origin
-----
-+
-[NOTE]
-====
-It is not necessary to specify the _origin_ remote, since it is configured as your default for tracking.
+As you proceed, you can enter `help` at various prompts to get more information about your input options.
 ====
 +
-[IMPORTANT]
-====
-Fix any merge errors before proceeding.
-====
-
-. Create your content.
-//
-+
-A typical content session involves editing source files and copying assets (such as image files) into appropriate project directories.
-Be sure to refer to <<Writing style>> and <<AsciiDoc>> to learn more about writing style and content formatting.
-
-. Render your document with DAPS to verify content, layout, and style.
-+
-[NOTE]
-====
-You may get validation errors if you have invalid AsciiDoc syntax.
-You must then find and correct these errors.
-====
-
-. Commit your changes locally.
-//
-+
-For example:
-+
-[source, console]
-----
-git add .
-git commit -m "updated section 5; added screenshot"
-----
-+
-[TIP]
-====
-Always include a commit message as a reminder to yourself and to let your collaboration team know what changes you made in this commit.
-====
-
-. Push the commit to your _origin_ remote.
-+
-[source, console]
-----
-git push origin
-----
-+
-[NOTE]
-====
-The first time you push a commit on your branch, you will see a warning like:
-
 [listing]
 ----
-fatal: The current branch my-tuxy-project has no upstream branch.
-To push the current branch and set the remote as upstream, use
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+= Set up workspace for a new technical reference document   =
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-    git push --set-upstream origin my-tuxy-project
+ This script will prompt you for information about your
+ document, then use your responses to create the directories
+ and template files you will need.
 
-To have this happen automatically for branches without a tracking
-upstream, see 'push.autoSetupRemote' in 'git help config'.
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - Before proceeding make sure you have:
+  - 1. created a local branch: `git branch myproject`
+  - 2. checked out your new branch: `git checkout myproject`
+  - 3. changed to the 'references' directory
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Are you ready to proceed?
+Press ENTER to continue or CTRL+C to cancel.
+----
++
+Press ENTER to continue.
+
+.. Enter the abbreviation for the desired document type.
++
+[listing]
+----
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- Gathering some information
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+>> Document type (gs, ri, rc, ea, help) : rc
 ----
 
-Simply follow the instructions to fix the issue.
+.. Enter the abbreviation for a featured SUSE component.
++
+[listing]
+----
+- - - - - -
+- Identify the featured SUSE products by entering
+- one product abbreviation at a time.
+- When done, press ENTER with no value.
+-
+- TIPS:
+-   - You do not need to list all products, only
+-     the featured one or ones.
+-   - When featuring multiple products, start at
+-     the top of the software stack.
+-     For example: 'rancher' then 'rke2' then 'sles'
+-
+- Additional options:
+-   'help': display accepted abbreviations.
+-   'clear': clear the product list and start over.
+-   Press CTRL+C to cancel and exit the script.
+- - - - - -
 
-You only need to do this once.
+>> SUSE product : rancher
+----
++
+You are then presented with confirmation of your entry and a prompt for an additional SUSE product.
++
+[listing]
+----
+Featured SUSE products: "rancher"
+
+>> SUSE product :
+----
++
+This is not required.
+If you only want to feature one SUSE product, just press ENTER to leave the loop and proceed to the next prompt.
+
+.. Enter the name of the primary partner you wish to feature.
++
+[listing]
+----
+- - - - - -
+- Enter the name of the primary partner.
+-
+- TIP: Select one partner whose product is at the top
+-      of the software stack and provides the key
+-      functionality for the featured use case.
+- - - - - -
+
+>> Primary partner : tuxy
+----
++
+[NOTE]
+====
+If you selected `ri` or reference implementation as your document type, you are not prompted for partner information.
 ====
 
-. Repeat these steps until you are finished with new content.
+.. Enter the name of the primary partner's product.
++
+[listing]
+----
+- - - - - -
+- Enter the name of the primary partner's product.
+-
+-   TIP: If the primary partner and the product
+-        share the same name, you can leave the
+-        partner product blank to avoid repetition.
+-
+- - - - - -
 
+>> Primary partner's product : snow
+----
 
-[TIP]
+.. If desired, enter additional text to distinguish this document from others that feature this combination of SUSE and partner products.
++
+[listing]
+----
+- - - - - -
+- OPTIONAL
+-
+- If a solution can address multiple use cases,
+- it may be useful to create a separate guide to
+- address unique concerns of each use case.
+-
+-   NOTE:  This option appends the text to the document's
+-          file name, so it should be used sparingly to
+-          avoid especially long file names.
+- - - - - -
+
+>> Distinctive text :
+----
++
+[NOTE]
 ====
-It is a good idea to break up long content creation sessions.
-Pause frequently to commit and push edits to your _origin_ remote.
+If you need to feature an additional partner and product, you can do so here.
+Follow the pattern: `partner-product`.
 ====
 
-
-=== Submitting your project
-
-Before you submit your documentation project, be sure to update your fork with changes in the 'main' branch of the upstream {trd} repository.
-
-. Open a local terminal and change to your clone directory.
-//
+.. Information gathering is complete, now review the proposed structure.
 +
-For example:
-+
-[source, console]
+[listing]
 ----
-cd ~/git/GITHUB_USER/technical-reference-documentation
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - Preparing to create the following structure:
+  -
+  -   references
+  -   └── tuxy
+  -       ├── DC-rc_suse-rancher_tuxy-snow
+  -       ├── adoc
+  -       │   ├── rc_suse-rancher_tuxy-snow.adoc
+  -       │   ├── rc_suse-rancher_tuxy-snow-docinfo.xml
+  -       │   └── rc_suse-rancher_tuxy-snow-vars.adoc
+  -       ├── images -> media
+  -       └── media
+  -           └── src
+  -               ├── png
+  -               └── svg
+  -
+  - NOTE: Several symbolic links will also be created.
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+>> Press ENTER to create document structure or CTRL+C to cancel.
+----
++
+Press ENTER to create it.
++
+[listing]
+----
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+= Workspace for your new guide has been set up.
+=
+= Access your workspace in:
+=   references/tuxy
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 ----
 
-. Check out your 'main' branch.
-+
-[source, console]
-----
-git checkout main
-----
-
-. Update your clone with changes in the _upstream_ remote.
-+
-[source, console]
-----
-git pull upstream main
-----
-
-. Synchronize these updates to your _origin_ remote.
-+
-[source, console]
-----
-git push origin
-----
-
-
-With your document in good shape and your fork synchronized, it is time to submit your document for official review.
-To do this, you submit a pull request (PR) from the GitHub UI.
-
-. Log into your GitHub account.
-
-. Select your fork of the _upstream_ repository.
-
-. Select your branch and click __Compare & pull request__.
-+
-image::suse-trd_github_pr_01.png[GitHub PR Creation - select branch, scaledwidth="85%"]
-
-. Verify that your branch is able to be merged and click __Create pull request__.
-//
-+
-You can add any helpful notes to the reviewer in the provided space.
-+
-image::suse-trd_github_pr_02.png[GitHub PR Creation - compare changes, scaledwidth="85%"]
-
-. Follow the status of your pull request in the GitHub __Pull requests__ page of the upstream repository.
-//
-+
-Respond to comments and suggestions in the __Conversation__ tab.
-+
-image::suse-trd_github_pr_03.png[GitHub PR Creation - review, scaledwidth="85%"]
-
-. When your document is ready, verify that is published to the {trd} {trd-portal}[website].
-
-. After your document has been published, clean up your work area.
-
-.. Delete your previous branch.
+.. Verify that the structure satisfies your requirements.
 +
 [source, console]
 ----
-git checkout main
-git branch -d my-tuxy-project
+tree tuxy
+----
++
+[listing]
+----
+tuxy
+├── adoc
+│   ├── common_docinfo_vars.adoc -> ../../../common/adoc/common_docinfo_vars.adoc
+│   ├── common_gfdl1.2_i.adoc -> ../../../common/adoc/common_gfdl1.2_i.adoc
+│   ├── common_sbp_legal_notice.adoc -> ../../../common/adoc/common_sbp_legal_notice.adoc
+│   ├── common_trd_legal_notice.adoc -> ../../../common/adoc/common_trd_legal_notice.adoc
+│   ├── rc_suse-rancher_tuxy-snow.adoc
+│   ├── rc_suse-rancher_tuxy-snow-docinfo.xml
+│   └── rc_suse-rancher_tuxy-snow-vars.adoc
+├── DC-rc_suse-rancher_tuxy-snow
+├── images -> media
+└── media
+    └── src
 ----
 
-.. Merge upstream changes to your local fork.
-+
-[source, console]
-----
-git pull upstream main
-----
-
-.. Synchronize your fork.
-+
-[source, console]
-----
-git push origin
-----
+With your project set up, you can proceed to building your content.
 
 

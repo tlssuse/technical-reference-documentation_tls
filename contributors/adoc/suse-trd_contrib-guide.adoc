@@ -58,8 +58,8 @@ In this document, you learn about:
 * <<Workspace setup>>
 * <<Repository structure>>
 * <<Project setup>>
+* <<Document building>>
 * <<Project submission>>
-* <<Document templates>>
 * <<Writing style>>
 * <<AsciiDoc>>
 
@@ -157,19 +157,16 @@ include::suse-trd_contrib-repo-structure.adoc[]
 include::suse-trd_contrib-project-setup.adoc[]
 
 
+
+== Document building
+
+include::suse-trd_contrib-doc-build.adoc[]
+
+
+
 == Project submission
 
 
-
-== Document templates
-
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Outline use of setup scripts and templates
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-Your {trd} documentation project relies on different types of source files, placed in specific locations within the repository's directory structure.
-The files and structures can be created from scratch.
-But you can use the provided automation tools to generate a framework for you, including templates for your source files.
 
 
 

@@ -62,7 +62,7 @@ If important, additional component providers can be noted in the names of your s
 
 
 Your work as a contributor is inside a provider directory.
-The structure and contents of an example provider directory are illustrated below.
+The structure and contents of an example provider directory are illustrated below for a simple getting started guide.
 
 [listing]
 ----
@@ -80,7 +80,8 @@ provider
 └── media <7>
     └── src
         ├── png
-        │   └──  get-vol-snapshots.png
+        │   ├──  suse-prod_partner-prod_architecture.png
+        │   └──  suse-prod_partner-prod_ui.png
         └── svg
             └── suse.svg -> ../../../../../common/images/src/svg/suse.svg
 ----
@@ -110,7 +111,7 @@ Your main content file, in AsciiDoc markup language, is where you add the conten
 //
 +
 The DocBook metadata file, in XML format, provides information about your document.
-You typically only need to make minor edits to the provided templates.
+You typically only need to make minor edits to the standard template.
 
 <6> Vars file
 //
