@@ -16,28 +16,20 @@ When creating your content:
 
 * Ensure files are encoded to https://en.wikipedia.org/wiki/UTF-8[UTF-8].
 
-* Start each line in the first column.
-//
-+
+* Start each line in the first column. +
 There should be no leading whitespace.
 
 * Strip trailing whitespace from lines.
 
-* End lines with the line feed character only.
-//
-+
+* End lines with the newline (or line feed) character only. +
 Some operating systems add both a carriage return and a line feed to the end of a line.
 You must strip these carriage return characters from your files before submission.
 This can also be done by https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings?platform=windows[configuring Git to handle line endings].
 
-* Do not edit files outside the scope of your project.
-//
-+
+* Do not edit files outside the scope of your project. +
 This includes common files, scripts, and the files associated with other published documentation.
 
-* Start each sentence on a new line, even if it is part of the same paragraph.
-//
-+
+* Start each sentence on a new line, even if it is part of the same paragraph. +
 This makes it easier to edit and handle Git merge conflicts.
 
 
@@ -49,56 +41,61 @@ The following sections address specific aspects of document structure and text s
 
 {asciidoc-docs}attributes/document-attributes/[Document attributes] are name-value pairs that you can use to configure the AsciiDoc processor, define document metadata, and create reusable content.
 Think of document attributes as document-scoped variables.
-Document attributes can be defined anywhere in your document and used from that point forward.
+These variables can be defined anywhere in your document and used from that point forward.
+However, the best practice is to define all variables in one place (in the Vars file).
 
-{trd} uses document attributes to define some required content, such as document title, author information, and product names.
-You can define your own document attributes and reference them throughout your document for frequently repeated content.
 
-The definition of a document attribute takes the form:
+A variable definition has the form:
 [source, asciidoc]
 ----
- :name-of-an-attribute: value of the attribute
+:name-of-an-attribute: value of the attribute
 ----
 
-Once defined, you can reference your document attributes in your text by surrounding the attribute name with curly braces ( `{` and `}` ).
+The definition begins with the variable name surrounded by colons ( : ) and is followed by the value that is to be assigned.
+The value includes everything up to the first newline character.
 
-For example:
+[TIP]
+====
+Stubs for required and some optional variable definitions are provided in the Vars file template.
+====
+
+Some example variable definitions are shown below.
+
 [source, asciidoc]
 ----
- :comp1-full: Rancher Prime by SUSE
- :comp1-website: https://www.suse.com/solutions/enterprise-container-management/#rancher-product
- :comp2-full: Kubeflow
- :kubeflow_website: https://www.kubeflow.org/
- :title: Deploy {comp2-full} with {comp1-full}
- :executive-summary: Learn how to deploy {comp2-website}[{comp2-full}] to a cluster managed by {comp1-website}[comp1-full}.
+:srancher-brand: SUSE® Rancher Prime
+:srancher-long: SUSE Rancher Prime
+:srancher: SUSE Rancher
+:srancher-version: 2.13
+:srancher-website: https://www.suse.com/products/rancher/
+:srancher-docs: https://documentation.suse.com/cloudnative/rancher-manager/
+
+:doctitle: Enterprise AI on {srancher-long}
 ----
+
+
+
+Once defined, you can reference a variable in your text by surrounding the variable name with curly braces ( `{` and `}` ).
+In fact, you can even define variables using variables you defined earlier (see the `doctitle` variable definition in the previous example).
+
 
 
 === Document title and subtitle
 
 With AsciiDoc, the title of your document is usually placed on the first line of the main content file and is prefixed by a single equal sign ( `=` ).
 An optional subtitle can be included on the same line, separated from the title by a colon and a space ( `:&#160;` ).
+When using the standard templates, you define the document's title and subtitle in the Vars file and reference them in your Main content file as shown below.
 
+In the Vars file:
 [source, asciidoc]
 ----
 
- = My Document Title: My Document Subtitle
+:doctitle: {svirt-long} and {xbackup-long}
+:docsubtitle: Implement Disaster Recovery for your Cloud Native Virtualization Environment
 
 ----
 
-
-For getting started guides, you define title and subtitle as document attributes:
-
-[source, asciidoc]
-----
-
- :title: Rancher by SUSE and Priority Support on AWS Marketplace
- :subtitle: Deploy Rancher on Elastic Kubernetes Service (EKS)
-
-----
-
-and reference them in your adoc file as:
-
+In the Main content file:
 [source, asciidoc]
 ----
 
@@ -106,8 +103,7 @@ and reference them in your adoc file as:
 
 ----
 
-and in your docinfo file as:
-
+In your Docinfo file:
 [source, asciidoc]
 ----
 

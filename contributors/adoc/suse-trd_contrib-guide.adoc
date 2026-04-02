@@ -178,7 +178,7 @@ include::suse-trd_contrib-doc-build.adoc[]
 
 == AsciiDoc
 
-//include::suse-trd_contrib-asciidoc.adoc[]
+include::suse-trd_contrib-asciidoc.adoc[]
 
 
 
