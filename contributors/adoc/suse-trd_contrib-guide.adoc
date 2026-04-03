@@ -72,7 +72,7 @@ They are built from a collection of {asciidoc-url}[AsciiDoc] and {docbook-url}[D
 Development often begins in a favorite word processor or shared document editing environment, making it easier to contribute content without learning to code.
 But, ultimately, these documents must be implemented in code.
 
-Those who only intend to contribute content outside the documentation-as-code environment are still encouraged to become familiar with documentation types and SUSE Documentation Style.
+Those who only intend to contribute content outside the documentation-as-code environment are still encouraged to become familiar with <<Documentation types>> and SUSE Documentation <<Writing style>>.
 
 
 Those who will be working in the documentation-as-code environment will need the following:
@@ -114,24 +114,18 @@ For those using {vscode-url}[Visual Studio Code (VS Code)] as their preferred in
 
 == Documentation types
 
-{trd-alt} can be divided into three types:
+The three primary types of {trd-alt} are:
 
-* *Getting Started Guide*
-//
-+
+* *Getting Started Guide* +
 A solution introduction with step-by-step guidance for installation and configuration for a use case.
 
-* *Reference Implementation*
-//
-+
+* *Reference Implementation* +
 An architectural reference with deployment guidance for a solution involving elements of the SUSE portfolio.
 
-* *Reference Configuration*
-//
-+
+* *Reference Configuration* +
 An architectural reference with deployment guidance for a solution featuring SUSE and partner components.
 
-
+Standard templates for these document types are available as Google Docs, DOCX files, and as the documentation-as-code files.
 
 
 == Workflow
