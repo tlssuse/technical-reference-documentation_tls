@@ -171,4 +171,6 @@
 :github-url: https://github.com/
 :daps-vscode-url: https://marketplace.visualstudio.com/items?itemName=opensuse.daps
 :vscode-url: https://code.visualstudio.com/
+:wiki-uri: https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
+:wiki-url: https://en.wikipedia.org/wiki/URL
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
