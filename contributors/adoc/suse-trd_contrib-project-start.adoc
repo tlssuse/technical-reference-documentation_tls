@@ -1,5 +1,5 @@
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Section: Project setup
+// Section: Starting your project
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 When you have your workspace set up, you are ready to start a new documentation project.
@@ -325,6 +325,6 @@ tuxy
     └── src
 ----
 
-With your project set up, you can proceed to building your content.
+With your project set up, you can proceed to building your content by working with the source files.
 
 

@@ -52,19 +52,19 @@ This guide aims to provide contributors with a basic introduction and reference 
 
 In this document, you learn about:
 
-* <<Prerequisites>>
-* <<Documentation types>>
-* <<Workflow>>
-* <<Workspace setup>>
-* <<Repository structure>>
-* <<Project setup>>
-* <<Document building>>
-* <<Project submission>>
-* <<Writing style>>
-* <<AsciiDoc>>
+* <<prereqs>>
+* <<doctypes>>
+* <<workflow>>
+* <<repstruct>>
+* <<workspace>>
+* <<projstart>>
+* <<sourcefiles>>
+* <<projsubmit>>
+* <<style>>
+* <<asciidoc>>
 
 
-
+[[prereqs, Prerequisites]]
 == Prerequisites
 
 {trd-alt} are documentation-as-code.
@@ -110,8 +110,7 @@ For those using {vscode-url}[Visual Studio Code (VS Code)] as their preferred in
 
 * PDF viewer and Web browser (for reviewing rendered documents).
 
-
-
+[[doctypes, Documentation types]]
 == Documentation types
 
 The three primary types of {trd-alt} are:
@@ -128,48 +127,51 @@ An architectural reference with deployment guidance for a solution featuring SUS
 Standard templates for these document types are available as Google Docs, DOCX files, and as the documentation-as-code files.
 
 
+[[workflow, Workflow]]
 == Workflow
 
 include::suse-trd_contrib-workflow.adoc[]
 
 
 
-== Workspace setup
-
-include::suse-trd_contrib-workspace-setup.adoc[]
-
-
-
+[[repstruct, Repository structure]]
 == Repository structure
 
 include::suse-trd_contrib-repo-structure.adoc[]
 
 
 
-== Project setup
+[[workspace, Setting up your workspace]]
+== Setting up your workspace
 
-include::suse-trd_contrib-project-setup.adoc[]
-
-
-
-== Document building
-
-include::suse-trd_contrib-doc-build.adoc[]
+include::suse-trd_contrib-workspace-setup.adoc[]
 
 
+[[projstart, Starting your project]]
+== Starting your project
 
-== Project submission
-
-
-
-
+include::suse-trd_contrib-project-start.adoc[]
 
 
+[[sourcefiles, Working with source files]]
+== Working with source files
+
+include::suse-trd_contrib-source-work.adoc[]
+
+
+[[projsubmit, Submitting your project]]
+== Submitting your project
+
+include::suse-trd_contrib-project-submit.adoc[]
+
+
+[[style, Writing style]]
 == Writing style
 
-//include::suse-trd_contrib-style.adoc[]
+include::suse-trd_contrib-style.adoc[]
 
 
+[[asciidoc, AsciiDoc]]
 == AsciiDoc
 
 include::suse-trd_contrib-asciidoc.adoc[]

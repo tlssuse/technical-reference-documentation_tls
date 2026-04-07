@@ -85,9 +85,7 @@ provider
         └── svg
             └── suse.svg -> ../../../../../common/images/src/svg/suse.svg
 ----
-<1> Doc Config (DC) file
-//
-+
+<1> Doc Config (DC) file::
 There is only one DC file per technical reference.
 It specifies the location of the main content, the stylesheet to use for formatting, the draft state, and more.
 You typically only need to edit this file once, when you are ready to publish and you turn off draft mode.
@@ -102,7 +100,7 @@ The `adoc` directory contains content and metadata files, as described below.
 +
 Your published document automatically includes standard content contained in these symbolically linked files.
 
-<4> Main content file
+<4> Main Content file
 //
 +
 Your main content file, in AsciiDoc markup language, is where you add the content you wish to see in the published document.
@@ -110,7 +108,7 @@ Your main content file, in AsciiDoc markup language, is where you add the conten
 <5> DocBook metadata (docinfo.xml) file
 //
 +
-The DocBook metadata file, in XML format, provides information about your document.
+The docinfo.xml file provides information about your document.
 You typically only need to make minor edits to the standard template.
 
 <6> Vars file

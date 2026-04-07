@@ -11,7 +11,7 @@ This includes the following major steps:
 . Set up your workspace.
 //
 +
-This is further detailed in <<Workspace setup>>.
+This is further detailed in <<Setting up your workspace>>.
 
 .. Fork the upstream {trd} repository.
 

@@ -1,0 +1,91 @@
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Section: Submitting your project
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+Before you submit your documentation project, be sure to update your fork with changes in the 'main' branch of the upstream {trd} repository.
+
+. Open a local terminal and change to your clone directory.
+//
++
+For example:
++
+[source, console]
+----
+cd ~/git/GITHUB_USER/technical-reference-documentation
+----
+
+. Check out your 'main' branch.
++
+[source, console]
+----
+git checkout main
+----
+
+. Update your clone with changes in the _upstream_ remote.
++
+[source, console]
+----
+git pull upstream main
+----
+
+. Synchronize these updates to your _origin_ remote.
++
+[source, console]
+----
+git push origin
+----
+
+
+With your document in good shape and your fork synchronized, it is time to submit your document for official review.
+To do this, you submit a pull request (PR) from the GitHub UI.
+
+. Log into your GitHub account.
+
+. Select your fork of the _upstream_ repository.
+
+. Select your branch and click __Compare & pull request__.
++
+image::suse-trd_github_pr_01.png[GitHub PR Creation - select branch, scaledwidth="85%"]
+
+. Verify that your branch is able to be merged and click __Create pull request__.
+//
++
+You can add any helpful notes to the reviewer in the provided space.
++
+image::suse-trd_github_pr_02.png[GitHub PR Creation - compare changes, scaledwidth="85%"]
+
+. Follow the status of your pull request in the GitHub __Pull requests__ page of the upstream repository.
+//
++
+Respond to comments and suggestions in the __Conversation__ tab.
++
+image::suse-trd_github_pr_03.png[GitHub PR Creation - review, scaledwidth="85%"]
+
+. When your document is ready, verify that is published to the {trd} {trd-portal}[website].
+
+. After your document has been published, clean up your work area.
+
+.. Delete your previous branch.
++
+[source, console]
+----
+git checkout main
+git branch -d my-tuxy-project
+----
+
+.. Merge upstream changes to your local fork.
++
+[source, console]
+----
+git pull upstream main
+----
+
+.. Synchronize your fork.
++
+[source, console]
+----
+git push origin
+----
+
+

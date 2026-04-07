@@ -1,0 +1,160 @@
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Section: Working with source files
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+=== Understanding the source files
+
+Building your documentation means editing source files.
+Several files can contribute to your final, rendered document.
+If you used the `refsetup.sh` script to set up your project, the directory structure, links to ancillary files, and templates for the primary files for your document have been set up for you.
+
+For a typical {trd} project, there are four source files you may need to edit.
+They are:
+
+Doc Config (DC) file::
+The DC file specifies the location of the main content, the stylesheet to use for formatting, the draft state, and more.
+There is only one DC file per technical reference, located at the root of your project directory, and its name always begins with `DC-`.
+You typically only need to edit this file once, when you are ready to publish and you turn off draft mode.
+
+DocBook metadata (Docinfo) file::
+Information about your document is provided by the Docinfo file.
+It is located in your project's `adoc` directory, and its file name always ends in `-docinfo.xml`.
+The standard template makes heavy use of variables to minimize the edits you must make to this file.
+Typical edits include updating variable names to match the ones you define in the vars file, identifying additional products or authors, and expanding the revision history.
+
+Variables (Vars) file::
+{trd-alt} make heavy use of variables (or document attributes), most of which are defined in your Vars file.
+Your Vars file located in your project's `adoc` directory and its file name always ends in `-vars.adoc`.
+Using variables helps ensure consistency throughout your document and also simplifies future revisions.
+The standard template provides stubs for required and recommended variable definitions.
+One of your first editing tasks is to define the variables you will use in your document.
+
+Main Content file::
+Your Main Content file, located in your project's `adoc` directory, is identified in the DC file.
+This is where you add your main content, formatted with the AsciiDoc markup language.
+The standard template provide the framework for your selected document type.
+You can have multiple content files, but they must all be linked (with the AsciiDoc `include` directive) into your Main Content file.
+In fact, every {trd} project includes content (the open source license, disclaimer, etc.) found in files located in the top-level `common` directory.
+
+Media files::
+Your document may also embedded media content.
+In practical terms, 'media' refers to images.
+Many types of image files can be used, but the preferred are Scaled Vector Graphics (SVG) for logos and diagrams and Portable Network Graphics (PNG) for screenshots and diagrams.
+
+
+Standard templates for each of these files are provided under the top-level `common` directory.
+But, if you use the `refsetup.sh` script to set up your project, copies of these templates have already been created in your project directory structure for you to begin editing.
+
+
+
+=== Developing your content
+
+Good documentation often results from collaborative efforts and multiple editing sessions.
+The following workflow can help you manage this process.
+
+. Enter the local directory containing the clone of your GitHub fork.
+For example:
++
+[source, console]
+----
+cd ~/git/GITHUB-USER/YOUR-REPO-NAME/references
+----
+
+. Check out your project's branch.
++
+[source, console]
+----
+git checkout my-tuxy-project
+----
++
+[TIP]
+====
+Always remember to work in your branch.
+====
+
+. Update the clone from your _origin_ remote.
+//
++
+This allows you to integrate any edits or other content from your contributors, helping you minimize merge conflicts later.
++
+[source, console]
+----
+git pull origin
+----
++
+[NOTE]
+====
+It is not necessary to specify the _origin_ remote, since it is configured as your default for tracking.
+====
++
+[IMPORTANT]
+====
+Fix any merge errors before proceeding.
+====
+
+. Create your content.
+//
++
+A typical content session involves editing source files and copying assets (such as image files) into appropriate project directories.
+Be sure to refer to <<Writing style>> and <<AsciiDoc>> to learn more about writing style and content formatting.
+
+. Render your document with DAPS to verify content, layout, and style.
++
+[NOTE]
+====
+You may get validation errors if you have invalid AsciiDoc syntax.
+You must then find and correct these errors.
+====
+
+. Commit your changes locally.
+//
++
+For example:
++
+[source, console]
+----
+git add .
+git commit -m "updated section 5; added screenshot"
+----
++
+[TIP]
+====
+Always include a commit message as a reminder to yourself and to let your collaboration team know what changes you made in this commit.
+====
+
+. Push the commit to your _origin_ remote.
++
+[source, console]
+----
+git push origin
+----
++
+[NOTE]
+====
+The first time you push a commit on your branch, you will see a warning like:
+
+[listing]
+----
+fatal: The current branch my-tuxy-project has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin my-tuxy-project
+
+To have this happen automatically for branches without a tracking
+upstream, see 'push.autoSetupRemote' in 'git help config'.
+----
+
+Simply follow the instructions to fix the issue.
+
+You only need to do this once.
+====
+
+. Repeat these steps until you are finished with new content.
+
+
+[TIP]
+====
+It is a good idea to break up long content creation sessions.
+Pause frequently to commit and push edits to your _origin_ remote.
+====
+
