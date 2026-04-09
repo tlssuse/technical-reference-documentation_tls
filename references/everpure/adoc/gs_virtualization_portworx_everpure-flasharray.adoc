@@ -36,7 +36,7 @@ What organizations need is an enterprise platform that unifies traditional and c
 {svirt-brand}, built on a modern, Kubernetes stack, solves this challenge by enabling organizations to run both virtual machines and containerized applications on the same infrastructure platform.
 When combined with {pxe-brand}, enterprises can unlock advanced storage capabilities, ensuring seamless data management across diverse environments, enabling high availability and data protection, and supporting hybrid-cloud mobility and multi-cluster environments.
 
-In this document administrators and platform engineers learn how to deploy, configure, and validate a {svirt} environment with {pxe} and {pfa} Storage, enabling them to deliver resilient, scalable, and efficient storage services for mission-critical workloads in virtualized and cloud-native environments.
+In this document administrators and platform engineers learn how to deploy, configure, and validate a {svirt} environment with {pxe} and {pfa-long} storage, enabling them to deliver resilient, scalable, and efficient storage services for mission-critical workloads.
 
 This integrated solution addresses a wide range of scenarios, including:
 
@@ -44,7 +44,7 @@ This integrated solution addresses a wide range of scenarios, including:
 
 * Hybrid and Multi-Cloud Deployments: Enabling workload and data mobility across on-premises, public cloud, and edge locations.
 
-* Business Continuity and Disaster Recovery: Providing robust backup, granular restore, and cross-site failover for both VMs and containers.
+* Business Continuity and Disaster Recovery: Providing cross-site failover and failback for both VMs and containers.
 
 * Dev/Test and Self-Service Environments: Allowing developers to quickly provision persistent, production-grade storage for any workload type.
 
@@ -54,12 +54,14 @@ This integrated solution addresses a wide range of scenarios, including:
 
 === Scope
 
-This document provides comprehensive instructions for installing {pxe} on a {svirt} cluster with a {pfa}.  It details the necessary steps for configuring multipathing, deploying the {pxo} and StorageCluster, and updating {svirt}'s storage configurations.
+This document provides instructions for installing {pxe} on a {svirt} cluster with an {pfa-long}.
+It details the necessary steps for configuring multipathing, deploying the {pxo}, defining the {px} StorageCluster, and updating {svirt} to use this storage for backing VMs and containers.
 
 
 === Audience
 
-The intended audience for this guide are system administrators, platform engineers, DevOps engineers, and IT professionals responsible for designing, deploying, managing, and maintaining a modern infrastructure environment for container and virtual machine workloads.  A basic understanding of Kubernetes and storage concepts is assumed.
+This guide is intended for system administrators, platform engineers, DevOps engineers, and IT professionals responsible for designing, deploying, managing, and maintaining a modern infrastructure environment for container and virtual machine workloads.
+A basic understanding of Kubernetes and storage concepts is assumed.
 
 
 
@@ -87,7 +89,9 @@ The intended audience for this guide are system administrators, platform enginee
 //
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-This practical guide illustrates how SUSE Virtualization can leverage a Pure Storage FlashArray to provide a robust, persistent, block storage for virtual machine and container workloads.  The environment is illustrated in the diagram below, showing a highly available, three-node SUSE Virtualization cluster connected to the Pure Storage FlashArray through a dedicated storage network.
+By deploying {svirt-long} with {pxe-long}, you gain robust, Kubernetes data storage and data management capabilities, such as automated data operations, elastic scalability, and flexible deployment options across hybrid, multi-cloud, and on-premises environments.
+With the included {px} Container Storage Inferface (CSI), you can leverage {pfa-long} storage to deliver unified, high-performance block storage to back your mission-critical VMs and containers in {svirt}.
+This is illustrated in the diagram below.
 
 image::suse-virt_portworx_purestorage-flasharray_2400x1800.png[title="Architecture Diagram: SUSE Virtualization with Portworx and Pure Storage FlashArray", scaledwidth="90%", align="center"]
 
@@ -463,22 +467,18 @@ image::suse-portworx-modvirt_csi-driver-config-external.png[title="SUSE Virtuali
 
 Ensure that {pxe} is correctly integrated with {svirt} by verifying that a virtual machine (VM) can be provisioned with storage on the {pfa}.
 
-. Create a new VM.
-//
-+
+. Create a new VM. +
 For guidance, refer to the {svirt-docs-create-vm}[SUSE Virtualization: Create a Virtual Machine] and be sure to select the StorageClass provisioned by Portworx (`data-disk-storage`) for your VM disk volume.
 
 . Wait for your VM to be provisioned.
 
 . In the {svirt} UI, navigate to __Virtual Machines__ > __<Your VM>__ > __Volumes__ and confirm that the attached disk has the `data-disk-storage` StorageClass.
 
-[NOTE]
-====
-You can also verify the provisioned disk for a VM from the CLI.
+. You can also verify the provisioned disk for a VM from the CLI.
 
-. Log into the {svirt} management CLI.
+.. Log into the {svirt} management CLI.
 
-. List the PersistentVolumeClaims (PVCs) in the VM’s namespace.
+.. List the PersistentVolumeClaims (PVCs) in the VM’s namespace.
 +
 [source, console]
 ----
@@ -491,9 +491,9 @@ NAME          STATUS  VOLUME                                    CAPACITY  ACCESS
 vm1-rootdisk  Bound   pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21  40Gi      RWX           data-disk-storage  2m
 ----
 
-. Confirm that the STORAGECLASS column shows `data-disk-storage`.
+.. Confirm that the STORAGECLASS column shows `data-disk-storage`.
 
-. For further verification, confirm that the volume is provisioned by `pxd.portworx.com`.
+.. For further verification, confirm that the volume is provisioned by `pxd.portworx.com`.
 +
 [source, console]
 ----

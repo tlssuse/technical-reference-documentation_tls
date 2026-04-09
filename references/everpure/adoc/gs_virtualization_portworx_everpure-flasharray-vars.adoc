@@ -22,7 +22,7 @@
 //   This is typically a series of words (often from the document title)
 //   separated by hyphens (-).
 //   (e.g., "rancher-kubflow-deployment")
-:article-id: suse-virt-portworx-everpure
+:article-id: gs_suse-virt-portworx-everpure
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -38,7 +38,7 @@
 //   :rev1-description: Original version
 // Set docdate to the most recent revision.
 //-
-:rev2-date: 2025-02-28
+:rev2-date: 2025-03-31
 :rev2-description: Updated to SUSE Virtualization v1.6.1
 :rev1-date: 2025-10-15
 :rev1-description: Original version
@@ -94,8 +94,12 @@
 :pfa-website: https://www.purestorage.com/products/unified-block-file-storage.html
 :pfa-docs: https://support.purestorage.com/category/m_flasharray
 
-:pxe: Portworx
-:pxe-provider: {pfa-provider}
+:px: Portworx
+:px-provider: {pfa-provider}
+:px-brand: {px}® by {px-provider}™
+:px-long: {px} by {px-provider}
+:pxe-provider: {px-provider}
+:pxe: {px} Enterprise
 :pxe-brand: {pxe}® by {pxe-provider}™
 :pxe-long: {pxe} by {pxe-provider}
 :pxe-version1: 3.5
@@ -106,7 +110,7 @@
 :pxe-k8s-secret: {pxe-docs}/platform/kubernetes/flasharray/install/install-flasharray/fa-multi-tenancy#create-a-kubernetes-secret
 :pxe-manage-rwx-block: {pxe-docs}/platform/provision-storage/kubevirt-vms/manage-kubevirt-vms-rwx-block/suse-virtualization
 :pxe-central: https://central.portworx.com/
-:pxo: Portworx Operator
+:pxo: {px} Operator
 :pxo-version1: 25.5.0
 
 :slmicro-provider: SUSE
@@ -153,17 +157,17 @@
 //             you can reference them to define new variables, like:
 //             :doctitle: Simplify deployment of {comp2} with {comp1}
 // -
-:doctitle: Modern Virtualization with {svirt-long} and {pxe-long}
+:doctitle: {svirt-long} and {px-long}
 
-:docsubtitle: Integrating {pfa-long} with {svirt} for VM storage
+:docsubtitle: Implementing a modern virtualization platform
 
 :usecase: modern virtualization
 
-:description: Deploy a modern, cloud-native environment supporting container and virtual machine workloads with {svirt-long} and {pxe-long}.
+:description: Learn how to deploy a modern, cloud-native environment to support both container and virtual machine workloads with {svirt-long} and {px-long}.
 
-:description-social: Modern Virtualization with {svirt} and {pxe-long}
+:description-social: Modern Virtualization with {svirt} and {px-long}
 
-:executive-summary: Integrate {svirt-brand} with {pxe-brand} to provide a flexible, enterprise platform that enables running both containers and VMs with unparalleled high availability, data protection, hybrid-cloud mobility, and multi-cluster support.
+:executive-summary: In this getting started guide, learn how to integrate {svirt-brand} with {pxe-brand} and an {pfa-brand} to provide a flexible, enterprise platform that enables running both containers and virtual machines with unparalleled high availability, data protection, hybrid-cloud mobility, and multi-cluster support.
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

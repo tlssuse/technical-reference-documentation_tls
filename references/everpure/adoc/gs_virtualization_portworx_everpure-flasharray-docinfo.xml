@@ -65,7 +65,7 @@
 -->
 <meta name="productname">
   <productname version="">{svirt-long}</productname>
-  <productname version="">{pxe-long}</productname>
+  <productname version="">{px-long}</productname>
   <productname>{pfa-long}</productname>
 </meta>
 
@@ -73,7 +73,7 @@
 <!-- Component listings for Google Analytics
      - Provide a comma-delimited list of components and their respective versions.
 -->
-<productname>{svirt-long}, {pxe-long}, {pfa-long}</productname>
+<productname>{svirt-long}, {px-long}, {pfa-long}</productname>
 
 
 
@@ -89,7 +89,7 @@
      Identify ONLY ONE technical partner (business or organization name)
      supplying a primary component of the solution.
 -->
-<meta name="techpartner">{pxe-provider}</meta>
+<meta name="techpartner">{px-provider}</meta>
 <meta name="techpartner">{pfa-provider}</meta>
 
 
