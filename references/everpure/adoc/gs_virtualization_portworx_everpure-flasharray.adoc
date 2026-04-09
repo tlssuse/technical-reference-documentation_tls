@@ -93,7 +93,7 @@ By deploying {svirt-long} with {pxe-long}, you gain robust, Kubernetes data stor
 With the included {px} Container Storage Inferface (CSI), you can leverage {pfa-long} storage to deliver unified, high-performance block storage to back your mission-critical VMs and containers in {svirt}.
 This is illustrated in the diagram below.
 
-image::suse-virt_portworx_purestorage-flasharray_2400x1800.png[title="Architecture Diagram: SUSE Virtualization with Portworx and Pure Storage FlashArray", scaledwidth="90%", align="center"]
+image::suse-virt_portworx_everpure-flasharray.png[title="Architecture Diagram: {svirt-long} with {px} and {pfa-long}", Architecture Diagram: {svirt-long} with {px} and {pfa-long}, scaledwidth="90%", align="center"]
 
 
 {empty} +
