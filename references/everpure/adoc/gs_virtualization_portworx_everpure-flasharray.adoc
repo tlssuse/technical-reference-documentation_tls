@@ -99,32 +99,32 @@ image::suse-virt_portworx_everpure-flasharray.png[title="Architecture Diagram: {
 {empty} +
 Key components of this architecture are:
 
-{svirt}::
+{svirt-long}::
 {svirt-website}[{svirt}] (formerly Harvester) is a modern, open, interoperable, hyperconverged infrastructure (HCI) solution built on Kubernetes.  {svirt} leverages other components (such as {slmicro-website}[{slmicro}] and {rke2-docs}[{rke2}]) to deliver a secure, resilient, and scalable platform for managing virtual machine and container workloads.
 Access the {svirt-docs-intro}[{svirt} documentation] for detailed technical information, including {svirt-docs-reqs}[Hardware and Network Requirements] and installation guidance.  This guide references {svirt} {svirt-version1} and later.
 
 
-{pxe} and {pxo}::
+{pxe-long}::
 {pxe-website}[{pxe}] delivers elastic scalability, industry-leading availability, and self-service access to any storage infrastructure for the most widely used Kubernetes distribution.
 This fully-integrated storage solution offers automated capacity management, thin provisioning, and flexibility across hybrid, multi-cloud, and on-premises deployments.
 {pxe} installation, configuration, and updates are handled through the {pxo}.
-This guide references {pxe-docs}[{pxe}] {pxe-version1}} or later and {pxo} {pxo-version1} or later.
+This guide references {pxe-docs}[{pxe}] {pxe-version1} or later and {pxo} {pxo-version1} or later.
 
 
 {pfa-long}::
-{pfa-website}[{pfa}] delivers high-performance, scalable, all-flash storage.
+An {pfa-website}[{pfa-long}] delivers high-performance, scalable, all-flash storage.
 Your {pfa} must be configured to meet the {pxe-reqs}[{pxe} environment prerequisites] and be accessible from the {svirt} cluster nodes.
 
 {empty} +
 {empty}
 
-In the following pages, you will learn how to configure your {svirt} environment to leverage a {pfa} for virtual machine storage.
+In the following pages, you learn how to configure your {svirt} environment with {pxe} to leverage a {pfa-long} for virtual machine storage.
 This includes:
 
-* Preparing the {svirt} cluster nodes and the {pfa}
+* Preparing the {svirt} cluster nodes and the {pfa-long}
 * Deploying the {pxo} to install and configuring {pxe}
 * Defining the Portworx StorageClass
-* Creating a virtual machine with {pfa} persistent storage
+* Creating a virtual machine with {pfa}-backed persistent storage
 
 
 
@@ -226,7 +226,7 @@ kubectl apply -f pure-multipath.yaml
 .. Restart the {svirt} cluster nodes.
 
 
-. {pxe-flasharray-user-access}[Configure user access] in the Pure Storage FlashArray.
+. {pxe-flasharray-user-access}[Configure user access] in the {pfa-long}.
 
 
 . {pxe-k8s-secret}[Create a Kubernetes secret], named `px-pure-secret`, to securely store your {pfa} credentials.
@@ -241,75 +241,78 @@ kubectl create secret generic px-pure-secret --namespace portworx --from-file=pu
 ----
 
 
-== Generate the Portworx spec
+[#sec-gen-spec]
+== Generate the {px} spec
 
 The {pxo} is designed to efficiently manage the installation and upgrade workflow of all {pxe} components, but it must be configured for your environment.
-This is accomplished by generating a Portworx spec.
+This is accomplished by generating a {px} spec.
 
-. Log in to {pxe-central}[Portworx Central].
+. Log in to {pxe-central}[{px} Central].
 
-. Select *Portworx Enterprise* -> *Generate Spec*.
+. Select __{pxe}__ -> __Generate Spec__.
 
-. Choose the *Portworx Version* and `Pure FlashArray` for *Platform*, then click *Customize*.
+. Choose the __{px} Version__ and `Pure FlashArray` for __Platform__, then click __Customize__.
 
-. On the *Basic* tab:
+. On the __Basic__ tab:
 +
-image::suse-portworx-modvirt_px-spec_01_basic.png[title="Portworx: Generate Spec - Basic", scaledwidth="90%", align="center"]
+image::suse-portworx-modvirt_px-spec_01_basic.png[title="{px}: Generate Spec - Basic", {px}: Generate Spec - Basic, scaledwidth="90%", align="center"]
 
 .. Validate or fill in values for each of the following fields:
 +
 --
-* *Portworx Version*
-* *Kubernetes Version*
-* *Namespace* (for example, `portworx`)
+* __{px} Version__
+* __Kubernetes Version__
+* __Namespace__ (for example, `portworx`)
 --
 
-.. Select the `Built-in` option for *etcd*.
+.. Select the `Built-in` option for __etcd__.
 
-.. Click *Next*.
+.. Click __Next__.
 
 
 
-. On the *Storage* tab, make the following choices:
+. On the __Storage__ tab, make the following choices:
 +
-image::suse-portworx-modvirt_px-spec_02_storage.png[title="Portworx: Generate Spec - Storage", scaledwidth="90%", align="center"]
+image::suse-portworx-modvirt_px-spec_02_storage.png[title="{px}: Generate Spec - Storage", {px}: Generate Spec - Storage, scaledwidth="90%", align="center"]
 
-.. Set *Select Cloud Platform* to `Pure FlashArray`.
-.. Set *Select type of disk* to `Create Using a Spec`
-.. Enable PX-StoreV2.
-.. Select `Fiber Channel` for *Type of  storage area network*.
-.. Enter the desired *Size* of the disk to be mapped to the SUSE Virtualization cluster.
-.. Update the *Max storage nodes per availability zone* to `3` (for your 3-node cluster).
-.. Click *Next*.
+.. Set __Select Cloud Platform__ to `Pure FlashArray`.
+.. Set __Select type of disk__ to `Create Using a Spec`
+.. Enable __PX-StoreV2__.
+.. Select `Fiber Channel` for __Type of  storage area network__.
+.. Enter the desired __Size__ of the disk to be mapped to the {svirt} cluster.
+.. Update the __Max storage nodes per availability zone__ to `3` (for your 3-node cluster).
+.. Click __Next__.
 
-. On the *Network* tab, configure the Portworx service port, then click *Next*.
-//
+. On the __Network__ tab, configure the {px} service port, then click __Next__.
 +
-Note that the default port is `9001`.
+[NOTE]
+====
+The default port is `9001`.
+====
 +
-image::suse-portworx-modvirt_px-spec_03_network.png[title="Portworx: Generate Spec - Network", scaledwidth="90%", align="center"]
+image::suse-portworx-modvirt_px-spec_03_network.png[title="{px}: Generate Spec - Network", {px}: Generate Spec - Network, scaledwidth="90%", align="center"]
 
-. On the *Customize* tab, select `Rancher Kubernetes Engine (RKE)` then click *Finish*.
+. On the __Customize__ tab, select `Rancher Kubernetes Engine (RKE)` then click __Finish__.
 +
-image::suse-portworx-modvirt_px-spec_04_customize.png[title="Portworx: Generate Spec - Customize", scaledwidth="90%", align="center"]
+image::suse-portworx-modvirt_px-spec_04_customize.png[title="{px}: Generate Spec - Customize", {px}: Generate Spec - Customize, scaledwidth="90%", align="center"]
 
 . You are next presented with two Kubectl commands.
-The first is for deploying the {pxo}, and the second is for deploying the Portworx StorageCluster.
+The first is for deploying the {pxo}, and the second is for deploying the {px} StorageCluster.
 Save these commands, as you will need them in the following section.
 
 
 
-== Deploy the {pxo} and Portworx StorageCluster
+== Deploy the {pxo} and {px} StorageCluster
 
 The {pxo} efficiently manages the installation and upgrade workflow of all {pxe} components.
-To deploy the {pxo}, you use the first of the Kubectl commands you generated in <<Generate the Portworx spec>> as detailed below.
+To deploy the {pxo}, you use the first of the Kubectl commands you generated in <<sec-gen-spec>> as detailed below.
 
-. Log in to the SUSE Virtualization management node command-line interface (CLI) with root access.
+. Log in to the {svirt} management node command-line interface (CLI) with root access.
 
 . Run the first Kubectl command saved from the previous section to install the {pxo}.
 //
 +
-The command should look something like:
+The command should be similar to:
 +
 [source, console]
 ----
@@ -318,7 +321,7 @@ kubectl apply -f 'https://install.portworx.com/3.3?comp=pxoperator&kbver=1.3.0&n
 +
 This should result in output like:
 +
-[source, console]
+[listing]
 ----
 namespace/portworx created
 serviceaccount/portworx-operator created
@@ -327,7 +330,7 @@ clusterrolebinding.rbac.authorization.k8s.io/portworx-operator created
 deployment.apps/portworx-operator created
 ----
 
-. If you are using {svirt} v1.6.0 or later, add a Stork Snapshot StorageClass.
+. If you are using {svirt} {svirt-version1} or later, add a Stork Snapshot StorageClass.
 
 .. Create the YAML file, `stork-snapshot-sc.yaml`, with the following contents:
 +
@@ -354,14 +357,12 @@ kubectl apply -f stork-snapshot-sc.yaml
 +
 You should see this output:
 +
-[source, console]
+[listing]
 ----
 storageclass.storage.k8s.io/stork-snapshot-sc created
 ----
 
-. Execute the second of the Portworx spec Kubectl commands you generated in <<Generate the Portworx spec>> to deploy the Portworx StorageCluster.
-//
-+
+. Execute the second of the {px} spec Kubectl commands you generated in <<sec-gen-spec>> to deploy the {px} StorageCluster. +
 The command should look something like:
 +
 [source, console]
@@ -369,18 +370,18 @@ The command should look something like:
 kubectl apply -f 'https://install.portworx.com/3.3?operator=true&mc=false&kbver=1.3.0&ns=portworx&b=true&iop=6&mz=3&s=%22size%3D1000%22&pureSanType=FC&ce=pure&dmthin=true&c=px-cluster-82af5d7d-f249-4f45-9e80-d1590e7bfce4&stork=true&csi=true&mon=true&tel=true&st=k8s&promop=true'
 ----
 +
-If successful, you will see output like:
+If successful, the command generates output like:
 +
-[source, console]
+[listing]
 ----
 storagecluster.core.libopenstorage.org/px-cluster-82af5d7d-f249-4f45-9e80-d1590e7bfce4 created
 ----
 
 
 
-== Add the Portworx StorageClass
+== Add the {px} StorageClass
 
-. Ensure you are still logged in to the SUSE Virtualization management CLI as root.
+. Ensure you are still logged in to the {svirt} management CLI as root.
 
 . Create the YAML file, `portworx-storageclass.yaml`, with the following contents:
 +
@@ -402,7 +403,7 @@ reclaimPolicy: Delete
 volumeBindingMode: Immediate
 ----
 
-. Apply this YAML file to create add the Portworx StorageClass.
+. Apply this YAML file to add the {px} StorageClass.
 +
 [source, console]
 ----
@@ -411,7 +412,7 @@ kubectl apply -f portworx-storageclass.yaml
 +
 You should see:
 +
-[source, console]
+[listing]
 ----
 storageclass.storage.k8s.io/data-disk-storage created
 ----
@@ -419,7 +420,7 @@ storageclass.storage.k8s.io/data-disk-storage created
 [TIP]
 ====
 You may see a “request is invalid” error, such as:
-[source, console]
+[listing]
 ----
 The request is invalid: default StorageClass, 'harvester-longhorn', already exists.
 Please reset it first before setting 'data-disk-storage' as default.
@@ -434,7 +435,7 @@ If this happens:
 kubectl patch storageclass harvester-longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 ----
 
-. Re-apply the Portworx StorageClass.
+. Re-apply the {px} StorageClass.
 +
 [source, console]
 ----
@@ -443,23 +444,21 @@ kubectl apply -f portworx-storageclass.yaml
 ====
 
 
-== Update the Portworx CSI driver configuration
+== Update the {px} CSI driver configuration
 
 
 . Log in to the {svirt} UI.
 
-. Navigate to *Advanced* > *Settings*.
+. Navigate to __Advanced__ > __Settings__.
 
-. Locate `csi-driver-config` and select *⋮* > *Edit Setting*.
+. Locate `csi-driver-config` and select __*⋮*__ > __Edit Setting__.
 
-. Set the *Provisioner* to `pxd.portworx.com`.
+. Set the __Provisioner__ to `pxd.portworx.com`.
 
-. Set the *Volume Snapshot Class Name* to `px-csi-snapclass`.
-//
-+
+. Set the __Volume Snapshot Class Name__ to `px-csi-snapclass`. +
 This setting points to the name of the VolumeSnapshotClass used for creating volume snapshots or VM snapshots.
 
-image::suse-portworx-modvirt_csi-driver-config-external.png[title="SUSE Virtualization: csi-driver-config", scaledwidth="90%", align="center"]
+image::suse-portworx-modvirt_csi-driver-config-external.png[title="{svirt}: csi-driver-config", {svirt}: csi-driver-config, scaledwidth="90%", align="center"]
 
 
 
@@ -468,13 +467,19 @@ image::suse-portworx-modvirt_csi-driver-config-external.png[title="SUSE Virtuali
 Ensure that {pxe} is correctly integrated with {svirt} by verifying that a virtual machine (VM) can be provisioned with storage on the {pfa}.
 
 . Create a new VM. +
-For guidance, refer to the {svirt-docs-create-vm}[SUSE Virtualization: Create a Virtual Machine] and be sure to select the StorageClass provisioned by Portworx (`data-disk-storage`) for your VM disk volume.
+For guidance, refer to the {svirt-docs-create-vm}[SUSE Virtualization: Create a Virtual Machine] and be sure to select the StorageClass provisioned by {px} (`data-disk-storage`) for your VM disk volume.
 
-. Wait for your VM to be provisioned.
+. Verify that the VM was provisioned with {px} storage in the {svirt} UI.
 
-. In the {svirt} UI, navigate to __Virtual Machines__ > __<Your VM>__ > __Volumes__ and confirm that the attached disk has the `data-disk-storage` StorageClass.
+.. Open __Virtual Machines__.
 
-. You can also verify the provisioned disk for a VM from the CLI.
+.. Select your VM.
+
+.. Open __Volumes__.
+
+.. Confirm that the attached disk is using the `data-disk-storage` StorageClass.
+
+. You can also verify the VM's storage from the CLI.
 
 .. Log into the {svirt} management CLI.
 
@@ -485,7 +490,7 @@ For guidance, refer to the {svirt-docs-create-vm}[SUSE Virtualization: Create a 
 kubectl get pvc -n <namespace>
 ----
 +
-[source, console]
+[listing]
 ----
 NAME          STATUS  VOLUME                                    CAPACITY  ACCESS MODES  STORAGECLASS       AGE
 vm1-rootdisk  Bound   pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21  40Gi      RWX           data-disk-storage  2m
@@ -493,7 +498,7 @@ vm1-rootdisk  Bound   pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21  40Gi      RWX   
 
 .. Confirm that the STORAGECLASS column shows `data-disk-storage`.
 
-.. For further verification, confirm that the volume is provisioned by `pxd.portworx.com`.
+.. As an additional check, confirm that the volume is provisioned by `pxd.portworx.com`.
 +
 [source, console]
 ----
@@ -528,7 +533,7 @@ Source:
 ----
 
 
-With these steps, you have validated that your VM is backed by the {pfa} with {pxe}.
+Upon successful completion of these checks, you have validated the integration of {svirt} with {px} and the {pfa-long}.
 
 
 
@@ -543,18 +548,10 @@ With these steps, you have validated that your VM is backed by the {pfa} with {p
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 {svirt-provider} and {pxe-provider} deliver the infrastructure platform modern enterprises seek.
-By combining {svirt-long} with {pxe-long} and {pfa-long}, organizations gain a flexible, resilient, and scalable platform that enables them to run container and virtual machine workloads side-by-side.
-In unifying and simplifying the infrastructure landscape, enterprises can streamline operations and experience lower operational and capital costs.
+Integrating {svirt-long} with {pxe-long} and an {pfa-long} provides a flexible, resilient, and scalable platform for running container and virtual machine workloads side-by-side.
+This unified landscape helps streamline operations and can lower both operational and capital costs.
 
-This guide provides an overview of this unified, infrastructure platform along with detailed steps for configuring and validating the integration.
-
-Continue your learning journey by exploring the following technical resources:
-
-* {svirt-docs-intro}[SUSE Virtualization documentation]
-* {pxe-manage-rwx-block}[Manage Portworx RWX Block Volumes on SUSE Virtualization]
-* {pfa-docs}[Pure Storage FlashArray]
-
-For a deeper dive
+This guide provides an overview of a reference architecture for the combined solution with detailed steps for implementation and validation.
 
 
 
