@@ -197,10 +197,8 @@
 //    :metatask3: Deployment
 // -
 :metatask1: Deployment
-:metatask2: Configuration
-:metatask3: Container Management
-:metatask4: Virtualization
-:metatask5: High Availability
+:metatask2: Virtualization
+:metatask3: High Availability
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

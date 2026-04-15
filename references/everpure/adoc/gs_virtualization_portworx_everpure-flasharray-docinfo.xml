@@ -53,8 +53,6 @@
     <phrase>{metatask1}</phrase>
     <phrase>{metatask2}</phrase>
     <phrase>{metatask3}</phrase>
-    <phrase>{metatask4}</phrase>
-    <phrase>{metatask5}</phrase>
 </meta>
 
 
@@ -66,7 +64,7 @@
 <meta name="productname">
   <productname version="">{svirt-long}</productname>
   <productname version="">{px-long}</productname>
-  <productname>{pfa-long}</productname>
+  <productname version="">{pfa-long}</productname>
 </meta>
 
 
@@ -83,14 +81,14 @@
        of the productname metadata above.
 -->
 <meta name="platform">{svirt}</meta>
-
+<meta name="platform">{px-long}</meta>
+<meta name="platform">{pfa-long}</meta>
 
 <!-- Partner metadata
      Identify ONLY ONE technical partner (business or organization name)
      supplying a primary component of the solution.
 -->
 <meta name="techpartner">{px-provider}</meta>
-<meta name="techpartner">{pfa-provider}</meta>
 
 
 <!-- author metadata

@@ -242,7 +242,7 @@ kubectl create secret generic px-pure-secret --namespace portworx --from-file=pu
 
 
 [#sec-gen-spec]
-== Generate the {px} spec
+== Generating the {px} spec
 
 The {pxo} is designed to efficiently manage the installation and upgrade workflow of all {pxe} components, but it must be configured for your environment.
 This is accomplished by generating a {px} spec.
@@ -276,7 +276,7 @@ image::suse-portworx-modvirt_px-spec_01_basic.png[title="{px}: Generate Spec - B
 image::suse-portworx-modvirt_px-spec_02_storage.png[title="{px}: Generate Spec - Storage", {px}: Generate Spec - Storage, scaledwidth="90%", align="center"]
 
 .. Set __Select Cloud Platform__ to `Pure FlashArray`.
-.. Set __Select type of disk__ to `Create Using a Spec`
+.. Set __Select type of disk__ to `Create Using a Spec`.
 .. Enable __PX-StoreV2__.
 .. Select `Fiber Channel` for __Type of  storage area network__.
 .. Enter the desired __Size__ of the disk to be mapped to the {svirt} cluster.
@@ -296,13 +296,13 @@ image::suse-portworx-modvirt_px-spec_03_network.png[title="{px}: Generate Spec -
 +
 image::suse-portworx-modvirt_px-spec_04_customize.png[title="{px}: Generate Spec - Customize", {px}: Generate Spec - Customize, scaledwidth="90%", align="center"]
 
-. You are next presented with two Kubectl commands.
+. The generator presents you with two Kubectl commands.
 The first is for deploying the {pxo}, and the second is for deploying the {px} StorageCluster.
 Save these commands, as you will need them in the following section.
 
 
 
-== Deploy the {pxo} and {px} StorageCluster
+== Deploying the {pxo} and {px} StorageCluster
 
 The {pxo} efficiently manages the installation and upgrade workflow of all {pxe} components.
 To deploy the {pxo}, you use the first of the Kubectl commands you generated in <<sec-gen-spec>> as detailed below.
@@ -319,7 +319,7 @@ The command should be similar to:
 kubectl apply -f 'https://install.portworx.com/3.3?comp=pxoperator&kbver=1.3.0&ns=portworx'
 ----
 +
-This should result in output like:
+You should see output like:
 +
 [listing]
 ----
@@ -379,7 +379,7 @@ storagecluster.core.libopenstorage.org/px-cluster-82af5d7d-f249-4f45-9e80-d1590e
 
 
 
-== Add the {px} StorageClass
+== Adding the {px} StorageClass
 
 . Ensure you are still logged in to the {svirt} management CLI as root.
 
@@ -444,14 +444,14 @@ kubectl apply -f portworx-storageclass.yaml
 ====
 
 
-== Update the {px} CSI driver configuration
+== Updating the {px} CSI driver configuration
 
 
 . Log in to the {svirt} UI.
 
 . Navigate to __Advanced__ > __Settings__.
 
-. Locate `csi-driver-config` and select __*⋮*__ > __Edit Setting__.
+. Locate `csi-driver-config`, click the three dots (for more options), then select __Edit Setting__.
 
 . Set the __Provisioner__ to `pxd.portworx.com`.
 
@@ -464,7 +464,7 @@ image::suse-portworx-modvirt_csi-driver-config-external.png[title="{svirt}: csi-
 
 == Validating the integration
 
-Ensure that {pxe} is correctly integrated with {svirt} by verifying that a virtual machine (VM) can be provisioned with storage on the {pfa}.
+Ensure that {pxe} is correctly integrated with {svirt} by verifying that a virtual machine (VM) can be provisioned with storage backed by the {pfa}.
 
 . Create a new VM. +
 For guidance, refer to the {svirt-docs-create-vm}[SUSE Virtualization: Create a Virtual Machine] and be sure to select the StorageClass provisioned by {px} (`data-disk-storage`) for your VM disk volume.
@@ -490,10 +490,10 @@ For guidance, refer to the {svirt-docs-create-vm}[SUSE Virtualization: Create a 
 kubectl get pvc -n <namespace>
 ----
 +
-[listing]
+[listing, subs="normal"]
 ----
 NAME          STATUS  VOLUME                                    CAPACITY  ACCESS MODES  STORAGECLASS       AGE
-vm1-rootdisk  Bound   pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21  40Gi      RWX           data-disk-storage  2m
+vm1-rootdisk  Bound   pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21  40Gi      RWX           *data-disk-storage*  2m
 ----
 
 .. Confirm that the STORAGECLASS column shows `data-disk-storage`.
@@ -505,12 +505,12 @@ vm1-rootdisk  Bound   pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21  40Gi      RWX   
 kubectl describe pv pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21
 ----
 +
-[listing]
+[listing, subs="normal"]
 ----
 Name:                 pvc-8f3c8b2c-6e1e-4c6a-a83e-9d6c34ac3b21
 StorageClass:         data-disk-storage
 Annotations:
-pv.kubernetes.io/provisioned-by: pxd.portworx.com
+pv.kubernetes.io/provisioned-by: *pxd.portworx.com*
 Status: Bound
 Reclaim Policy:       Delete
 VolumeMode:           Block
