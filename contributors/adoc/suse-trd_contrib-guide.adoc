@@ -55,7 +55,7 @@ In this document, you learn about:
 * <<prereqs>>
 * <<doctypes>>
 * <<workflow>>
-* <<repstruct>>
+* <<repostruct>>
 * <<workspace>>
 * <<projstart>>
 * <<sourcefiles>>
@@ -134,7 +134,7 @@ include::suse-trd_contrib-workflow.adoc[]
 
 
 
-[[repstruct, Repository structure]]
+[[repostruct, Repository structure]]
 == Repository structure
 
 include::suse-trd_contrib-repo-structure.adoc[]

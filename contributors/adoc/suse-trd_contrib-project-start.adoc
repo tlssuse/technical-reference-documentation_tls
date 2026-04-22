@@ -5,18 +5,18 @@
 When you have your workspace set up, you are ready to start a new documentation project.
 This involves two main activities:
 
-. creating a Git branch to contain your project
+. Creating a Git branch to contain your project
 //
 +
 All {trd} development work must be performed in a unique, Git branch.
 This rule applies whether you are creating a new document or editing an existing one.
 Branches help you keep your project work separate from other projects.
 
-. creating the source file and directory structure for your project
+. Creating the source file and directory structure for your project
 //
 +
 Your technical reference is built from multiple source files, which must be located in the directory structure described in <<Repository structure>>.
-You can use the `refsetup.sh` script to automatically create the required structure along with standard file templates.
+You can use the `{setupscript}` script to automatically create the required structure along with standard file templates.
 
 
 Details for both activities are providing in the following sections.
@@ -117,11 +117,11 @@ cd /home/geeko/git/geeko/trd-geeko/references
 git checkout my-tuxy-project
 ----
 
-. Excecute the `refsetup.sh` script located in the `bin` directory.
+. Excecute the `{setupscript}` script located in the `bin` directory.
 +
-[source, console]
+[source, console, subs="attributes+"]
 ----
-./bin/refsetup.sh
+./bin/{setupscript}
 ----
 +
 This interactive script prompts you for information about your project and uses this to create the project directory structure with source files based on the standard templates.

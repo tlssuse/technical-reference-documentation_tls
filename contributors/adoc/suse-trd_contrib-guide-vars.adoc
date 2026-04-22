@@ -161,6 +161,8 @@
 // MISCELLANEOUS ATTRIBUTES
 //   Define any additional variables here for use within the document.
 // -
+:setupscript: refsetup.sh
+
 :asciidoc-url: https://asciidoc.org/
 :asciidoc-docs: https://docs.asciidoctor.org/asciidoc/latest/
 :docbook-url: https://docbook.org

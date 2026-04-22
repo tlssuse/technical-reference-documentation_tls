@@ -2,58 +2,100 @@
 // Section: Working with source files
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-=== Understanding the source files
+{trd} is built from documentation-as-code, contained in source files.
+Source files provide content, structure, and metadata for your document.
+No matter where you create your content, it must be encoded in source files within the structure of the {trd} repository.
 
-Building your documentation means editing source files.
-Several files can contribute to your final, rendered document.
-If you used the `refsetup.sh` script to set up your project, the directory structure, links to ancillary files, and templates for the primary files for your document have been set up for you.
 
-For a typical {trd} project, there are four source files you may need to edit.
-They are:
+=== Source files
 
-Doc Config (DC) file::
+Every technical reference is built or rendered from multiple source files.
+These include:
+
+* *Doc Config (DC) file* +
 The DC file specifies the location of the main content, the stylesheet to use for formatting, the draft state, and more.
 There is only one DC file per technical reference, located at the root of your project directory, and its name always begins with `DC-`.
 You typically only need to edit this file once, when you are ready to publish and you turn off draft mode.
 
-DocBook metadata (Docinfo) file::
+* *DocBook metadata (Docinfo) file* +
 Information about your document is provided by the Docinfo file.
 It is located in your project's `adoc` directory, and its file name always ends in `-docinfo.xml`.
 The standard template makes heavy use of variables to minimize the edits you must make to this file.
 Typical edits include updating variable names to match the ones you define in the vars file, identifying additional products or authors, and expanding the revision history.
 
-Variables (Vars) file::
+* *Variables (Vars) file* +
 {trd-alt} make heavy use of variables (or document attributes), most of which are defined in your Vars file.
 Your Vars file located in your project's `adoc` directory and its file name always ends in `-vars.adoc`.
 Using variables helps ensure consistency throughout your document and also simplifies future revisions.
 The standard template provides stubs for required and recommended variable definitions.
 One of your first editing tasks is to define the variables you will use in your document.
 
-Main Content file::
+* *Main Content file* +
 Your Main Content file, located in your project's `adoc` directory, is identified in the DC file.
 This is where you add your main content, formatted with the AsciiDoc markup language.
 The standard template provide the framework for your selected document type.
 You can have multiple content files, but they must all be linked (with the AsciiDoc `include` directive) into your Main Content file.
-In fact, every {trd} project includes content (the open source license, disclaimer, etc.) found in files located in the top-level `common` directory.
 
-Media files::
-Your document may also embedded media content.
-In practical terms, 'media' refers to images.
-Many types of image files can be used, but the preferred are Scaled Vector Graphics (SVG) for logos and diagrams and Portable Network Graphics (PNG) for screenshots and diagrams.
+* *common content files* +
+These are source files that are included automatically when your document is rendered, providing such things as the open source documentation license and standard disclaimer.
+The `{setupscript}` script creates symbolic links to these common files in your project's `adoc` directory, but you do not edit them.
+
+* *media files* +
+In practice, 'media' refers to images that are included in your rendered document.
+These can include logos (for example, the SUSE logo is automatically included on the cover page), diagrams, screenshots, and so on.
+//
++
+Many image file types are supported, but preference is given to:
++
+--
+* https://www.w3.org/Graphics/SVG/[Scaled Vector Graphics] or 'SVG' is a widely-deployed, royalty-free, vector graphics format developed and maintained by the W3C.
+A vector graphics image is rendered from a set of instructions that defines the image from basic, geometric shapes.
+This allows SVGs to be resized without loss of clarity.
+SVGs are typically used for logos and architectural diagrams.
+Copy any SVGs you wish to include into your `media/src/svg` directory.
+
+* https://en.wikipedia.org/wiki/PNG[Portable Network Graphics] or 'PNG' is a raster graphics format.
+A raster image encodes information (like position, color, or brightness)  for each pixel (picture element) that makes up the image.
+PNG uses lossless compression, allowing PNGs to be edited and resaved without loss of clarity (unlike Joint Photographic Experts Group or 'JPEG' images).
+Scaling raster images can introduce artifacts.
+This is particularly apparent when images are enlarged.
+Choose image resolutions to minimize these artifacts.
+Copy any PNGs or JPGs you wish to use into your `media/src/png` or `media/src/jpg` directory, respectively.
+--
+
+[TIP]
+====
+Save yourself effort by using the `{setupscript}` script to set up your project.
+See <<projstart>> for for information.
+====
 
 
-Standard templates for each of these files are provided under the top-level `common` directory.
-But, if you use the `refsetup.sh` script to set up your project, copies of these templates have already been created in your project directory structure for you to begin editing.
+=== Workflow
+
+However you develop your content, in the end, it must be encoded into source files in the {trd} repository.
+You may choose to edit source files yourself or share the joy with others.
+In both cases, it is important to make use of your GitHub fork (`origin`) to preserve your work, allow for asynchronous collaboration, and submit your completed project.
+
+[NOTE]
+====
+Recall that, during setup, you established two _remotes_ for your local clone:
+
+* `origin`: created automatically by the cloning process points to your GitHub fork.
+
+* `upstream`: added by you to point to the upstream {trd} repository.
+====
+
+While editing locally, it is good practice to keep in sync with your GitHub fork (`origin`).
+Do this by:
+
+. Frequently committing your changes and pushing them to `origin`, especially at the end of every editing session.
+
+. Pulling (fetching and merging) any changes from `origin` at the start of every new editing session.
 
 
+This workflow is detailed below.
 
-=== Developing your content
-
-Good documentation often results from collaborative efforts and multiple editing sessions.
-The following workflow can help you manage this process.
-
-. Enter the local directory containing the clone of your GitHub fork.
-For example:
+. Enter the local directory containing the clone of your GitHub fork (`origin`).
 +
 [source, console]
 ----
@@ -70,9 +112,10 @@ git checkout my-tuxy-project
 [TIP]
 ====
 Always remember to work in your branch.
+If you make edits in the wrong branch, back out all the changes you made before switching to the correct branch to work on your project.
 ====
 
-. Update the clone from your _origin_ remote.
+. Update the clone from your `origin` remote.
 //
 +
 This allows you to integrate any edits or other content from your contributors, helping you minimize merge conflicts later.
@@ -82,21 +125,21 @@ This allows you to integrate any edits or other content from your contributors, 
 git pull origin
 ----
 +
-[NOTE]
+[TIP]
 ====
-It is not necessary to specify the _origin_ remote, since it is configured as your default for tracking.
+It is not necessary to specify the `origin` remote, since it is configured as your default for tracking.
 ====
 +
 [IMPORTANT]
 ====
-Fix any merge errors before proceeding.
+Be sure to fix any merge errors before proceeding.
 ====
 
 . Create your content.
 //
 +
 A typical content session involves editing source files and copying assets (such as image files) into appropriate project directories.
-Be sure to refer to <<Writing style>> and <<AsciiDoc>> to learn more about writing style and content formatting.
+For content style and formatting guidance, see <<style>> and <<asciidoc>>.
 
 . Render your document with DAPS to verify content, layout, and style.
 +
@@ -122,7 +165,7 @@ git commit -m "updated section 5; added screenshot"
 Always include a commit message as a reminder to yourself and to let your collaboration team know what changes you made in this commit.
 ====
 
-. Push the commit to your _origin_ remote.
+. Push the commit to your `origin` remote.
 +
 [source, console]
 ----
@@ -149,12 +192,12 @@ Simply follow the instructions to fix the issue.
 You only need to do this once.
 ====
 
-. Repeat these steps until you are finished with new content.
+. Repeat these steps until you are finished with all edits.
+
+. When ready, continue on to <<projsubmit>>.
 
 
 [TIP]
 ====
-It is a good idea to break up long content creation sessions.
-Pause frequently to commit and push edits to your _origin_ remote.
+It is a good idea to break up long content creation sessions by pausing to commit and push edits to your `origin` remote.
 ====
-

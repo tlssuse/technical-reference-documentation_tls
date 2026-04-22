@@ -85,64 +85,39 @@ provider
         └── svg
             └── suse.svg -> ../../../../../common/images/src/svg/suse.svg
 ----
-<1> Doc Config (DC) file::
+<1> *Doc Config (DC) file* +
 There is only one DC file per technical reference.
 It specifies the location of the main content, the stylesheet to use for formatting, the draft state, and more.
 You typically only need to edit this file once, when you are ready to publish and you turn off draft mode.
 
-<2> `adoc` directory
-//
-+
+<2> *`adoc` directory* +
 The `adoc` directory contains content and metadata files, as described below.
 
-<3> Common files
-//
-+
+<3> *Common files* +
 Your published document automatically includes standard content contained in these symbolically linked files.
 
-<4> Main Content file
-//
-+
+<4> *Main Content file* +
 Your main content file, in AsciiDoc markup language, is where you add the content you wish to see in the published document.
 
-<5> DocBook metadata (docinfo.xml) file
-//
-+
+<5> *DocBook metadata (docinfo.xml) file* +
 The docinfo.xml file provides information about your document.
 You typically only need to make minor edits to the standard template.
 
-<6> Vars file
-//
-+
+<6> *Vars file* +
 The vars file contains variable (or document attribute) definitions.
 These include the product names and versions, website and documentation URLs, document title, author names, and more.
 These variables are then substituted for text in the main content file and DocBook metadata file to ensure consistency throughout your document.
 Additionally, using variables makes it easier to make future updates, such as if a product name or website URL change.
 
-<7> `media` directory
-//
-+
+<7> *`media` directory* +
 The `media` directory contains all media files, such as diagrams and screenshots, you wish to appear in your published document.
 Media files must be organized by file type under `media/src`.
-//
-+
-Many image file types are supported, but preference is given to:
-+
---
-* https://www.w3.org/Graphics/SVG/[Scaled Vector Graphics] or 'SVG' is a widely-deployed, royalty-free, vector graphics format developed and maintained by the W3C.
-A vector graphics image is rendered from a set of instructions that defines the image from basic, geometric shapes.
-This allows SVGs to be resized without loss of clarity.
-SVGs are typically used for logos and architectural diagrams.
-* https://en.wikipedia.org/wiki/PNG[Portable Network Graphics] or 'PNG' is a raster graphics format.
-A raster image encodes information (like position, color, or brightness)  for each pixel (picture element) that makes up the image.
-PNG uses lossless compression, allowing PNGs to be edited and resaved without loss of clarity (unlike Joint Photographic Experts Group or 'JPEG' images).
-Scaling raster images can introduce artifacts.
-This is particularly apparent when images are enlarged.
-Choose image resolutions to minimize these artifacts.
---
 +
 [NOTE]
 ====
 Legacy processes referenced an `images` directory.
 Today, `images` is simply a symbolic link to the `media` directory and is maintained for compatibility.
 ====
+
+
+See <<sourcefiles>> for more about the contents of your project directory.

@@ -8,8 +8,10 @@ You do not work directly with the repository.
 Instead, you work in your own workspace.
 This workspace consists of two parts:
 
-. a _fork_ or copy of the repository in your own GitHub account
+. a _fork_ or copy of the {trd} repository in your own GitHub account
+
 . a _clone_ of your fork downloaded to your local system
+
 
 These steps are detailed below.
 
@@ -28,7 +30,7 @@ The first step to setting up your workspace is to create a _fork_ of the _upstre
 If you work for SUSE or a partner company, you should use your company-sanctioned GitHub account.
 ====
 
-Create your fork of the upstream source repository by following the steps detailed below.
+Create your fork of the upstream {trd} repository by following the steps detailed below.
 
 . Open your Web browser and log into your GitHub account.
 
@@ -105,7 +107,7 @@ To find the URL of your fork in the GitHub UI:
 cd YOUR-REPO-NAME
 ----
 
-. Configure the {trd} source repository as your 'upstream' remote.
+. Configure the {trd} source repository as your `upstream` remote.
 +
 [source, console]
 ----
@@ -115,8 +117,8 @@ git remote add upstream git@github.com:SUSE/technical-reference-documentation.gi
 [NOTE]
 ====
 Git uses the concept of _remotes_ to communicate with repositories beyond the clone on your local system.
-When you created your local clone, your fork on GitHub was assigned the name 'origin'.
-And, because the {trd} source repository is upstream of your fork, you assign it the name 'upstream' here.
+When you created your local clone, your fork on GitHub was assigned the name `origin`.
+And, because the {trd} source repository is upstream of your fork, you assign it the name `upstream` here.
 ====
 
 . Verify your remotes.
