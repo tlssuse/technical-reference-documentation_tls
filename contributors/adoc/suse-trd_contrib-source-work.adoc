@@ -70,7 +70,7 @@ See <<projstart>> for for information.
 ====
 
 
-=== Workflow
+=== Development workflow
 
 However you develop your content, in the end, it must be encoded into source files in the {trd} repository.
 You may choose to edit source files yourself or share the joy with others.
@@ -192,12 +192,25 @@ Simply follow the instructions to fix the issue.
 You only need to do this once.
 ====
 
-. Repeat these steps until you are finished with all edits.
-
-. When ready, continue on to <<projsubmit>>.
-
-
+. Repeat these steps until you are finished with all content edits.
++
 [TIP]
 ====
 It is a good idea to break up long content creation sessions by pausing to commit and push edits to your `origin` remote.
 ====
+
+. Unset the "DRAFT" designation for your documentation project. +
+Your document is marked as "DRAFT" by default when using the standard templates.
+Unset "draft mode" before submitting your document with the following steps:
+
+.. Edit your DC file.
+
+.. Locate the line containing "DRAFT=yes" and prefix it with a hash mark ('#'). +
+That is,
++
+[source, asciidoc]
+----
+#DRAFT=yes
+----
+
+With your content complete and no longer marked as "DRAFT," you can proceed to <<projsubmit>>.

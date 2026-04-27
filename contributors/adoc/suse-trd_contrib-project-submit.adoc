@@ -2,13 +2,17 @@
 // Section: Submitting your project
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+You submit your project for inclusion in the {trd} with a Git pull request (PR).
+A PR is a request to merge the changes contained in one branch into another branch of a Git repository.
+In your case, your PR will request to merge the changes in your project branch into the 'main' branch of the upstream {trd} repository.
 
-Before you submit your documentation project, be sure to update your fork with changes in the 'main' branch of the upstream {trd} repository.
+
+=== Preparing for submission
+
+When submitting your documentation project, you first need to make sure your fork is up-to-date with the upstream repository.
+You can do this locally, then push to your fork (`origin` remote).
 
 . Open a local terminal and change to your clone directory.
-//
-+
-For example:
 +
 [source, console]
 ----
@@ -22,14 +26,35 @@ cd ~/git/GITHUB_USER/technical-reference-documentation
 git checkout main
 ----
 
-. Update your clone with changes in the _upstream_ remote.
+. Merge the upstream 'main' branch into your local 'main' branch.
+[source, console]
+----
+git pull upstream main
+----
+
+. Push these updates to your `origin` remote.
++
+[source, console]
+----
+git push origin
+----
+
+. Check out your project branch. +
+For example:
++
+[source, console]
+----
+git checkout my-tuxy-project
+----
+
+. Merge the upstream 'main' branch into your local project branch.
 +
 [source, console]
 ----
 git pull upstream main
 ----
 
-. Synchronize these updates to your _origin_ remote.
+. Push these updates to your `origin` remote.
 +
 [source, console]
 ----
@@ -37,12 +62,13 @@ git push origin
 ----
 
 
-With your document in good shape and your fork synchronized, it is time to submit your document for official review.
-To do this, you submit a pull request (PR) from the GitHub UI.
+=== Creating a pull request
+
+You can submit a pull request (PR) in the GitHub UI.
 
 . Log into your GitHub account.
 
-. Select your fork of the _upstream_ repository.
+. Select your fork of the upstream repository.
 
 . Select your branch and click __Compare & pull request__.
 +

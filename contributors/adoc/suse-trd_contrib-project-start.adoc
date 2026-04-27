@@ -42,7 +42,7 @@ cd ~/git/GITHUB-USER/YOUR-REPO-NAME/references
 git checkout main
 ----
 
-. Make sure your main branch is up-to-date with the 'main' branch of the upstream repository.
+. Make sure your main branch is up-to-date with the 'main' branch of the upstream repository (your `upstream` remote).
 +
 [source console]
 ----
