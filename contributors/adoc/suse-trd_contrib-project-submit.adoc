@@ -27,6 +27,7 @@ git checkout main
 ----
 
 . Merge the upstream 'main' branch into your local 'main' branch.
++
 [source, console]
 ----
 git pull upstream main
@@ -68,9 +69,11 @@ You can submit a pull request (PR) in the GitHub UI.
 
 . Log into your GitHub account.
 
-. Select your fork of the upstream repository.
+. Select your fork of the upstream repository (your `origin` remote).
 
-. Select your branch and click __Compare & pull request__.
+. Select your branch (for example, 'my-tuxy-project').
+
+. Click __Compare & pull request__.
 +
 image::suse-trd_github_pr_01.png[GitHub PR Creation - select branch, scaledwidth="85%"]
 
@@ -84,34 +87,51 @@ image::suse-trd_github_pr_02.png[GitHub PR Creation - compare changes, scaledwid
 . Follow the status of your pull request in the GitHub __Pull requests__ page of the upstream repository.
 //
 +
-Respond to comments and suggestions in the __Conversation__ tab.
+Respond to comments or suggestions from the reviwer in the __Conversation__ tab.
 +
 image::suse-trd_github_pr_03.png[GitHub PR Creation - review, scaledwidth="85%"]
++
+[NOTE]
+====
+When all identified issues have been addressed, your project is merged into the upstream 'main' branch and scheduled for publication.
+====
 
-. When your document is ready, verify that is published to the {trd} {trd-portal}[website].
 
-. After your document has been published, clean up your work area.
+=== Following up after publication
 
-.. Delete your previous branch.
+After your new technical reference has been published, do the following:
+
+. Visit the {trd-portal}[{trd} portal] and confirm that you can access all published versions (HTML and PDF).
+
+. Verify that the content appears as expected.
+
+. Celebrate the new technical reference by sharing it.
+
+. Clean up your workspace.
+
+.. Delete your project branch.
 +
 [source, console]
 ----
 git checkout main
+----
++
+[source, console]
+----
 git branch -d my-tuxy-project
 ----
 
-.. Merge upstream changes to your local fork.
+.. Merge upstream changes to your local clone.
 +
 [source, console]
 ----
 git pull upstream main
 ----
 
-.. Synchronize your fork.
+.. Synchronize your local clone with your fork on GitHub.
 +
 [source, console]
 ----
 git push origin
 ----
-
 
