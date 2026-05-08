@@ -1,0 +1,184 @@
+:docinfo:
+include::./common_docinfo_vars.adoc[]
+include::./gs_suse-sles_mariadb_replication-vars.adoc[]
+[#art-{article-id}]
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// SUSE Technical Reference Documentation
+// Getting Started Guide
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//
+// DOCUMENT ATTRIBUTES AND VARIABLES
+//
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// 1. Define variables (document attributes) in the vars file.
+// 2. Develop content and reference variables in the adoc file.
+// 3. Update the docinfo.xml file as needed.
+// 4. Update DC file (at a minimum, deactivate DRAFT mode)
+//
+// For further guidance, see
+//   https://github.com/SUSE/technical-reference-documentation/blob/main/common/templates/start/README.md
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+
+= {doctitle}: {docsubtitle}
+
+
+
+== Introduction
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Provide a motivation for the document in 2-4 sentences to identify:
+//   - what the document is about
+//   - why it may be of interest to the reader
+//   - what products are being highlighted
+// Include an approved SUSE | Partner logo lock-up if possible
+// Include any additional, relevant details
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+This guide provides step-by-step instructions for setting up a primary-replica topology for {mariadb-brand} on {sles-brand}.
+
+Enterprises leverage database replication to ensure high availability, disaster recovery, and improved read performance by distributing queries across multiple servers.
+By creating multiple copies of a database and copying data from one or more primary servers to one or more replicas, organizations can ensure data consistency, minimize downtime during maintenance, and scale their infrastructure to handle growing workloads efficiently.
+
+{mariadb-long} is a high-performance, open-source relational database management system (RDBMS) that was created as a community-developed fork of MySQL to ensure the software remains free and accessible under the GPL license.
+Built to handle diverse workloads, the core open-source database offers extensive flexibility through its wide selection of native storage engines.
+This includes the default InnoDB engine, which provides ACID compliance and foreign key support optimized for transactional (OLTP) operations.
+The server also features specialized engines such as Aria (a crash-safe alternative to MyISAM used for internal temporary tables), MEMORY (which stores data entirely in RAM for high-speed lookups), and Spider (a federated database solution that supports partitioning and XA transactions).
+
+For organizations requiring robust high availability without relying on proprietary enterprise features, {mariadb} can be deployed as a multi-master cluster powered by Galera, which provides an open-source, active-active synchronous replication solution with automated node provisioning.
+Furthermore, the open-source ecosystem is supported by numerous database connectors, allowing seamless integration with applications built in C, C++, Java, Node.js, Python, and other languages.
+
+{sles-long} provides a robust and reliable foundation for {mariadb} deployments, making it a compelling choice for businesses that need enterprise-grade stability and support.
+SUSE offers a long lifecycle of 13 years (10 years of general support plus 3 years of extended support), which gives organizations the confidence to run mission-critical applications without frequent, costly upgrades.
+The platform's depth of offering is a significant differentiator.
+For example, the High Availability extension provides a suite of clustering technologies to eliminate single points of failure, ensure business continuity, and minimize downtime.
+This is particularly crucial for applications that demand high uptime and data integrity.
+SUSE delivers world-class support services, leveraging deep expertise in business-critical environments and a long history of working with demanding applications such as SAP.
+This ensures that customers receive responsive and expert assistance for both the operating system and the {mariadb} database itself.
+This combination of a stable, long-term platform, comprehensive features, and expert support makes {sles} a value-added solution for {mariadb} users.
+
+
+
+
+=== Scope
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Specify what this guide covers in no more than 2 sentences.
+//   E.g., "You will learn how to ..."
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+In this guide, you learn the basic steps for setting up a primary-replica topology of {mariadb-long} {mariadb-version1} on {sles-long} {sles-version1}.
+
+[TIP]
+====
+To follow the steps of this guide, you will require a valid {sles-long} subscription for system registration and to obtain updates and patches.
+Visit {suse-downloads}[SUSE Downloads] to obtain an installation image and {scc-url}[{scc}] to request a 60-day trial subscription.
+====
+
+
+
+
+=== Audience
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Identify for whom this document is intended, perhaps with:
+//   - topics of interests (e.g., machine learning, security, etc.)
+//   - job roles (e.g., developer, administrator, platform architect, etc.)
+//   - required skills
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+This technical guide is intended for a variety of roles in an organization with an interest in how these technologies keep operations running, including:
+
+* *Database Administrators (DBAs)*: DBAs are responsible for the database topology.
+They would use the guide to implement {mariadb} replication for asynchronous or semi-synchronous primary-replica configurations to ensure that database services remain highly available.
+
+* *System Administrators*: System administrators handle the underlying OS infrastructure.
+The guide would help them deploy and configure {mariadb} on {sles}.
+
+* *IT Architects and Engineers*: Professionals designing the overall infrastructure must meet strict business continuity requirements.
+They would use the guide to architect robust replication strategies across different environments, such as configuring local clusters within a single data center or stretched "metro" clusters across multiple buildings, to ensure data integrity and seamless failover.
+
+* *IT Managers, Directors, and C-Level Executives*: While not performing the technical setup, technical leaders are responsible for risk management.
+They would be interested in how the combination of {sles} and {mariadb} with replication translates directly to business continuity and fulfillment of Service Level Agreements (SLAs) for mission-critical applications.
+
+* *Application Developers and ISVs*: Developers need to ensure their applications remain responsive during a server outage.
+
+* *IT Consultants and Service Providers*: Consultants designing enterprise architectures would rely on the guide to implement best-practice replication and high availability blueprints, ensuring they deliver disaster-resilient, continuous environments that protect their clients from data loss and outages.
+
+
+
+== Architecture
+
+Add architecture diagram here
+
+
+You need at least two hosts, one for the primary database instance and one for the replica.
+These can be physical machines, virtual machines, or cloud instances.
+
+For training and configuration testing, each node must meet the following minimum system requirements:
+
+* Processor: 2 CPUs (or vCPUs)
+
+* Memory: 4 GB of RAM
+
+* Storage: 50 GB of disk storage
+
+
+
+== Preparing the hosts
+
+Add content
+
+
+== Installing {mariadb}
+
+
+== Configuring the primary
+
+
+== Configuring the secondary
+
+
+== Setting up replication
+
+
+== Verifying replication
+
+
+== Summary
+
+
+
+== Troubleshooting tips
+
+
+
+
+
+
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Do not modify below this break.
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+++++
+<?pdfpagebreak?>
+++++
+
+
+:leveloffset: 0
+
+== Legal notice
+include::common_trd_legal_notice.adoc[]
+
+++++
+<?pdfpagebreak?>
+++++
+
+
+:leveloffset: 0
+include::common_gfdl1.2_i.adoc[]
+
+//end
