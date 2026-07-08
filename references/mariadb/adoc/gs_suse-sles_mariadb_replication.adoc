@@ -129,7 +129,30 @@ For training and configuration testing, each node must meet the following minimu
 
 == Preparing the hosts
 
-Add content
+Set up your primary and secondary host systems as follows.
+
+. Install {sles-long} {sles-version1} on each host, setting the hostname of the primary as ‘primary’ and the replica as ‘secondary’. +
+Find deployment guidance at {sles-docs}[SUSE Linux Enterprise Server Documentation].
+
+. Configure the network interface on each host with a stable IP address and hostname. +
+For example:
+
+
+Host
+Hostname
+IP Address
+Primary
+Master
+192.168.12.159
+Replica
+Slave
+192.168.12.160
+
+
+Register each host in order to get product updates and technical support.
+Apply available patches and updates.
+Ensure port 3306 (MariaDB default port) and port 22 (SSH for file transfer) are open in the firewall (see https://documentation.suse.com/sles/16.0/html/firewalld).
+
 
 
 == Installing {mariadb}

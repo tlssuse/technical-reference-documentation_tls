@@ -19,7 +19,7 @@
 //   This is typically a series of words (often from the document title)
 //   separated by hyphens (-).
 //   (e.g., "gs-rancher-kubflow-deployment")
-:article-id: gs_suse-sles_mariadb_replication
+:article-id: gs_suse-sles-mariadb-replication
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -95,17 +95,18 @@
 :sles-version1: 16
 :sles-website: https://www.suse.com/products/server/
 :sles-docs: https://documentation.suse.com/sles/16.0/
+:sles-docs-firewalld: {sles-docs}/html/SLES-intro-firewalld/
 
 :suse-downloads: https://www.suse.com/download/sles/
-:scc-long: SUSE Customer Center
+:scc: SUSE Customer Center
 :scc-url: https://scc.suse.com/
 
 
 :mariadb-provider: MariaDB
 :mariadb: MariaDB
 :mariadb-long: MariaDB Server
-:mariadb-brand: branded product name
-:mariadb-version1: 11.8.6
+:mariadb-brand: MariaDB Server
+:mariadb-version1: 11.8.8
 :mariadb-website: https://mariadb.org
 :mariadb-docs: https://mariadb.org/documentation/
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
