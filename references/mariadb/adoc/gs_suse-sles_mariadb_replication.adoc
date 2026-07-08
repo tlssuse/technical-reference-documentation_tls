@@ -47,7 +47,7 @@ Built to handle diverse workloads, the core open-source database offers extensiv
 This includes the default InnoDB engine, which provides ACID compliance and foreign key support optimized for transactional (OLTP) operations.
 The server also features specialized engines such as Aria (a crash-safe alternative to MyISAM used for internal temporary tables), MEMORY (which stores data entirely in RAM for high-speed lookups), and Spider (a federated database solution that supports partitioning and XA transactions).
 
-For organizations requiring robust high availability without relying on proprietary enterprise features, {mariadb} can be deployed as a multi-master cluster powered by Galera, which provides an open-source, active-active synchronous replication solution with automated node provisioning.
+For organizations requiring robust high availability without relying on proprietary enterprise features, {mariadb} can be deployed as a multi-primary (multi-master) cluster powered by Galera, which provides an open-source, active-active synchronous replication solution with automated node provisioning.
 Furthermore, the open-source ecosystem is supported by numerous database connectors, allowing seamless integration with applications built in C, C++, Java, Node.js, Python, and other languages.
 
 {sles-long} provides a robust and reliable foundation for {mariadb} deployments, making it a compelling choice for businesses that need enterprise-grade stability and support.
@@ -129,25 +129,28 @@ For training and configuration testing, each node must meet the following minimu
 
 == Preparing the hosts
 
-Set up your primary and secondary host systems as follows.
+Set up your primary and replica host systems as follows.
 
-. Install {sles-long} {sles-version1} on each host, setting the hostname of the primary as ‘primary’ and the replica as ‘secondary’. +
+. Install {sles-long} {sles-version1} on each host.
+
+. to ‘primary’ and ‘replica’, respectively. +
 Find deployment guidance at {sles-docs}[SUSE Linux Enterprise Server Documentation].
 
 . Configure the network interface on each host with a stable IP address and hostname. +
 For example:
 
+[cols="1,1",options="header"]
+|===
+|Hostname
+|IP Address
 
-Host
-Hostname
-IP Address
-Primary
-Master
-192.168.12.159
-Replica
-Slave
-192.168.12.160
+|primary
+|192.168.12.159
 
+|replica
+|192.168.12.160
+
+|===
 
 Register each host in order to get product updates and technical support.
 Apply available patches and updates.
