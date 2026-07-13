@@ -19,7 +19,7 @@
 //   This is typically a series of words (often from the document title)
 //   separated by hyphens (-).
 //   (e.g., "gs-rancher-kubflow-deployment")
-:article-id: gs_suse-sles-mariadb-replication
+:article-id: gs-suse-sles-mariadb-replication
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -105,10 +105,17 @@
 :mariadb-provider: MariaDB
 :mariadb: MariaDB
 :mariadb-long: MariaDB Server
-:mariadb-brand: MariaDB Server
+:mariadb-brand: {mariadb-long}
 :mariadb-version1: 11.8.8
 :mariadb-website: https://mariadb.org
 :mariadb-docs: https://mariadb.org/documentation/
+
+:mep-long: MariaDB Enterprise Platform
+:mep-website: https://mariadb.com/products/enterprise/
+:mep-docs-repl: https://mariadb.com/docs/server/ha-and-performance/standard-replication/replication-overview
+
+
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 

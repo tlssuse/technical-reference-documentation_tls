@@ -37,18 +37,17 @@ include::./gs_suse-sles_mariadb_replication-vars.adoc[]
 // Include any additional, relevant details
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-This guide provides step-by-step instructions for setting up a primary-replica topology for {mariadb-brand} on {sles-brand}.
+This guide provides step-by-step instructions for setting up a primary-replica topology for {mariadb-long} on {sles-long}.
 
-Enterprises leverage database replication to ensure high availability, disaster recovery, and improved read performance by distributing queries across multiple servers.
-By creating multiple copies of a database and copying data from one or more primary servers to one or more replicas, organizations can ensure data consistency, minimize downtime during maintenance, and scale their infrastructure to handle growing workloads efficiently.
+Organizations leverage database replication to achieve high availability, disaster recovery, and improved read performance by distributing queries across multiple servers in a primary-replica topology.
+This configuration creates multiple copies of a database from one or more primary servers to one or more replicas.
+This helps ensure data consistency, minimize downtime during maintenance, and scale infrastructure to handle growing workloads efficiently.
 
 {mariadb-long} is a high-performance, open-source relational database management system (RDBMS) that was created as a community-developed fork of MySQL to ensure the software remains free and accessible under the GPL license.
-Built to handle diverse workloads, the core open-source database offers extensive flexibility through its wide selection of native storage engines.
-This includes the default InnoDB engine, which provides ACID compliance and foreign key support optimized for transactional (OLTP) operations.
-The server also features specialized engines such as Aria (a crash-safe alternative to MyISAM used for internal temporary tables), MEMORY (which stores data entirely in RAM for high-speed lookups), and Spider (a federated database solution that supports partitioning and XA transactions).
-
-For organizations requiring robust high availability without relying on proprietary enterprise features, {mariadb} can be deployed as a multi-primary (multi-master) cluster powered by Galera, which provides an open-source, active-active synchronous replication solution with automated node provisioning.
+mariadb} is built to handle diverse workloads, providing flexibility through its extensive selection of native storage engines.
+A few of the included engines include the InnoDB engine (ensuring ACID compliance and foreign key support optimized for transactional operations), Aria (providing a crash-safe alternative to MyISAM used for internal temporary tables), MEMORY (storing data entirely in RAM for high-speed lookups), and Spider (providing a federated database solution that supports partitioning and XA transactions).
 Furthermore, the open-source ecosystem is supported by numerous database connectors, allowing seamless integration with applications built in C, C++, Java, Node.js, Python, and other languages.
+
 
 {sles-long} provides a robust and reliable foundation for {mariadb} deployments, making it a compelling choice for businesses that need enterprise-grade stability and support.
 SUSE offers a long lifecycle of 13 years (10 years of general support plus 3 years of extended support), which gives organizations the confidence to run mission-critical applications without frequent, costly upgrades.
@@ -58,6 +57,7 @@ This is particularly crucial for applications that demand high uptime and data i
 SUSE delivers world-class support services, leveraging deep expertise in business-critical environments and a long history of working with demanding applications such as SAP.
 This ensures that customers receive responsive and expert assistance for both the operating system and the {mariadb} database itself.
 This combination of a stable, long-term platform, comprehensive features, and expert support makes {sles} a value-added solution for {mariadb} users.
+
 
 
 
@@ -111,19 +111,21 @@ They would be interested in how the combination of {sles} and {mariadb} with rep
 
 == Architecture
 
-Add architecture diagram here
-
+image::
 
 You need at least two hosts, one for the primary database instance and one for the replica.
 These can be physical machines, virtual machines, or cloud instances.
 
-For training and configuration testing, each node must meet the following minimum system requirements:
+The following system specifications are adequate for learning:
 
 * Processor: 2 CPUs (or vCPUs)
 
 * Memory: 4 GB of RAM
 
 * Storage: 50 GB of disk storage
+
+
+Explore the MariaDB Enterprise Platform for more about replication in production environments.
 
 
 
