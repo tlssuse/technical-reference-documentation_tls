@@ -111,6 +111,7 @@
 :mariadb-docs: https://mariadb.org/documentation/
 
 :mep-long: MariaDB Enterprise Platform
+:mep: {mep-long}
 :mep-website: https://mariadb.com/products/enterprise/
 :mep-docs-repl: https://mariadb.com/docs/server/ha-and-performance/standard-replication/replication-overview
 

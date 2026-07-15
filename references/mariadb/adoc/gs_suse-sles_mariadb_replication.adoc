@@ -28,66 +28,45 @@ include::./gs_suse-sles_mariadb_replication-vars.adoc[]
 
 == Introduction
 
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Provide a motivation for the document in 2-4 sentences to identify:
-//   - what the document is about
-//   - why it may be of interest to the reader
-//   - what products are being highlighted
-// Include an approved SUSE | Partner logo lock-up if possible
-// Include any additional, relevant details
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
 This guide provides step-by-step instructions for setting up a primary-replica topology for {mariadb-long} on {sles-long}.
-
-Organizations leverage database replication to achieve high availability, disaster recovery, and improved read performance by distributing queries across multiple servers in a primary-replica topology.
-This configuration creates multiple copies of a database from one or more primary servers to one or more replicas.
-This helps ensure data consistency, minimize downtime during maintenance, and scale infrastructure to handle growing workloads efficiently.
+The configuration relies on maintaining copies of a database across multiple hosts, replicating data from an identified primary to one or more secondaries.
+By distributing the data and workloads, organizations can ensure data consistency, maintain high availability, provide for disaster recovery, and scale to handle growing workloads efficiently.
 
 {mariadb-long} is a high-performance, open-source relational database management system (RDBMS) that was created as a community-developed fork of MySQL to ensure the software remains free and accessible under the GPL license.
-mariadb} is built to handle diverse workloads, providing flexibility through its extensive selection of native storage engines.
-A few of the included engines include the InnoDB engine (ensuring ACID compliance and foreign key support optimized for transactional operations), Aria (providing a crash-safe alternative to MyISAM used for internal temporary tables), MEMORY (storing data entirely in RAM for high-speed lookups), and Spider (providing a federated database solution that supports partitioning and XA transactions).
-Furthermore, the open-source ecosystem is supported by numerous database connectors, allowing seamless integration with applications built in C, C++, Java, Node.js, Python, and other languages.
+{mariadb} is built to handle diverse workloads, providing flexibility through its extensive selection of native storage engines.
+A few of the included engines are the InnoDB engine (ensuring ACID compliance and foreign key support optimized for transactional operations), Aria (providing a crash-safe alternative to MyISAM used for internal temporary tables), MEMORY (storing data entirely in RAM for high-speed lookups), and Spider (providing a federated database solution that supports partitioning and XA transactions).  Furthermore, the open-source ecosystem is supported by numerous database connectors, allowing seamless integration with applications built in C, C++, Java, Node.js, Python, and other languages.
+{mariadb} supports database replication in a primary-replica topology, allowing organizations to see improved availability, minimized downtime, and increased performance.
+For business-critical applications, {mep-long} offers additional features and capabilities, as well as enterprise support.
 
-
-{sles-long} provides a robust and reliable foundation for {mariadb} deployments, making it a compelling choice for businesses that need enterprise-grade stability and support.
+{sles-long} provides a robust and reliable foundation for {mariadb} and {mep} deployments, making it a compelling choice for businesses that need enterprise-grade stability and support.
 SUSE offers a long lifecycle of 13 years (10 years of general support plus 3 years of extended support), which gives organizations the confidence to run mission-critical applications without frequent, costly upgrades.
-The platform's depth of offering is a significant differentiator.
-For example, the High Availability extension provides a suite of clustering technologies to eliminate single points of failure, ensure business continuity, and minimize downtime.
-This is particularly crucial for applications that demand high uptime and data integrity.
-SUSE delivers world-class support services, leveraging deep expertise in business-critical environments and a long history of working with demanding applications such as SAP.
-This ensures that customers receive responsive and expert assistance for both the operating system and the {mariadb} database itself.
-This combination of a stable, long-term platform, comprehensive features, and expert support makes {sles} a value-added solution for {mariadb} users.
+{sles} features broad hardware and cloud platform support and access to a curated collection of securely packaged, maintained, and supported open source applications, including {mariadb} Server.
+SUSE also delivers world-class support services, leveraging deep expertise in business-critical environments and a long history of working with demanding applications, such as SAP.  This ensures that customers receive responsive and expert assistance.
 
-
+Together, SUSE and {mariadb} deliver open source innovation with enterprise reliability, performance, and scale.
 
 
 
 === Scope
 
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Specify what this guide covers in no more than 2 sentences.
-//   E.g., "You will learn how to ..."
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-In this guide, you learn the basic steps for setting up a primary-replica topology of {mariadb-long} {mariadb-version1} on {sles-long} {sles-version1}.
+This guide provides steps for deploying {mariadb-long} on {sles-long} in a basic primary-replica topology.
+
+[NOTE]
+====
+Although this guide was developed using {sles} {sles-version1} and {mariadb} {mariadb-version1} from the SUSE package repositories, you should have little difficulty leveraging this guidance for newer versions of these products.
+====
 
 [TIP]
 ====
 To follow the steps of this guide, you will require a valid {sles-long} subscription for system registration and to obtain updates and patches.
-Visit {suse-downloads}[SUSE Downloads] to obtain an installation image and {scc-url}[{scc}] to request a 60-day trial subscription.
+If you do not have a current subscription, visit {suse-downloads}[SUSE Downloads] to obtain an installation image and {scc-url}[{scc}] to request a 60-day trial subscription.
 ====
-
 
 
 
 === Audience
 
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-// Identify for whom this document is intended, perhaps with:
-//   - topics of interests (e.g., machine learning, security, etc.)
-//   - job roles (e.g., developer, administrator, platform architect, etc.)
-//   - required skills
-// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 This technical guide is intended for a variety of roles in an organization with an interest in how these technologies keep operations running, including:
 
@@ -111,12 +90,13 @@ They would be interested in how the combination of {sles} and {mariadb} with rep
 
 == Architecture
 
-image::
+image::SUSE-MariaDB-primary-replica.png[title="Basic Primary-Replica Topology", Basic Primary-Replica Topology, scaledwidth=90%]
 
-You need at least two hosts, one for the primary database instance and one for the replica.
+To implement this architecture, you need at least two host systems.
+One system will host the primary database instance and one will host the replica.
 These can be physical machines, virtual machines, or cloud instances.
 
-The following system specifications are adequate for learning:
+For the purposes of this guide, the following system specifications are adequate:
 
 * Processor: 2 CPUs (or vCPUs)
 
@@ -124,8 +104,9 @@ The following system specifications are adequate for learning:
 
 * Storage: 50 GB of disk storage
 
+* Network: 1 Gbps Ethernet or better
 
-Explore the MariaDB Enterprise Platform for more about replication in production environments.
+You can find additional sizing guidance in the product documentation, and both SUSE and {mariadb} offer consulting and professional services that can help you design environments for enterprise scale.
 
 
 
@@ -133,30 +114,33 @@ Explore the MariaDB Enterprise Platform for more about replication in production
 
 Set up your primary and replica host systems as follows.
 
-. Install {sles-long} {sles-version1} on each host.
+. Install {sles-long} on each host. +
+Detailed installation guidance is available in the {sles-docs}[SUSE Linux Enterprise Server Documentation].
 
-. to ‘primary’ and ‘replica’, respectively. +
-Find deployment guidance at {sles-docs}[SUSE Linux Enterprise Server Documentation].
-
-. Configure the network interface on each host with a stable IP address and hostname. +
+. Configure each host with an appropriate hostname and IP address. +
 For example:
-
-[cols="1,1",options="header"]
++
+[cols="1,1,1",options="header"]
 |===
 |Hostname
-|IP Address
+|Role
+|IP address
 
-|primary
+|host1
+|Primary
 |192.168.12.159
 
-|replica
+|host2
+|Replica
 |192.168.12.160
-
 |===
 
-Register each host in order to get product updates and technical support.
-Apply available patches and updates.
-Ensure port 3306 (MariaDB default port) and port 22 (SSH for file transfer) are open in the firewall (see https://documentation.suse.com/sles/16.0/html/firewalld).
+. Register each host in order. +
+This allows you to get product updates and technical support.
+
+. Apply available patches and updates.
+
+. Ensure port 3306 (MariaDB default port) and port 22 (SSH for file transfer) are open in the firewall (see https://documentation.suse.com/sles/16.0/html/firewalld).
 
 
 
