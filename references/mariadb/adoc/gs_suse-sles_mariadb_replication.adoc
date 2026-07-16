@@ -25,23 +25,45 @@ include::./gs_suse-sles_mariadb_replication-vars.adoc[]
 = {doctitle}: {docsubtitle}
 
 
+== Key take aways
+
+In this guide, you learn:
+to set up a primary-replica topology for {mariadb} on {sles}.
+how this architecture can help you improve read performance, data consistency, high availability, and disaster recovery for mission-critical applications.
+the value of enterprise, open source software.
+
+
 
 == Introduction
 
 This guide provides step-by-step instructions for setting up a primary-replica topology for {mariadb-long} on {sles-long}.
 The configuration relies on maintaining copies of a database across multiple hosts, replicating data from an identified primary to one or more secondaries.
-By distributing the data and workloads, organizations can ensure data consistency, maintain high availability, provide for disaster recovery, and scale to handle growing workloads efficiently.
+Distributing the data and workloads, organizations can deliver improved performance, maintain data consistency, and support high availability and disaster recovery requirements.
 
-{mariadb-long} is a high-performance, open-source relational database management system (RDBMS) that was created as a community-developed fork of MySQL to ensure the software remains free and accessible under the GPL license.
-{mariadb} is built to handle diverse workloads, providing flexibility through its extensive selection of native storage engines.
-A few of the included engines are the InnoDB engine (ensuring ACID compliance and foreign key support optimized for transactional operations), Aria (providing a crash-safe alternative to MyISAM used for internal temporary tables), MEMORY (storing data entirely in RAM for high-speed lookups), and Spider (providing a federated database solution that supports partitioning and XA transactions).  Furthermore, the open-source ecosystem is supported by numerous database connectors, allowing seamless integration with applications built in C, C++, Java, Node.js, Python, and other languages.
+{mariadb-website}[{mariadb-long}] is a high-performance, open source relational database management system (RDBMS).
+It began as a community-developed fork of MySQL to ensure the software remains free and accessible under the GPL license.
+Native storage engines provide flexibility for diverse workloads.
+Some highlights include:
+
+* The InnoDB engine - ensures ACID compliance and transaction support.
+* Aria - offers a crash-safe alternative to MyISAM.
+* MEMORY - stores data in RAM for high-speed lookups.
+* Spider - provides a partitioned, federated database solution.
+
+Numerous database connectors also support the open source ecosystem.
+This allows seamless integration with applications built in Python, Java, C++, and other languages.
+
 {mariadb} supports database replication in a primary-replica topology, allowing organizations to see improved availability, minimized downtime, and increased performance.
-For business-critical applications, {mep-long} offers additional features and capabilities, as well as enterprise support.
+And, {mep-long} is an option for business-critical environments, delivering even more enterprise features as well as enterprise-grade support.
 
-{sles-long} provides a robust and reliable foundation for {mariadb} and {mep} deployments, making it a compelling choice for businesses that need enterprise-grade stability and support.
-SUSE offers a long lifecycle of 13 years (10 years of general support plus 3 years of extended support), which gives organizations the confidence to run mission-critical applications without frequent, costly upgrades.
-{sles} features broad hardware and cloud platform support and access to a curated collection of securely packaged, maintained, and supported open source applications, including {mariadb} Server.
-SUSE also delivers world-class support services, leveraging deep expertise in business-critical environments and a long history of working with demanding applications, such as SAP.  This ensures that customers receive responsive and expert assistance.
+{sles-website}[{sles-long}] provides a robust and reliable foundation for {mariadb} and {mep} deployments, making it a compelling choice for businesses that need enterprise-grade stability and support.
+SUSE offers a 13-year lifecycle (10 years general support and 3 years extended support).
+This gives organizations the confidence to run mission-critical applications without frequent, costly upgrades.
+
+{sles} features broad hardware and cloud platform support.
+It also provides access to a curated collection of securely packaged, maintained, and supported open source applications, including {mariadb} Server.
+SUSE also delivers world-class support services, leveraging deep expertise in business-critical environments and a long history of working with demanding applications, such as SAP.
+This ensures that customers receive responsive and expert assistance.
 
 Together, SUSE and {mariadb} deliver open source innovation with enterprise reliability, performance, and scale.
 
