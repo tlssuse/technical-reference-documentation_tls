@@ -106,6 +106,7 @@ include::./common_docinfo_vars.adoc[]
 :editor1_jobtitle: Director of Global Partner Solutions
 :editor1_orgname: SUSE
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+:ibm-crypto-url: https://www.ibm.com/docs/en/linux-on-systems?topic=execution-crypto-express-adapters#lxse_ap_pass__title__2
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // miscellaneous
@@ -249,7 +250,7 @@ The following high level infrastructure prerequisites are needed to use {hpvs_on
 * If hardware accelerated crypto passthrough will be used
 ** https://www.ibm.com/docs/en/hpvs/2.1.x?topic=servers-crypto-passthrough#hpcr_prerequisites[IBM z16 or IBM LinuxONE 4] is required
 ** The Host Key Document (HKD) for the IBM Z or IBM LinuxONE server which was obtained in an earlier step.
-** One or more https://www.ibm.com/docs/en/linux-on-systems?topic=execution-crypto-express-adapters#lxse_ap_pass__title__2[supported and properly configured IBM Crypto Express adapters]
+** One or more {ibm-crypto-url}[supported and properly configured IBM Crypto Express adapters]
 //
 +
 {product2} will provide the IBM Secure Execution enabled Kernel-based Virtual Machine (KVM) host.

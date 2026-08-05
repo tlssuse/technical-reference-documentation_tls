@@ -1,0 +1,3709 @@
+:docinfo:
+include::./common_docinfo_vars.adoc[]
+include::./rc_suse-telco_amd-epyc-vars.adoc[]
+[#art-{article-id}]
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// SUSE Technical Reference Documentation
+// Reference Configuration
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//
+// DOCUMENT ATTRIBUTES AND VARIABLES
+//
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// 1. Define variables (document attributes) in the vars file.
+// 2. Develop content and reference variables in the adoc file.
+// 3. Update the docinfo.xml file as needed.
+// 4. Update DC file (at a minimum, deactivate DRAFT mode)
+//
+// For further guidance, see
+//   https://github.com/SUSE/technical-reference-documentation/blob/main/common/templates/start/README.md
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+
+= {doctitle}: {docsubtitle}
+
+
+
+== Introduction
+
+Telecom operators today face intensifying demands driven by 5G-Advanced and Open RAN deployments. 
+These include stricter latency and jitter requirements, severe power and space constraints at the edge, 
+and the growing need to integrate AI into network operations. 
+{stelco-brand} running on {amd-brand} (code-named Turin) provides a robust, CPU-centric solution that addresses these challenges 
+through high core density, strong memory performance, and flexible resource tuning capabilities.
+
+This reference architecture shows how the combination enables efficient workload consolidation for vRAN, 5G Core, 
+and AI-augmented functions. It delivers the determinism, power efficiency, and operational simplicity operators 
+need to scale intelligently and reduce complexity in their networks.
+
+
+=== Acknowledgments
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Recognize by name other individuals who contributed to the development
+// of the document.
+// Use 'editor' and 'contrib' variables defined in your Vars file.
+// If there are no acknowledgments, comment out this section.
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+The following individuals contributed to the creation of this document:
+
+ * {editor1-firstname} {editor1-surname}, {editor1-jobtitle}, {editor1-orgname}
+ * {editor2-firstname} {editor2-surname}, {editor2-jobtitle}, {editor2-orgname}
+ * {editor3-firstname} {editor3-surname}, {editor3-jobtitle}, {editor3-orgname}
+ * {editor4-firstname} {editor4-surname}, {editor4-jobtitle}, {editor4-orgname}
+
+
+
+== Telco market challenges and requirements
+
+The rapid evolution toward 5G-Advanced and the large-scale deployment of Open RAN (O-RAN) have placed unprecedented computational demands on telecommunications infrastructure. 
+Operators are moving away from traditional, hardware-centric designs toward fully software-defined architectures that must deliver significantly higher performance while operating under real-world constraints. 
+This transition brings increased expectations around scalability, flexibility, and intelligence, but it also surfaces several critical technical challenges that 
+general-purpose infrastructure must now overcome:
+
+* **Stricter Latency and Jitter Limits:** The move to O-RAN and Ultra-Reliable Low-Latency Communications (URLLC) has introduced much stricter requirements for latency and jitter, particularly within the O-RAN fronthaul and midhaul interfaces. 
+Engineering teams must achieve the same level of deterministic precision and timing accuracy on general-purpose CPU architectures that was previously exclusive to specialized Application-Specific Integrated Circuits (ASICs).
+
+* **Physical Edge Constraints with Power Efficiency:** Expanding compute capacity at edge sites introduces severe physical bottlenecks, including restricted rack space, tight thermal envelopes, and limited power availability. 
+Maximizing performance-per-watt and throughput-per-rack-unit is essential to scaling capacity without increasing physical footprints.
+
+* **AI Integration at the Edge:** Embedding AI directly into the network fabric, for real-time beamforming optimization, traffic steering, and automated fault detection, adds massive computational intensity. 
+These advanced workloads require a combination of high core counts, wide memory bandwidth, and efficient data movement to ensure deterministic execution during complex inference tasks.
+
+To address these needs, this reference architecture presents a validated integration of {stelco-long} on {amd-long} (code-named Turin). 
+This software-defined blueprint combines the high core density and memory throughput of the {amd-provider} Turin architecture with {stelco-provider}’s robust cloud-native management. 
+The result is a future-proof, x86-based foundation for vRAN, 5G Core, and AI-augmented network functions, providing the deterministic performance and extreme density required for next-generation intelligent networks.
+
+++++
+<?pdfpagebreak?>
+++++
+
+
+== The solution
+
+=== Hardware architecture: 5th gen {amd-long}
+
+The {amd-epyc-website}[5th Generation {amd-long}] bring a modular chiplet design built around Zen 5 cores.
+
+
+[cols=".>a,.>a", frame=none, grid=none]
+|===
+|image::image1.png[title="{amd-long} with central I/O Die and 16 Zen 5 Classic-based Core Complex Dies",  {amd-long} with central I/O Die and 16 Zen 5 Classic-based Core Complex Dies, align="center", scaledwidth=70%, role=half-view-width]
+|image::image9.png[title="{amd-long} with central I/O Die and 12 Zen 5c “Dense”-based Core Complex Dies", {amd-long} with central I/O Die and 12 Zen 5c “Dense”-based Core Complex Dies, align="center", scaledwidth=70%, role=half-view-width]
+|===
+
+
+Each Core Complex (CCX) groups up to eight Zen 5 cores that share a 32 MB L3 cache, delivering fast data access for threads working closely together.
+
+[cols=".>a,.>a", frame=none, grid=none]
+|===
+|image::image8.png[title="CCX with eight Zen5 compute cores and 32 MB shared L3 cache",  CCX with sixteen Zen5c compute cores and 32 MB shared L3 cache, align="center", scaledwidth=70%, role=half-view-width]
+|image::image7.png[title="CCX with sixteen Zen5c compute cores and 32 MB shared L3 cache",  CCX with sixteen Zen5c compute cores and 32 MB shared L3 cache, align="center", scaledwidth=70%, role=half-view-width]
+|===
+
+
+These CCXs reside on Core Complex Dies (CCDs), which connect through a central I/O Die using {amd-provider} Infinity Fabric. 
+This architecture provides high core counts, substantial memory bandwidth via multiple DDR5 channels, and highly configurable Non-Uniform Memory Access (NUMA) topologies that telco operators can tune precisely to their workloads.
+
+
+
+image::image3.png[title="{amd-provider} EPYC 9005 IOD",  {amd-provider} EPYC 9005 IOD, align="center", scaledwidth=80%, role=full-view-width]
+
+
+
+In dual-socket configurations, the platform delivers massive parallelism (up to 128 cores) while offering generous PCIe Gen5 lanes for high-speed networking cards and accelerators when needed. 
+The design balances raw throughput with the predictable, low-jitter behavior essential for real-time telco applications. 
+Features such as flexible NUMA Nodes Per Socket (NPS) settings and the option to treat individual L3 caches as NUMA domains give infrastructure teams fine-grained control over resource locality, memory interleaving, and thread pinning. 
+This helps minimize cross-NUMA traffic that can introduce unwanted latency variation in packet processing or timing-critical functions.
+
+
+For telecom operators, these capabilities translate into better workload consolidation and improved power efficiency per core. 
+They also enable running both high-throughput data plane tasks and latency-sensitive control plane operations on the same general-purpose hardware. 
+The architecture supports the industry shift toward CPU-centric designs that reduce dependency on specialized accelerators while still meeting strict performance service level objectives.
+
+=== Software architecture: {stelco-long}
+
+{suse-telco-url}[{stelco-long}] builds on {suse-linux-micro-url}[{slemicro}], a lightweight, immutable operating system designed for edge and telco environments. 
+It incorporates hardened real-time kernel capabilities, comprehensive automation for day-1 and day-2 operations, and full support for both virtual network functions (VNFs) and cloud-native network functions (CNFs). 
+The platform integrates tightly with {rancher-prime-url}[{srancherprime}] for container orchestration and management, enabling GitOps-driven deployments that improve consistency and reduce human error across distributed sites.
+
+
+
+image::SUSE-telco-cloud-AMD-architecture.svg[title="{stelco-long} Architecture",  {stelco-long} Architecture, align="center", scaledwidth=100%, role=full-view-width]
+
+Key telco-focused features include advanced observability tools, security hardening aligned with industry standards, and automated lifecycle management that simplifies patching and upgrades without disrupting live services. 
+{stelco-long} also provides optimized networking stacks with DPDK support, SR-IOV capabilities, and precise CPU isolation mechanisms that work hand-in-hand with the underlying hardware’s NUMA and cache architecture.
+
+Together, the stack lets telco operators run consolidated workloads on general-purpose hardware while maintaining the isolation, determinism, and performance guarantees traditionally associated with specialized appliances. 
+This carrier-grade foundation helps service providers accelerate innovation, lower total cost of ownership, and build infrastructure that can evolve smoothly toward 6G and greater AI integration in the network.
+
+== Deployment and tuning for deterministic low latency
+
+See the <<Testing setup and results>> for the Validation and performance testing using Cyclictest.
+
+The Validation and performance testing focused heavily on ensuring real-time consistency using `cyclictest` under heavy execution load. During evaluation, a rigorous set of low-latency best practices were applied to the platform:
+
+{stelco-long} on {amd-long}
+
+* **Core and thread topology:** Simultaneous Multithreading (SMT) was disabled, and housekeeping operating system cores were isolated exclusively to the first CCX (cores 0–7).
+
+* **Kernel optimization:** A real-time kernel was deployed using standard `isolcpus`, `nohz_full`, and `rcu_nocbs` boot parameters.
+
+* **NUMA configuration:** Testing ran explicitly without forcing `numa=off`, allowing the underlying hardware NUMA capabilities to operate optimally.
+
+A primary area of exploration involved testing the various NUMA Nodes Per Socket (NPS) BIOS configurations to evaluate workload behavior across different granularities:
+
+[cols="1,3,3",options="header"]
+|===
+|NPS Setting
+|Configuration Profile
+|Ideal Workload Target
+
+|NPS4
+|Four NUMA domains per socket.
+|Provides the tightest hardware locality between cores, memory, and local I/O adapters.
+
+|NPS2
+|Two NUMA domains per socket.
+|Offers a balanced domain split ideal for many common virtual network functions.
+
+|NPS1
+|Single NUMA node per socket.
+|Enables full memory interleaving across the entire socket channel space.
+
+|NPS0
+|System-wide single NUMA domain (Dual-socket only).
+|Simplifies resource allocation for less NUMA-aware workloads.
+|===
+
+**Validation performance note:** Across all tested configurations, the platform demonstrated strong, deterministic real-time behavior. 
+Maximum latencies consistently remained in the low teens to upper single-digit microseconds under representative network traffic loads.
+
+== Practical benefits for telco operators
+
+This combination supports the shift toward CPU-only architectures. 
+By removing reliance on discrete accelerators for many use cases, operators can simplify supply chains, reduce validation cycles, and lower both CAPEX and OPEX. 
+The high core density and memory subsystem efficiency help maximize workload consolidation per site while keeping power and cooling demands manageable. 
+The platform also aligns well with AI-native telco roadmaps. 
+Strong per-core performance and cache hierarchies support both traditional packet processing and emerging inference tasks running alongside RAN or core functions.
+
+== Looking ahead
+
+The successful validation of {stelco-long} on {amd-long} gives telco operators another proven path for building efficient, future-ready networks. 
+Whether the priority is maximum density at the edge, deterministic performance for Open RAN, or a balanced platform ready for AI services, the joint solution offers the configurability and performance needed.
+The telecommunications sector is changing rapidly. 
+Platforms that combine raw processing capability with operational simplicity and open standards will separate industry leaders from the rest. 
+{stelco-provider} and {amd-provider} deliver precisely that foundation.
+
+If you are currently evaluating next-generation telecom infrastructure, reach out to the {stelco-provider} and {amd-provider} account teams to initiate a technical proof of concept tailored to your specific deployment environment.
+
+++++
+<?pdfpagebreak?>
+++++
+
+== Testing setup and results
+
+For the testing setup, BIOS and kernel are configured as follows to provide the best possible performance:
+
+* BIOS
+
+** Disable SMT/Logical Processors
+
+** Disable all the C-state and P-state (maximum frequency requested) optimizations
+
+** Disable all the L1/L2 related Prefetchers
+
+** Look for maximum performance at the cost of energy savings
+
+
+* Kernel
+
+** 120 isolated cores in total after setting the first 8 cores (for example, first CCD) as housekeeping cores (following {amd-provider} recommendations)
+
+** Remove unnecessary (kernel) threads and interrupts from isolated cores (see {stelco-docs-kernel-args}[{stelco-long} documentation: Kernel arguments for low latency and high performance])
+
+
+Except for a single core in a single test case, **all maximum latencies per each isolated core returned below 20 µsec** (the target identified by {amd-provider} experts).
+Cyclictest testing was repeated **for all possible NUMA configurations without experiencing any significant difference**.
+
+
+=== Dell PowerEdge R7725 - dual-socket {amd-provider} Turin (EPYC 9555 - 64 “Zen5” cores per socket)
+
+
+. {amd-provider} EPYC 5th Generation - Architecture Overview
+Sources:
+
+* {amd-architecture-overview}[{amd-long} Architecture Overview (58462)]
+
+* {amd-tech-info-portal}[{amd-brand} Architecture (white paper)]
+
+image::image120.png[title="8 Zen5 cores per CCX", 8 Zen5 cores per CCX, align="center", scaledwidth=100%, role=full-view-width]
+
+[NOTE]
+====
+This testing used {amd-provider} EPYC 9555 64-cores Zen5 processors with 8 Zen5 cores per CCX.
+====
+
+
+image::image30.png[title="8 CCDs per socket (eight Zen5 cores each with a 32MB shared L3)", 8 CCDs per socket (eight Zen5 cores each with a 32MB shared L3), align="center", scaledwidth=100%, role=full-view-width]
+
+[NOTE]
+====
+The “{amd-provider} EPYC 9555 64-cores Zen5” processor used in this test, provides 8 CCDs per socket (eight Zen5 cores each with a 32MB shared L3) instead of the 12 CCDs per socket.
+====
+
+image::image100.png[title="NUMA Topology", NUMA Topology, align="center", scaledwidth=100%, role=full-view-width]
+image::image90.png[title="NUMA Settings", NUMA Settings, align="center", scaledwidth=100%, role=full-view-width]
+
+[NOTE]
+====
+This testing was performed with a dual-socket Dell PowerEdge R7725 server using “{amd-provider} EPYC 9555 64-cores Zen5” processors, each with 8 CCDs per socket.
+This delivered 16 NUMA nodes in total when enabling the “L3 cache as NUMA domain” BIOS option.
+====
+
+image::image20.png[title="2 CCDs per NUMA quadrant in an NPS=4 configuration", 2 CCDs per NUMA quadrant in an NPS=4 configuration, align="center", scaledwidth=100%, role=full-view-width]
+
+[NOTE]
+====
+The “{amd-provider} EPYC 9555 64-cores Zen5” processors used in this test provide 2 CCDs per NUMA quadrant in an NPS=4 configuration (8 CCDs per socket) instead of the 4 CCDs per quadrant (16 CCDs per socket) shown in this image.
+====
+
+
+=== BIOS settings
+
+You can find the applied BIOS configuration in <<Appendix - BIOS settings>>.
+
+
+=== General OS settings
+
+* House Keeping cores set to 0-7 as recommended from {amd-provider} (for example, all cores in the first CCX); resulting isolated cores: 8-127 (120 isolated cores in total)
+
+* Remove unnecessary (kernel) threads and interrupts from isolated cores; see {stelco-long} documentation: Kernel arguments for low latency and high performance.
+
+* numa=off (used during the early tests) has been removed from the set of kernel args.
+
+* RPMs related to Telco features in {stelco-long} downstream nodes that are not required for the cyclictest based performance tests have not been installed (for example, linuxptp).
+
+
+=== General Kubernetes/RKE2 settings
+
+As the Kubernetes/RKE2 layer is not required for cyclictest based performance tests, it has not been deployed in the target server.
+
+
+=== Results
+
+For each test configuration we have run the test several times, showing below the obtained “Max Latencies” (per isolated core with 120 isolated cores in total) for two of them, selected randomly.
+
+
+==== BIOS/L3 cache as NUMA Domain=disabled - BIOS/NPS=0 HK cores=0-7
+
+image::image10.png[title="BIOS/NPS=0 Domain=disabled", BIOS/NPS=0 Domain=disabled, align="center", scaledwidth=100%, role=full-view-width]
+
+[source, console]
+----
+numactl -H
+----
+
+[listing]
+----
+
+available: 1 nodes (0)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127
+node 0 size: 385960 MB
+node 0 free: 320383 MB
+node distances:
+node     0 
+   0:   10 
+
+----
+
+[source, console]
+----
+cd ~/telco-performance/Performance-settings/rt-low-latency-tools && \
+../Performance\ scripts/performance-settings.sh && \
+./release-scenario-SV-rtapp95utilIsolate-cyclictestIsolated.sh
+
+----
+
+[listing]
+----
+# Max Latencies: 00012 00002 00014 00003 00008 00003 00003 00013 00003 00003 00003 00002 00003 00011 00011 00016 00004 00004 00004 00003 00008 00003 00011 00016 00014 00014 00014 00008 00006 00013 00002 00014 00003 00003 00003 00002 00015 00009 00015 00003 00007 00007 00007 00002 00011 00011 00011 00002 00008 00008 00008 00002 00002 00009 00007 00002 00016 00002 00002 00002 00002 00002 00016 00015 00003 00003 00011 00002 00009 00005 00011 00011 00017 00017 00017 00012 00002 00003 00016 00007 00004 00004 00004 00004 00002 00008 00003 00008 00003 00003 00003 00003 00003 00018 00006 00002 00002 00014 00002 00002 00012 00002 00003 00002 00003 00003 00003 00002 00002 00002 00002 00002 00015 00015 00015 00002 00013 00004 00002 00002
+
+# Max Latencies: 00004 00013 00010 00002 00002 00013 00010 00015 00002 00002 00002 00004 00002 00016 00010 00002 00002 00002 00002 00001 00002 00002 00001 00002 00004 00004 00001 00001 00001 00002 00002 00002 00015 00009 00016 00004 00002 00015 00011 00007 00002 00002 00002 00001 00007 00002 00015 00007 00009 00009 00009 00006 00002 00002 00002 00002 00002 00002 00002 00001 00003 00002 00002 00002 00004 00004 00003 00008 00002 00001 00001 00001 00003 00003 00002 00002 00001 00001 00007 00002 00016 00016 00016 00011 00002 00002 00002 00011 00003 00003 00003 00002 00007 00003 00002 00002 00003 00002 00011 00003 00012 00001 00002 00002 00008 00008 00008 00002 00002 00015 00005 00013 00014 00014 00002 00002 00003 00002 00002 00010
+
+----
+
+
+==== BIOS/L3 cache as NUMA Domain=disabled - BIOS/NPS=1 HK cores=0-7
+
+image::image40.png[title="BIOS/NPS=1 Domain=disabled", BIOS/NPS=1 Domain=disabled, align="center", scaledwidth=100%, role=full-view-width]
+
+[source, console]
+----
+# numactl -H
+----
+
+[listing]
+----
+
+available: 4 nodes (0-3)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+node 0 size: 95978 MB
+node 0 free: 63638 MB
+node 1 cpus: 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63
+node 1 size: 96736 MB
+node 1 free: 85365 MB
+node 2 cpus: 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
+node 2 size: 96752 MB
+node 2 free: 85441 MB
+node 3 cpus: 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127
+node 3 size: 96685 MB
+node 3 free: 84828 MB
+node distances:
+node     0    1    2    3 
+   0:   10   12   32   32 
+   1:   12   10   32   32 
+   2:   32   32   10   12 
+   3:   32   32   12   10 
+
+
+----
+
+[source, console]
+----
+# cd ~/telco-performance/Performance-settings/rt-low-latency-tools && \
+../Performance\ scripts/performance-settings.sh && \
+./release-scenario-SV-rtapp95utilIsolate-cyclictestIsolated.sh
+
+----
+
+[listing]
+----
+
+# Max Latencies: 00005 00002 00003 00002 00004 00002 00002 00014 00003 00003 00003 00002 00002 00003 00003 00003 00003 00003 00002 00003 00002 00014 00004 00003 00003 00003 00003 00003 00002 00002 00003 00002 00007 00007 00007 00004 00003 00005 00003 00003 00003 00003 00003 00003 00003 00003 00002 00016 00002 00002 00003 00003 00003 00002 00002 00013 00002 00002 00003 00003 00002 00003 00010 00009 00003 00002 00002 00013 00002 00002 00002 00014 00008 00008 00004 00004 00003 00002 00015 00017 00003 00002 00002 00002 00002 00002 00003 00003 00016 00016 00016 00016 00016 00015 00002 00009 00004 00004 00003 00003 00004 00015 00002 00002 00003 00003 00003 00002 00003 00015 00003 00004 00016 00011 00004 00003 00002 00003 00002 00016
+
+# Max Latencies: 00016 00004 00012 00004 00003 00012 00005 00005 00004 00005 00013 00010 00005 00004 00004 00010 00014 00014 00009 00004 00015 00007 00007 00004 00004 00004 00004 00014 00006 00004 00012 00005 00005 00005 00004 00004 00004 00004 00016 00005 00004 00003 00006 00004 00012 00003 00004 00009 00011 00011 00011 00004 00004 00004 00009 00015 00015 00015 00017 00007 00009 00005 00006 00006 00010 00010 00010 00010 00005 00010 00006 00004 00009 00005 00003 00004 00004 00006 00004 00004 00013 00013 00013 00011 00004 00005 00004 00004 00009 00007 00004 00005 00004 00012 00005 00007 00013 00013 00013 00011 00013 00008 00004 00004 00007 00007 00004 00004 00004 00004 00004 00004 00009 00005 00005 00004 00003 00004 00004 00005
+
+----
+
+
+==== BIOS/L3 cache as NUMA Domain=disabled - BIOS/NPS=2 HK cores=0-7
+
+image::image70.png[title="BIOS/NPS=2 Domain=disabled", BIOS/NPS=2 Domain=disabled, align="center", scaledwidth=100%, role=full-view-width]
+
+[source, console]
+----
+# numactl -H
+----
+
+[listing]
+----
+
+available: 4 nodes (0-3)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+node 0 size: 95978 MB
+node 0 free: 63638 MB
+node 1 cpus: 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63
+node 1 size: 96736 MB
+node 1 free: 85365 MB
+node 2 cpus: 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
+node 2 size: 96752 MB
+node 2 free: 85441 MB
+node 3 cpus: 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127
+node 3 size: 96685 MB
+node 3 free: 84828 MB
+node distances:
+node     0    1    2    3 
+   0:   10   12   32   32 
+   1:   12   10   32   32 
+   2:   32   32   10   12 
+   3:   32   32   12   10 
+
+----
+
+
+[source, console]
+----
+
+# cd ~/telco-performance/Performance-settings/rt-low-latency-tools && \
+../Performance\ scripts/performance-settings.sh && \
+./release-scenario-SV-rtapp95utilIsolate-cyclictestIsolated.sh
+----
+
+[listing]
+----
+# Max Latencies: 00005 00002 00003 00002 00004 00002 00002 00014 00003 00003 00003 00002 00002 00003 00003 00003 00003 00003 00002 00003 00002 00014 00004 00003 00003 00003 00003 00003 00002 00002 00003 00002 00007 00007 00007 00004 00003 00005 00003 00003 00003 00003 00003 00003 00003 00003 00002 00016 00002 00002 00003 00003 00003 00002 00002 00013 00002 00002 00003 00003 00002 00003 00010 00009 00003 00002 00002 00013 00002 00002 00002 00014 00008 00008 00004 00004 00003 00002 00015 00017 00003 00002 00002 00002 00002 00002 00003 00003 00016 00016 00016 00016 00016 00015 00002 00009 00004 00004 00003 00003 00004 00015 00002 00002 00003 00003 00003 00002 00003 00015 00003 00004 00016 00011 00004 00003 00002 00003 00002 00016
+
+# Max Latencies: 00016 00004 00012 00004 00003 00012 00005 00005 00004 00005 00013 00010 00005 00004 00004 00010 00014 00014 00009 00004 00015 00007 00007 00004 00004 00004 00004 00014 00006 00004 00012 00005 00005 00005 00004 00004 00004 00004 00016 00005 00004 00003 00006 00004 00012 00003 00004 00009 00011 00011 00011 00004 00004 00004 00009 00015 00015 00015 00017 00007 00009 00005 00006 00006 00010 00010 00010 00010 00005 00010 00006 00004 00009 00005 00003 00004 00004 00006 00004 00004 00013 00013 00013 00011 00004 00005 00004 00004 00009 00007 00004 00005 00004 00012 00005 00007 00013 00013 00013 00011 00013 00008 00004 00004 00007 00007 00004 00004 00004 00004 00004 00004 00009 00005 00005 00004 00003 00004 00004 00005
+----
+
+==== BIOS/L3 cache as NUMA Domain=disabled - BIOS/NPS=4 HK cores=0-7
+
+image::image130.png[title="BIOS/NPS=2 Domain=disabled", BIOS/NPS=2 Domain=disabled, align="center", scaledwidth=100%, role=full-view-width]
+
+[source, console]
+----
+# numactl -H
+----
+
+[listing]
+----
+available: 8 nodes (0-7)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+node 0 size: 47602 MB
+node 0 free: 21140 MB
+node 1 cpus: 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+node 1 size: 48375 MB
+node 1 free: 42456 MB
+node 2 cpus: 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
+node 2 size: 48375 MB
+node 2 free: 42772 MB
+node 3 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63
+node 3 size: 48359 MB
+node 3 free: 42723 MB
+node 4 cpus: 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79
+node 4 size: 48375 MB
+node 4 free: 42774 MB
+node 5 cpus: 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
+node 5 size: 48375 MB
+node 5 free: 42767 MB
+node 6 cpus: 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111
+node 6 size: 48375 MB
+node 6 free: 42781 MB
+node 7 cpus: 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127
+node 7 size: 48308 MB
+node 7 free: 42282 MB
+node distances:
+node     0    1    2    3    4    5    6    7 
+   0:   10   12   12   12   32   32   32   32 
+   1:   12   10   12   12   32   32   32   32 
+   2:   12   12   10   12   32   32   32   32 
+   3:   12   12   12   10   32   32   32   32 
+   4:   32   32   32   32   10   12   12   12 
+   5:   32   32   32   32   12   10   12   12 
+   6:   32   32   32   32   12   12   10   12 
+   7:   32   32   32   32   12   12   12   10
+ 
+----
+
+
+[source, console]
+----
+# cd ~/telco-performance/Performance-settings/rt-low-latency-tools && \
+../Performance\ scripts/performance-settings.sh && \
+./release-scenario-SV-rtapp95utilIsolate-cyclictestIsolated.sh
+
+----
+
+[listing]
+----
+
+# Max Latencies: 00004 00004 00012 00008 00017 00007 00003 00003 00009 00009 00009 00009 00003 00003 00003 00003 00004 00004 00004 00004 00003 00003 00003 00003 00015 00015 00015 00015 00008 00003 00003 00003 00005 00005 00004 00005 00003 00003 00005 00003 00012 00012 00012 00012 00009 00005 00015 00015 00013 00013 00013 00013 00007 00005 00006 00004 00004 00003 00004 00004 00004 00003 00003 00009 00004 00004 00004 00003 00003 00003 00003 00003 00005 00005 00014 00005 00005 00005 00005 00004 00012 00012 00012 00017 00006 00004 00013 00008 00013 00004 00003 00003 00004 00013 00007 00003 00004 00003 00011 00009 00003 00003 00014 00003 00006 00005 00005 00007 00004 00013 00003 00014 00007 00007 00016 00014 00009 00003 00005 00004
+
+# Max Latencies: 00005 00003 00012 00003 00003 00003 00003 00002 00013 00013 00013 00013 00015 00006 00002 00002 00006 00006 00017 00009 00002 00002 00002 00013 00002 00002 00001 00001 00001 00001 00001 00001 00002 00002 00002 00001 00001 00001 00001 00001 00011 00011 00011 00001 00002 00001 00001 00001 00002 00002 00002 00001 00008 00005 00003 00003 00010 00010 00010 00009 00017 00017 00016 00017 00016 00016 00016 00013 00008 00008 00002 00002 00003 00003 00003 00003 00002 00002 00002 00002 00003 00003 00003 00009 00002 00003 00002 00002 00018 00018 00018 00004 00002 00003 00002 00002 00004 00002 00002 00002 00002 00002 00002 00002 00017 00006 00015 00002 00007 00002 00002 00003 00004 00003 00009 00006 00002 00011 00007 00002
+----
+
+
+=== BIOS/L3 cache as NUMA Domain=enabled HK cores=0-7
+
+image::image110.png[title="BIOS/NPS=0 Domain=enabled", BIOS/NPS=0 Domain=enabled, align="center", scaledwidth=100%, role=full-view-width]
+
+[source, console]
+----
+# numactl -H
+----
+
+[listing]
+----
+available: 16 nodes (0-15)
+node 0 cpus: 0 1 2 3 4 5 6 7
+node 0 size: 23415 MB
+node 0 free: 19369 MB
+node 1 cpus: 8 9 10 11 12 13 14 15
+node 1 size: 24188 MB
+node 1 free: 20873 MB
+node 2 cpus: 16 17 18 19 20 21 22 23
+node 2 size: 24188 MB
+node 2 free: 20525 MB
+node 3 cpus: 24 25 26 27 28 29 30 31
+node 3 size: 24188 MB
+node 3 free: 20872 MB
+node 4 cpus: 32 33 34 35 36 37 38 39
+node 4 size: 24188 MB
+node 4 free: 20874 MB
+node 5 cpus: 40 41 42 43 44 45 46 47
+node 5 size: 24188 MB
+node 5 free: 20874 MB
+node 6 cpus: 48 49 50 51 52 53 54 55
+node 6 size: 24188 MB
+node 6 free: 20835 MB
+node 7 cpus: 56 57 58 59 60 61 62 63
+node 7 size: 24188 MB
+node 7 free: 20895 MB
+node 8 cpus: 64 65 66 67 68 69 70 71
+node 8 size: 24188 MB
+node 8 free: 21966 MB
+node 9 cpus: 72 73 74 75 76 77 78 79
+node 9 size: 24188 MB
+node 9 free: 21968 MB
+node 10 cpus: 80 81 82 83 84 85 86 87
+node 10 size: 24188 MB
+node 10 free: 21972 MB
+node 11 cpus: 88 89 90 91 92 93 94 95
+node 11 size: 24188 MB
+node 11 free: 21970 MB
+node 12 cpus: 96 97 98 99 100 101 102 103
+node 12 size: 24188 MB
+node 12 free: 21968 MB
+node 13 cpus: 104 105 106 107 108 109 110 111
+node 13 size: 24089 MB
+node 13 free: 21873 MB
+node 14 cpus: 112 113 114 115 116 117 118 119
+node 14 size: 24188 MB
+node 14 free: 21567 MB
+node 15 cpus: 120 121 122 123 124 125 126 127
+node 15 size: 24188 MB
+node 15 free: 21967 MB
+node distances:
+node     0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15 
+   0:   10   11   11   11   11   11   11   11   11   11   11   11   11   11   11   11 
+   1:   11   10   11   11   11   11   11   11   11   11   11   11   11   11   11   11 
+   2:   11   11   10   11   11   11   11   11   11   11   11   11   11   11   11   11 
+   3:   11   11   11   10   11   11   11   11   11   11   11   11   11   11   11   11 
+   4:   11   11   11   11   10   11   11   11   11   11   11   11   11   11   11   11 
+   5:   11   11   11   11   11   10   11   11   11   11   11   11   11   11   11   11 
+   6:   11   11   11   11   11   11   10   11   11   11   11   11   11   11   11   11 
+   7:   11   11   11   11   11   11   11   10   11   11   11   11   11   11   11   11 
+   8:   11   11   11   11   11   11   11   11   10   11   11   11   11   11   11   11 
+   9:   11   11   11   11   11   11   11   11   11   10   11   11   11   11   11   11 
+  10:   11   11   11   11   11   11   11   11   11   11   10   11   11   11   11   11 
+  11:   11   11   11   11   11   11   11   11   11   11   11   10   11   11   11   11 
+  12:   11   11   11   11   11   11   11   11   11   11   11   11   10   11   11   11 
+  13:   11   11   11   11   11   11   11   11   11   11   11   11   11   10   11   11 
+  14:   11   11   11   11   11   11   11   11   11   11   11   11   11   11   10   11 
+  15:   11   11   11   11   11   11   11   11   11   11   11   11   11   11   11   10 
+
+----
+
+[source, console]
+----
+# cd ~/telco-performance/Performance-settings/rt-low-latency-tools && \
+../Performance\ scripts/performance-settings.sh && \
+./release-scenario-SV-rtapp95utilIsolate-cyclictestIsolated.sh
+
+----
+
+[listing]
+----
+# Max Latencies: 00017 00002 00002 00008 00015 00003 00014 00003 00005 00005 00005 00005 00005 00018 00017 00007 00012 00012 00005 00005 00002 00008 00003 00003 00009 00009 00009 00008 00005 00016 00002 00002 00007 00007 00007 00007 00007 00011 00009 00002 00003 00003 00003 00002 00002 00014 00005 00002 00009 00009 00009 00009 00006 00003 00010 00012 00019 00019 00018 00018 00010 00003 00002 00015 00004 00010 00003 00004 00015 00003 00003 00010 00017 00017 00015 00017 00017 00013 00012 00013 00002 00002 00002 00002 00002 00003 00016 00011 00003 00003 00003 00003 00002 00002 00010 00003 00002 00006 00006 00006 00006 00002 00005 00017 00007 00007 00007 00007 00015 00012 00003 00015 00003 00003 00003 00003 00003 00017 00003 00003
+
+
+# Max Latencies: 00009 00005 00007 00005 00010 00010 00004 00006 00012 00012 00008 00006 00015 00013 00007 00014 00011 00011 00011 00007 00009 00006 00013 00004 00006 00006 00006 00006 00005 00014 00013 00012 00005 00005 00017 00011 00005 00006 00015 00004 00008 00008 00006 00012 00005 00011 00008 00005 00017 00017 00017 00008 00011 00007 00017 00007 00015 00015 00015 00005 00008 00006 00004 00004 00008 00008 00008 00011 00004 00004 00004 00004 00005 00005 00005 00019 00006 00013 00015 00013 00012 00012 00012 00013 00007 00004 00004 00006 00008 00008 00008 00006 00011 00005 00014 00015 00017 00017 00017 00012 00005 00014 00014 00005 00013 00013 00013 00008 00006 00005 00007 00005 00007 00008 00007 00005 00005 00004 00006 0000
+----
+
+image::image60.png[title="BIOS/NPS=1 Domain=enabled", BIOS/NPS=1 Domain=enabled, align="center", scaledwidth=100%, role=full-view-width]
+
+[source, console]
+----
+# numactl -H
+----
+
+[listing]
+----
+available: 16 nodes (0-15)
+node 0 cpus: 0 1 2 3 4 5 6 7
+node 0 size: 23415 MB
+node 0 free: 19425 MB
+node 1 cpus: 8 9 10 11 12 13 14 15
+node 1 size: 24188 MB
+node 1 free: 20887 MB
+node 2 cpus: 16 17 18 19 20 21 22 23
+node 2 size: 24188 MB
+node 2 free: 20540 MB
+node 3 cpus: 24 25 26 27 28 29 30 31
+node 3 size: 24188 MB
+node 3 free: 20886 MB
+node 4 cpus: 32 33 34 35 36 37 38 39
+node 4 size: 24188 MB
+node 4 free: 20892 MB
+node 5 cpus: 40 41 42 43 44 45 46 47
+node 5 size: 24164 MB
+node 5 free: 20864 MB
+node 6 cpus: 48 49 50 51 52 53 54 55
+node 6 size: 24188 MB
+node 6 free: 20845 MB
+node 7 cpus: 56 57 58 59 60 61 62 63
+node 7 size: 24188 MB
+node 7 free: 20898 MB
+node 8 cpus: 64 65 66 67 68 69 70 71
+node 8 size: 24188 MB
+node 8 free: 21914 MB
+node 9 cpus: 72 73 74 75 76 77 78 79
+node 9 size: 24188 MB
+node 9 free: 21912 MB
+node 10 cpus: 80 81 82 83 84 85 86 87
+node 10 size: 24188 MB
+node 10 free: 21916 MB
+node 11 cpus: 88 89 90 91 92 93 94 95
+node 11 size: 24188 MB
+node 11 free: 21911 MB
+node 12 cpus: 96 97 98 99 100 101 102 103
+node 12 size: 24188 MB
+node 12 free: 21914 MB
+node 13 cpus: 104 105 106 107 108 109 110 111
+node 13 size: 24113 MB
+node 13 free: 21835 MB
+node 14 cpus: 112 113 114 115 116 117 118 119
+node 14 size: 24188 MB
+node 14 free: 21575 MB
+node 15 cpus: 120 121 122 123 124 125 126 127
+node 15 size: 24188 MB
+node 15 free: 21915 MB
+node distances:
+node     0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15 
+   0:   10   11   11   11   11   11   11   11   32   32   32   32   32   32   32   32 
+   1:   11   10   11   11   11   11   11   11   32   32   32   32   32   32   32   32 
+   2:   11   11   10   11   11   11   11   11   32   32   32   32   32   32   32   32 
+   3:   11   11   11   10   11   11   11   11   32   32   32   32   32   32   32   32 
+   4:   11   11   11   11   10   11   11   11   32   32   32   32   32   32   32   32 
+   5:   11   11   11   11   11   10   11   11   32   32   32   32   32   32   32   32 
+   6:   11   11   11   11   11   11   10   11   32   32   32   32   32   32   32   32 
+   7:   11   11   11   11   11   11   11   10   32   32   32   32   32   32   32   32 
+   8:   32   32   32   32   32   32   32   32   10   11   11   11   11   11   11   11 
+   9:   32   32   32   32   32   32   32   32   11   10   11   11   11   11   11   11 
+  10:   32   32   32   32   32   32   32   32   11   11   10   11   11   11   11   11 
+  11:   32   32   32   32   32   32   32   32   11   11   11   10   11   11   11   11 
+  12:   32   32   32   32   32   32   32   32   11   11   11   11   10   11   11   11 
+  13:   32   32   32   32   32   32   32   32   11   11   11   11   11   10   11   11 
+  14:   32   32   32   32   32   32   32   32   11   11   11   11   11   11   10   11 
+  15:   32   32   32   32   32   32   32   32   11   11   11   11   11   11   11   10
+
+----
+
+[source, console]
+----
+# cd ~/telco-performance/Performance-settings/rt-low-latency-tools && \
+../Performance\ scripts/performance-settings.sh && \
+./release-scenario-SV-rtapp95utilIsolate-cyclictestIsolated.sh
+
+----
+
+[listing]
+----
+
+# Max Latencies: 00003 00014 00004 00003 00002 00002 00012 00002 00003 00003 00003 00003 00002 00003 00003 00002 00004 00004 00004 00002 00002 00007 00003 00003 00006 00006 00006 00018 00006 00003 00002 00003 00002 00002 00002 00002 00002 00002 00002 00005 00003 00003 00002 00005 00002 00002 00003 00047 00002 00002 00002 00002 00008 00002 00002 00003 00003 00003 00003 00014 00010 00018 00014 00003 00005 00009 00009 00003 00003 00005 00003 00006 00003 00003 00003 00002 00002 00012 00003 00002 00014 00002 00003 00003 00003 00004 00003 00003 00018 00018 00018 00018 00018 00006 00002 00002 00003 00003 00003 00003 00002 00002 00003 00003 00010 00010 00010 00010 00002 00004 00003 00003 00002 00002 00002 00005 00002 00002 00002 00003
+
+
+# Max Latencies: 00003 00002 00011 00002 00003 00002 00002 00002 00002 00002 00002 00013 00005 00001 00002 00002 00002 00002 00002 00001 00001 00001 00001 00001 00002 00002 00002 00002 00017 00011 00004 00001 00002 00002 00003 00002 00002 00014 00004 00008 00003 00003 00001 00001 00001 00001 00001 00015 00002 00012 00009 00002 00018 00010 00002 00002 00004 00003 00003 00003 00009 00008 00003 00002 00014 00008 00003 00004 00002 00002 00002 00002 00013 00013 00013 00013 00008 00002 00002 00002 00003 00003 00003 00003 00002 00011 00010 00014 00002 00002 00003 00002 00002 00002 00002 00002 00009 00009 00009 00002 00002 00002 00002 00002 00009 00009 00008 00006 00002 00002 00002 00002 00003 00002 00002 00003 00009 00009 00002 00002
+
+----
+
+image::image50.png[title="BIOS/NPS=2 Domain=enabled", BIOS/NPS=2 Domain=enabled, align="center", scaledwidth=100%, role=full-view-width]
+
+
+[source, console]
+----
+# numactl -H
+----
+
+[listing]
+----
+
+available: 16 nodes (0-15)
+node 0 cpus: 0 1 2 3 4 5 6 7
+node 0 size: 23415 MB
+node 0 free: 19428 MB
+node 1 cpus: 8 9 10 11 12 13 14 15
+node 1 size: 24188 MB
+node 1 free: 20885 MB
+node 2 cpus: 16 17 18 19 20 21 22 23
+node 2 size: 24188 MB
+node 2 free: 20541 MB
+node 3 cpus: 24 25 26 27 28 29 30 31
+node 3 size: 24184 MB
+node 3 free: 20877 MB
+node 4 cpus: 32 33 34 35 36 37 38 39
+node 4 size: 24188 MB
+node 4 free: 20883 MB
+node 5 cpus: 40 41 42 43 44 45 46 47
+node 5 size: 24168 MB
+node 5 free: 20861 MB
+node 6 cpus: 48 49 50 51 52 53 54 55
+node 6 size: 24188 MB
+node 6 free: 20845 MB
+node 7 cpus: 56 57 58 59 60 61 62 63
+node 7 size: 24188 MB
+node 7 free: 20890 MB
+node 8 cpus: 64 65 66 67 68 69 70 71
+node 8 size: 24188 MB
+node 8 free: 21909 MB
+node 9 cpus: 72 73 74 75 76 77 78 79
+node 9 size: 24188 MB
+node 9 free: 21904 MB
+node 10 cpus: 80 81 82 83 84 85 86 87
+node 10 size: 24188 MB
+node 10 free: 21909 MB
+node 11 cpus: 88 89 90 91 92 93 94 95
+node 11 size: 24184 MB
+node 11 free: 21917 MB
+node 12 cpus: 96 97 98 99 100 101 102 103
+node 12 size: 24188 MB
+node 12 free: 21912 MB
+node 13 cpus: 104 105 106 107 108 109 110 111
+node 13 size: 24117 MB
+node 13 free: 21837 MB
+node 14 cpus: 112 113 114 115 116 117 118 119
+node 14 size: 24188 MB
+node 14 free: 21561 MB
+node 15 cpus: 120 121 122 123 124 125 126 127
+node 15 size: 24188 MB
+node 15 free: 21904 MB
+node distances:
+node     0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15 
+   0:   10   11   11   11   12   12   12   12   32   32   32   32   32   32   32   32 
+   1:   11   10   11   11   12   12   12   12   32   32   32   32   32   32   32   32 
+   2:   11   11   10   11   12   12   12   12   32   32   32   32   32   32   32   32 
+   3:   11   11   11   10   12   12   12   12   32   32   32   32   32   32   32   32 
+   4:   12   12   12   12   10   11   11   11   32   32   32   32   32   32   32   32 
+   5:   12   12   12   12   11   10   11   11   32   32   32   32   32   32   32   32 
+   6:   12   12   12   12   11   11   10   11   32   32   32   32   32   32   32   32 
+   7:   12   12   12   12   11   11   11   10   32   32   32   32   32   32   32   32 
+   8:   32   32   32   32   32   32   32   32   10   11   11   11   12   12   12   12 
+   9:   32   32   32   32   32   32   32   32   11   10   11   11   12   12   12   12 
+  10:   32   32   32   32   32   32   32   32   11   11   10   11   12   12   12   12 
+  11:   32   32   32   32   32   32   32   32   11   11   11   10   12   12   12   12 
+  12:   32   32   32   32   32   32   32   32   12   12   12   12   10   11   11   11 
+  13:   32   32   32   32   32   32   32   32   12   12   12   12   11   10   11   11 
+  14:   32   32   32   32   32   32   32   32   12   12   12   12   11   11   10   11 
+  15:   32   32   32   32   32   32   32   32   12   12   12   12   11   11   11   10 
+
+----
+
+[source, console]
+----
+# cd ~/telco-performance/Performance-settings/rt-low-latency-tools && \
+../Performance\ scripts/performance-settings.sh && \
+./release-scenario-SV-rtapp95utilIsolate-cyclictestIsolated.sh
+----
+
+[listing]
+----
+
+# Max Latencies: 00006 00012 00004 00012 00014 00006 00005 00004 00007 00007 00007 00006 00012 00011 00004 00004 00006 00004 00009 00015 00005 00005 00004 00004 00018 00018 00018 00019 00014 00006 00012 00006 00017 00012 00017 00008 00006 00004 00005 00017 00004 00016 00006 00005 00005 00005 00004 00004 00004 00004 00011 00004 00004 00005 00004 00004 00013 00013 00013 00013 00012 00005 00007 00017 00010 00012 00012 00006 00006 00012 00006 00006 00006 00013 00007 00007 00007 00012 00013 00006 00017 00017 00017 00017 00017 00009 00007 00017 00012 00012 00012 00012 00010 00004 00008 00005 00006 00006 00006 00008 00006 00006 00007 00007 00016 00016 00006 00004 00004 00004 00004 00012 00005 00005 00012 00004 00004 00004 00004 00004
+
+
+# Max Latencies: 00005 00009 00002 00003 00015 00006 00017 00009 00017 00017 00017 00006 00001 00001 00001 00001 00002 00002 00002 00001 00001 00002 00001 00005 00015 00015 00015 00017 00007 00003 00002 00002 00003 00003 00003 00004 00003 00003 00002 00002 00002 00002 00002 00002 00014 00004 00001 00002 00002 00002 00002 00003 00014 00003 00002 00002 00003 00003 00003 00003 00003 00002 00002 00002 00002 00002 00003 00003 00002 00008 00015 00012 00004 00004 00004 00004 00002 00002 00002 00002 00003 00003 00003 00003 00003 00018 00008 00003 00010 00010 00010 00010 00005 00002 00002 00003 00015 00015 00019 00015 00017 00003 00002 00002 00002 00003 00002 00002 00003 00002 00002 00002 00009 00017 00014 00002 00011 00002 00002 00002
+----
+
+
+image::image150.png[title="BIOS/NPS=4 Domain=enabled", BIOS/NPS=4 Domain=enabled, align="center", scaledwidth=100%, role=full-view-width]
+
+[source, console]
+----
+# numactl -H
+----
+
+[listing]
+----
+
+available: 16 nodes (0-15)
+node 0 cpus: 0 1 2 3 4 5 6 7
+node 0 size: 23415 MB
+node 0 free: 19375 MB
+node 1 cpus: 8 9 10 11 12 13 14 15
+node 1 size: 24186 MB
+node 1 free: 20878 MB
+node 2 cpus: 16 17 18 19 20 21 22 23
+node 2 size: 24188 MB
+node 2 free: 20533 MB
+node 3 cpus: 24 25 26 27 28 29 30 31
+node 3 size: 24186 MB
+node 3 free: 20874 MB
+node 4 cpus: 32 33 34 35 36 37 38 39
+node 4 size: 24188 MB
+node 4 free: 20879 MB
+node 5 cpus: 40 41 42 43 44 45 46 47
+node 5 size: 24186 MB
+node 5 free: 20879 MB
+node 6 cpus: 48 49 50 51 52 53 54 55
+node 6 size: 24188 MB
+node 6 free: 20842 MB
+node 7 cpus: 56 57 58 59 60 61 62 63
+node 7 size: 24170 MB
+node 7 free: 20865 MB
+node 8 cpus: 64 65 66 67 68 69 70 71
+node 8 size: 24188 MB
+node 8 free: 21909 MB
+node 9 cpus: 72 73 74 75 76 77 78 79
+node 9 size: 24186 MB
+node 9 free: 21901 MB
+node 10 cpus: 80 81 82 83 84 85 86 87
+node 10 size: 24188 MB
+node 10 free: 21910 MB
+node 11 cpus: 88 89 90 91 92 93 94 95
+node 11 size: 24186 MB
+node 11 free: 21901 MB
+node 12 cpus: 96 97 98 99 100 101 102 103
+node 12 size: 24188 MB
+node 12 free: 21911 MB
+node 13 cpus: 104 105 106 107 108 109 110 111
+node 13 size: 24186 MB
+node 13 free: 21911 MB
+node 14 cpus: 112 113 114 115 116 117 118 119
+node 14 size: 24188 MB
+node 14 free: 21574 MB
+node 15 cpus: 120 121 122 123 124 125 126 127
+node 15 size: 24119 MB
+node 15 free: 21824 MB
+node distances:
+node     0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15 
+   0:   10   11   12   12   12   12   12   12   32   32   32   32   32   32   32   32 
+   1:   11   10   12   12   12   12   12   12   32   32   32   32   32   32   32   32 
+   2:   12   12   10   11   12   12   12   12   32   32   32   32   32   32   32   32 
+   3:   12   12   11   10   12   12   12   12   32   32   32   32   32   32   32   32 
+   4:   12   12   12   12   10   11   12   12   32   32   32   32   32   32   32   32 
+   5:   12   12   12   12   11   10   12   12   32   32   32   32   32   32   32   32 
+   6:   12   12   12   12   12   12   10   11   32   32   32   32   32   32   32   32 
+   7:   12   12   12   12   12   12   11   10   32   32   32   32   32   32   32   32 
+   8:   32   32   32   32   32   32   32   32   10   11   12   12   12   12   12   12 
+   9:   32   32   32   32   32   32   32   32   11   10   12   12   12   12   12   12 
+  10:   32   32   32   32   32   32   32   32   12   12   10   11   12   12   12   12 
+  11:   32   32   32   32   32   32   32   32   12   12   11   10   12   12   12   12 
+  12:   32   32   32   32   32   32   32   32   12   12   12   12   10   11   12   12 
+  13:   32   32   32   32   32   32   32   32   12   12   12   12   11   10   12   12 
+  14:   32   32   32   32   32   32   32   32   12   12   12   12   12   12   10   11 
+  15:   32   32   32   32   32   32   32   32   12   12   12   12   12   12   11   10 
+
+----
+
+[source, console]
+----
+# cd ~/telco-performance/Performance-settings/rt-low-latency-tools && \
+../Performance\ scripts/performance-settings.sh && \
+./release-scenario-SV-rtapp95utilIsolate-cyclictestIsolated.sh
+
+----
+
+[listing]
+----
+# Max Latencies: 00005 00009 00012 00006 00004 00005 00006 00004 00012 00012 00012 00008 00004 00013 00005 00011 00016 00010 00009 00009 00005 00005 00005 00006 00009 00009 00007 00010 00006 00005 00005 00004 00004 00004 00004 00003 00004 00014 00007 00005 00007 00007 00007 00006 00006 00007 00005 00004 00011 00005 00005 00006 00007 00004 00005 00006 00012 00007 00007 00008 00005 00009 00005 00006 00015 00015 00014 00006 00007 00012 00015 00008 00011 00012 00011 00015 00010 00004 00004 00005 00005 00008 00005 00013 00007 00017 00014 00008 00013 00013 00006 00006 00011 00004 00006 00006 00007 00017 00006 00005 00004 00011 00004 00007 00011 00018 00004 00009 00005 00008 00005 00006 00007 00007 00007 00007 00004 00008 00004 00007
+
+# Max Latencies: 00005 00010 00004 00006 00010 00011 00005 00005 00005 00005 00006 00012 00019 00007 00014 00006 00007 00007 00005 00004 00010 00006 00017 00007 00006 00005 00005 00004 00006 00005 00007 00004 00005 00005 00005 00004 00005 00004 00004 00004 00005 00006 00004 00004 00004 00005 00004 00016 00006 00005 00006 00004 00009 00005 00011 00006 00018 00018 00018 00018 00010 00009 00014 00012 00005 00004 00004 00008 00004 00013 00004 00005 00006 00006 00006 00005 00011 00011 00005 00004 00014 00014 00014 00012 00019 00006 00011 00006 00014 00014 00014 00013 00014 00018 00011 00009 00006 00005 00006 00007 00005 00004 00005 00006 00007 00007 00007 00005 00013 00006 00006 00012 00009 00013 00017 00006 00012 00006 00014 00005
+
+----
+
+
+=== Appendix - BIOS settings
+
+[source, json]
+----
+
+{
+  "SystemConfiguration": {
+    "Comments": [
+      {
+        "Comment": "Export type is Normal,JSON,Selective"
+      },
+      {
+        "Comment": "Exported configuration may contain commented attributes. Attributes may be commented due to dependency, destructive nature, preserving server identity or for security reasons."
+      }
+    ],
+    "Model": "PowerEdge R7725",
+    "ServiceTag": "56CCZ84",
+    "TimeStamp": "Tue Jun  9 15:54:09 2026",
+    "Components": [
+      {
+        "FQDD": "BIOS.Setup.1-1",
+        "Attributes": [
+          {
+            "Name": "WorkloadProfile",
+            "Value": "NotConfigured",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "LogicalProc",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ProcVirtualization",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IommuSupport",
+            "Value": "Enabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PrebootDmaProtection",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "KernelDmaProtection",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "L1StreamHwPrefetcher",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "L2StreamHwPrefetcher",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "L1StridePrefetcher",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "L1RegionPrefetcher",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "L2UpDownPrefetcher",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NumaNodesPerSocket",
+            "Value": "4",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "CcxAsNumaDomain",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Sme",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PciMultiSegmentSupport",
+            "Value": "TwoSegments",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AmdSpeculativeStoreMode",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "CpuFeatureErms",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "CpuFeatureFsrm",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "CpuFeatureRmss",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "CpuAcpiCstC2Latency",
+            "Value": "800",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AmdCpuAvx512",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "TdpControl",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ProcConfigTdpManual",
+            "Value": "400",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PptControl",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ProcConfigPptManual",
+            "Value": "400",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ProcX2Apic",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ProcCcds",
+            "Value": "All",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "CcdCores",
+            "Value": "All",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ControlledTurbo",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ControlledTurboMinusBin",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeMode",
+            "Value": "NonRaid",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "BiosNvmeDriver",
+            "Value": "DellQualifiedDrives",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "BootSeqRetry",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "GenericUsbBoot",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HddPlaceholder",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SysPrepClean",
+            "Value": "None",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderEn",
+            "Value": "Disk.Bay.16:Enclosure.Internal.0-3,RAID.Slot.7-2,NIC.PxeDevice.1-1",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderEn2",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderDis",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderDis2",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd1",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd2",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd3",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd4",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd5",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd6",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd7",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd8",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd9",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd10",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd11",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd12",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd13",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd14",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd15",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SetBootOrderFqdd16",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NumberOfPxeDevices",
+            "Value": "4",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev1EnDis",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev2EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev3EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev4EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiInitiatorName",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofEnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofHostId",
+            "Value": "4C4C4544-0036-4310-8043-B5C04F5A3834",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofHostSecurityPath",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev1Interface",
+            "Value": "NIC.Slot.10-1-1",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev1Protocol",
+            "Value": "IPv4",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev1VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev1VlanId",
+            "Value": "1",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev1VlanPriority",
+            "Value": "0",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev2Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev2Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev2VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev2VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev2VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev3Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev3Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev3VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev3VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev3VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev4Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev4Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev4VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev4VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev4VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev5Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev5Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev5VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev5VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev5VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev6Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev6Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev6VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev6VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev6VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev7Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev7Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev7VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev7VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev7VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev8Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev8Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev8VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev8VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev8VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev9Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev9Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev9VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev9VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev9VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev10Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev10Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev10VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev10VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev10VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev11Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev11Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev11VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev11VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev11VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev12Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev12Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev12VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev12VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev12VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev13Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev13Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev13VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev13VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev13VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev14Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev14Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev14VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev14VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev14VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev15Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev15Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev15VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev15VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev15VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev16Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev16Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev16VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev16VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PxeDev16VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1DhcpEnDis",
+            "Value": "Enabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1Ip",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1Mask",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1Gateway",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1DnsDhcpEnDis",
+            "Value": "Enabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1Dns1",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1Dns2",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1Uri",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev1TlsMode",
+            "Value": "OneWay",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2DhcpEnDis",
+            "Value": "Enabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2Ip",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2Mask",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2Gateway",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2DnsDhcpEnDis",
+            "Value": "Enabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2Dns1",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2Dns2",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2Uri",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev2TlsMode",
+            "Value": "OneWay",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3DhcpEnDis",
+            "Value": "Enabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3Ip",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3Mask",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3Gateway",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3DnsDhcpEnDis",
+            "Value": "Enabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3Dns1",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3Dns2",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3Uri",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev3TlsMode",
+            "Value": "OneWay",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4Protocol",
+            "Value": "IPv4",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4DhcpEnDis",
+            "Value": "Enabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4Ip",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4Mask",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4Gateway",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4DnsDhcpEnDis",
+            "Value": "Enabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4Dns1",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4Dns2",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4Uri",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HttpDev4TlsMode",
+            "Value": "OneWay",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1ConOrder",
+            "Value": "Con1Con2",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1Protocol",
+            "Value": "IPv4",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1Retry",
+            "Value": "3",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1Timeout",
+            "Value": "10000",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1DhcpEnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1Ip",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1Mask",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1Gateway",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1TgtDhcpEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1TargetName",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1TargetIp",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1Port",
+            "Value": "3260",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1Lun",
+            "Value": "0",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1IsId",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1Auth",
+            "Value": "None",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1ChapType",
+            "Value": "OneWay",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1ChapName",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OldIscsiDev1Con1ChapSecret",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NewIscsiDev1Con1ChapSecret",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con1RevChapName",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OldIscsiDev1Con1RevChapSecret",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NewIscsiDev1Con1RevChapSecret",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2Interface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2Protocol",
+            "Value": "IPv4",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2Retry",
+            "Value": "3",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2Timeout",
+            "Value": "10000",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2DhcpEnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2Ip",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2Mask",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2Gateway",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2TgtDhcpEnDis",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2TargetName",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2TargetIp",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2Port",
+            "Value": "3260",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2Lun",
+            "Value": "0",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2IsId",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2Auth",
+            "Value": "None",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2ChapType",
+            "Value": "OneWay",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2ChapName",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OldIscsiDev1Con2ChapSecret",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NewIscsiDev1Con2ChapSecret",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "IscsiDev1Con2RevChapName",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OldIscsiDev1Con2RevChapSecret",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NewIscsiDev1Con2RevChapSecret",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4EnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1ConInterface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1TransType",
+            "Value": "TCP",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1ConProtocol",
+            "Value": "IPv4",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1Retry",
+            "Value": "3",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1Timeout",
+            "Value": "10000",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1HostDhcp",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1HostIP",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1HostMask",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1HostGateway",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1InfoDhcp",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1Nqn",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1Address",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1Port",
+            "Value": "4420",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1NameSpaceId",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1ControllerId",
+            "Value": "0",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1Security",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1Auth",
+            "Value": "None",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys1SecurityKeyPath",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2ConInterface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2TransType",
+            "Value": "TCP",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2ConProtocol",
+            "Value": "IPv4",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2Retry",
+            "Value": "3",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2Timeout",
+            "Value": "10000",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2HostDhcp",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2HostIP",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2HostMask",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2HostGateway",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2InfoDhcp",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2Nqn",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2Address",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2Port",
+            "Value": "4420",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2NameSpaceId",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2ControllerId",
+            "Value": "0",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2Security",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2Auth",
+            "Value": "None",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys2SecurityKeyPath",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3ConInterface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3TransType",
+            "Value": "TCP",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3ConProtocol",
+            "Value": "IPv4",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3Retry",
+            "Value": "3",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3Timeout",
+            "Value": "10000",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3HostDhcp",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3HostIP",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3HostMask",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3HostGateway",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3InfoDhcp",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3Nqn",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3Address",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3Port",
+            "Value": "4420",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3NameSpaceId",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3ControllerId",
+            "Value": "0",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3Security",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3Auth",
+            "Value": "None",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys3SecurityKeyPath",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4ConInterface",
+            "Value": "NIC.Slot.4-1-1",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4TransType",
+            "Value": "TCP",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4ConProtocol",
+            "Value": "IPv4",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4VlanEnDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4VlanId",
+            "Value": "1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4VlanPriority",
+            "Value": "0",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4Retry",
+            "Value": "3",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4Timeout",
+            "Value": "10000",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4HostDhcp",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4HostIP",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4HostMask",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4HostGateway",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4InfoDhcp",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4Nqn",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4Address",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4Port",
+            "Value": "4420",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4NameSpaceId",
+            "Value": "",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4ControllerId",
+            "Value": "0",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4Security",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4Auth",
+            "Value": "None",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NvmeofSubsys4SecurityKeyPath",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "UsbPorts",
+            "Value": "AllOn",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "InternalUsb",
+            "Value": "On",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "UsbManagedPort",
+            "Value": "On",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "EmbVideo",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SriovGlobalEnable",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OsWatchdogTimer",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DellAutoDiscovery",
+            "Value": "PlatformDefault",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Slot2Bif",
+            "Value": "x16",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Slot3Bif",
+            "Value": "x16",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Slot7Bif",
+            "Value": "x16",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Slot9Bif",
+            "Value": "x16",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Slot2",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Slot3",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Slot4",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Slot7",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Slot9",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Slot10",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SerialComm",
+            "Value": "Off",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SerialPortAddress",
+            "Value": "Com1",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "FailSafeBaud",
+            "Value": "115200",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ConTermType",
+            "Value": "Vt100Vt220",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SysProfile",
+            "Value": "Custom",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ProcPwrPerf",
+            "Value": "MaxPerf",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "MemFrequency",
+            "Value": "MaxPerf",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ProcTurboMode",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ProcCStates",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "MemPatrolScrub",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "MemRefreshRate",
+            "Value": "1x",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PcieAspmL1",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PeriodicDirectoryRinseTuning",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DeterminismControl",
+            "Value": "Manual",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DeterminismSlider",
+            "Value": "PerfDeterminism",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OptimizerMode",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PowerProfileSelect",
+            "Value": "HighPerformanceMode",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "EqBypassToHighestRate",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AmdCmnXgmiPstateControl",
+            "Value": "Manual",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AmdCmnXgmiPstateSelection",
+            "Value": "High",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DfPstateFreqOptimizer",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DfCState",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AmdThrottlerMode",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Hsmp",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AmdGnbSmuGmiFolding",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "BoostFMax",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ApbDis",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AmdGnbSmuCppc",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AdaptiveAllocation",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Sdci",
+            "Value": "Auto",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AmdMaxXgmiSpeed",
+            "Value": "32GB",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DynamicLinkWidthManagement",
+            "Value": "Unforced",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "StrongPassword",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "StrongPasswordMinLength",
+            "Value": "8",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OldSysPassword",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NewSysPassword",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OldSetupPassword",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NewSetupPassword",
+            "Value": "******",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PasswordStatus",
+            "Value": "Unlocked",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "TpmSecurity",
+            "Value": "On",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Tpm2Hierarchy",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DrtmSkinit",
+            "Value": "Off",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PwrButton",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "UefiVariableAccess",
+            "Value": "Standard",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SecureBoot",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SecureBootPolicy",
+            "Value": "Standard",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "SecureBootMode",
+            "Value": "DeployedMode",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "TpmPpiBypassProvision",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "TpmPpiBypassClear",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Tpm2Algorithm",
+            "Value": "SHA256",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "RedundantOsLocation",
+            "Value": "None",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "RedundantOsState",
+            "Value": "Visible",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "RedundantOsBoot",
+            "Value": "Disabled",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "MemTest",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DramRefreshDelay",
+            "Value": "Minimum",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "CorrEccSmi",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "PPROnUCE",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "CECriticalSEL",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot00",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot01",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot02",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot03",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot04",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot05",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot06",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot07",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot08",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot09",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot10",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot11",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot12",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot13",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot14",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot15",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot16",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot17",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot18",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot19",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot20",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot21",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot22",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DimmSlot23",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "CXLMemoryMode",
+            "Value": "Homogeneous",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "TimeZone",
+            "Value": "UTCP0100",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "Daylight",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AssetTag",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "NumLock",
+            "Value": "On",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "ErrPrompt",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "DellWyseP25BIOSAccess",
+            "Value": "Enabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "AcpiFpdt",
+            "Value": "Disabled",
+            "Set On Import": "True",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "UefiBootSeq",
+            "Value": "Disk.Bay.16:Enclosure.Internal.0-3, Unknown.Unknown.2-1, RAID.Slot.7-2, NIC.PxeDevice.1-1",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "HddSeq",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OneTimeBiosBootSeq",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OneTimeUefiBootSeq",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          },
+          {
+            "Name": "OneTimeHddSeq",
+            "Value": "",
+            "Set On Import": "False",
+            "Comment": "Read and Write"
+          }
+        ]
+      }
+    ]
+  }
+}
+
+
+
+
+----
+
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Do not modify below this break.
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+++++
+<?pdfpagebreak?>
+++++
+
+
+:leveloffset: 0
+
+== Legal notice
+include::common_trd_legal_notice.adoc[]
+
+++++
+<?pdfpagebreak?>
+++++
+
+
+:leveloffset: 0
+include::common_gfdl1.2_i.adoc[]
+
+//end

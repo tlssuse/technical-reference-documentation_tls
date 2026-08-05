@@ -1,0 +1,192 @@
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// SUSE Technical Reference Documentation
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//
+// DOCUMENT ATTRIBUTES AND VARIABLES
+//
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// 1. Define and use variables (document attributes) in this file.
+// 2. Develop content in the adoc file.
+// 3. Update the docinfo.xml file, if needed.
+// 4. Update DC file (at a minimum, deactivate DRAFT mode)
+//
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ARTICLE IDENTIFIER
+//   Provide a unique article identifier.
+//   This is typically a series of words separate by hyphens (-).
+//   Typically, you can use the root file name of your main content file.
+//   For example:
+//     "rc_suse-rancher_everpure-portworx_tna-topology"
+:article-id: rc-suse-telco-amd-epyc
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// DOCUMENT REVISION HISTORY
+//
+// Provide a complete revision history in reverse chronological order.
+// E.g.:
+//   :rev3-date: 2026-01-25
+//   :rev3-description: Updated product versions
+//   :rev2-date: 2025-05-18
+//   :rev2-description: Fixed installation script typo
+//   :rev1-date: 2024-09-06
+//   :rev1-description: Original version
+// Set docdate to the most recent revision.
+//-
+:rev1-date: 2026-07-07
+:rev1-description: Original version
+:docdate: {rev1-date}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// TECHNICAL COMPONENTS
+// -
+:stelco-provider: SUSE
+:stelco-brand: SUSE® Telco Cloud
+:stelco-long: SUSE Telco Cloud
+:stelco: {stelco-provider}
+:stelco-edge: SUSE Edge
+:stelco-edge-version: 3.6
+:stelco-version1:
+:slemicro: SUSE Linux Micro
+:srancherprime: SUSE Rancher Prime
+:eib: Edge Image Builder
+:stelco-website: https://www.suse.com/products/edge-for-telco/
+:stelco-docs-kernel-args: https://documentation.suse.com/suse-telco/{stelco-edge-version}/html/telco/kernel-args.html
+:stelco-contact: https://www.suse.com/contact/
+:suse-telco-url: https://www.suse.com/products/edge-for-telco/
+:suse-linux-micro-url: https://www.suse.com/products/micro/
+:rancher-prime-url: https://www.suse.com/products/rancher/
+
+
+:amd-provider: AMD
+:amd-version1: 9005
+:amd-brand: {amd-provider}® EPYC™ {amd-version1} Series Processors
+:amd-long: {amd-provider} EPYC {amd-version1} Series Processors
+:amd-epyc-website: https://www.amd.com/en/products/processors/server/epyc/9005-series.html
+:amd-turin-dual-soc: https://docs.google.com/document/d/1wwCkRf4oRomJBTJ3wCH8HdiRZTNXYpdOzLR-v9rkifA/edit?pli=1&tab=t.0#heading=h.5nk21n8hs3wk
+:amd-architecture-overview: https://docs.amd.com/v/u/en-US/58462_amd-epyc-9005-tg-architecture-overview
+:amd-tech-info-portal: https://docs.amd.com/v/u/en-US/5th-gen-amd-epyc-processor-architecture-white-paper
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// DOCUMENT TITLES AND DESCRIPTIONS
+// -
+
+:doctitle: {stelco-long} on {amd-long}
+
+:docsubtitle: Validated reference architecture
+
+:usecase: Open RAN and 5G Infrastructure
+
+:description: Reference architecture showing how {stelco-long} and {amd-long} deliver deterministic performance for Open RAN and 5G workloads.
+
+:description-social: {stelco-long} and {amd-long} for Open RAN
+
+:executive-summary: Telecom operators today face intensifying demands driven by 5G-Advanced and Open RAN deployments. These include stricter latency and jitter requirements, severe power and space constraints at the edge, and the growing need to integrate AI into network operations. {stelco-brand} running on {amd-brand} (code-named Turin) provides a robust, CPU-centric solution that addresses these challenges through high core density, strong memory performance, and flexible resource tuning capabilities. \ 
+This reference architecture shows how the combination enables efficient workload consolidation for vRAN, 5G Core, and AI-augmented functions. It delivers the determinism, power efficiency, and operational simplicity operators need to scale intelligently and reduce complexity in their networks.
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Tasks
+//   Identify the tasks detailed or outlined in the guide.
+//
+//   Tasks are used to for filtering documents in the
+//   SUSE Documentation portal.
+//   Typically, no more than three tasks defined per
+//   document.
+//
+//   Tasks must be one of these supported values:
+//     Administration, Artificial Intelligence, Auditing, Authentication,
+//     Automation, Backup &amp; Recovery, Certification, Cloud,
+//     Clustering, Compliance, Configuration, Containerization,
+//     Container Management, Data Intelligence, Deployment, Design,
+//     Encryption, High Availability, Image Building, Implementation,
+//     Installation, Integration, Maintenance, Migration, Monitoring,
+//     Packaging, Security, Storage, Subscription Management,
+//     Troubleshooting, Upgrade &amp; Update, Virtualization,
+//     Vulnerability, Web
+//
+//   For example:
+//    :metatask1: Configuration
+//    :metatask2: Installation
+//    :metatask3: Deployment
+// -
+
+:metatask1: Configuration
+:metatask2: Installation
+:metatask3: Deployment
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// CONTRIBUTORS
+// -
+
+:author1-firstname: Piotr
+:author1-surname: Weglicki
+:author1-jobtitle: Telco Lead Server Business Unit
+:author1-orgname: AMD
+
+:author2-firstname: Keesang
+:author2-surname: Song
+:author2-jobtitle: Senior Cloud Architect
+:author2-orgname: AMD
+
+:author3-firstname: Alberto
+:author3-surname: Morgante
+:author3-jobtitle: Principal Telco Engineer
+:author3-orgname: SUSE
+
+:author4-firstname: Antonio Alonso
+:author4-surname: Alarcon
+:author4-jobtitle: Senior Telco Engineer
+:author4-orgname: SUSE
+
+:author5-firstname: Tim
+:author5-surname: Irnich
+:author5-jobtitle: Senior Distinguished Telco Product Manager
+:author5-orgname: SUSE
+
+
+
+:editor1-firstname: Jivaji
+:editor1-surname: Ihare
+:editor1-jobtitle: Partner Solution Architect
+:editor1-orgname: SUSE
+
+:editor2-firstname: Terry
+:editor2-surname: Smith
+:editor2-jobtitle: Ecosystem Solution Innovation Director
+:editor2-orgname: SUSE
+
+:editor3-firstname: Vesselin
+:editor3-surname: Matev
+:editor3-jobtitle: Partner Solutions Manager
+:editor3-orgname: SUSE
+
+:editor4-firstname: Andrés
+:editor4-surname: Valero
+:editor4-jobtitle: Principal Technology Advocate
+:editor4-orgname: SUSE
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// MISCELLANEOUS ATTRIBUTES
+//   Define any additional variables here for use within the document.
+// -
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
