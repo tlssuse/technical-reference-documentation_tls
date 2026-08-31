@@ -1,0 +1,496 @@
+:docinfo:
+include::./common_docinfo_vars.adoc[]
+include::./gs_suse-virtualization_storware_backup-and-recovery-vars.adoc[]
+[#art-{article-id}]
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// SUSE Technical Reference Documentation
+// Getting Started Guide
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//
+// DOCUMENT ATTRIBUTES AND VARIABLES
+//
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// 1. Define variables (document attributes) in the vars file.
+// 2. Develop content and reference variables in the adoc file.
+// 3. Update the docinfo.xml file as needed.
+// 4. Update DC file (at a minimum, deactivate DRAFT mode)
+//
+// For further guidance, see
+//   https://github.com/SUSE/technical-reference-documentation/blob/main/common/templates/start/README.md
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+
+= {doctitle}: {docsubtitle}
+
+
+
+== Introduction
+
+Organizations rely on diverse software that cannot be effectively managed in silos.
+IT environments must bridge the gap between VM workloads and containerized applications.
+**{svirt-long}** is the Kubernetes-native platform that manages VMs and containers side by side. This unifies operations and infrastructure, reducing IT costs.
+**{storware-long}** complements {svirt-long} with an agentless, policy-driven data protection solution. It can back up and snapshot VMs, containers, and core cloud applications.
+This delivers a layer of data resiliency that reduces downtime, streamlines recovery, and improves cybersecurity.
+Integrating {storware-long} with {svirt-long} helps organizations support mixed workloads, improve resilience, and reduce costs.
+
+
+
+=== Scope
+
+This guide describes how to deploy and configure {storware-long} to protect virtual machine workloads running on {svirt-long}.
+
+It provides step-by-step instructions for integrating {storware-long} with {svirt-long} and validating backup and restore operations.
+
+
+=== Audience
+
+This guide is intended for virtualization administrators, systems administrators, infrastructure architects, platform engineers, and backup administrators responsible for protecting workloads running on {svirt-long}.
+
+Before following this guide, you should have the following knowledge and experience:
+
+* Basic Linux administration skills
+* Familiarity with Kubernetes and `kubectl`
+* Experience managing virtual machines and storage
+* Basic understanding of {svirt-long} and backup concepts
+
+
+=== Acknowledgments
+
+The authors wish to acknowledge the contributions of the following individuals to the creation of this document:
+
+* {contrib1-firstname} {contrib1-surname}, {contrib1-jobtitle}, {contrib1-orgname}
+* {contrib2-firstname} {contrib2-surname}, {contrib2-jobtitle}, {contrib2-orgname}
+
+
+== Architecture
+
+
+This section provides a planning and architecture overview for deploying {storware-long} with {svirt-long}.
+
+The focus is to describe a high-level design that delivers reliable backup and recovery capabilities for virtual machine workloads running on a cloud-native virtualization platform.
+
+The integrated solution combines {svirt-long} with {storware-long} to provide centralized data protection, policy-driven backup operations, and rapid recovery for enterprise workloads.
+
+image::suse-virtualization-storware-architecture.png[title="Architecture Diagram: {svirt-long} with {storware-long}", Architecture Diagram: {svirt-long} with {storware-long}, scaledwidth="90%", align="center"]
+
+=== {svirt-long}
+
+{svirt-website}[SUSE Virtualization] is a lightweight, hyperconverged infrastructure solution, enabling the management of virtual machines and containers side-by-side on a unified, cloud-native platform.
+
+To ensure a secure and optimized base, {svirt-long} is deployed on SUSE Linux Micro, an immutable, enterprise-grade operating system purpose-built for containerized and virtual workloads.
+
+Furthermore, the platform integrates natively with {srancher-long}.
+
+This integration equips the architecture with centralized authentication, access control, observability, and built-in security, empowering operators to manage diverse workloads across data center and edge environments using a consistent operational model.
+
+{svirt-long} {svirt-version1} was used in the development of this guide.
+
+=== {storware-long}
+
+{storware-website}[{storware-long}] provides centralized, policy-driven backup and recovery capabilities for virtualized and cloud-native environments.
+
+Integrated with {svirt-long} through Kubernetes APIs and leveraging Velero as the Kubernetes-native framework for orchestrating backup and restore operations, Storware protects virtual machine metadata and persistent volumes while enabling automated backup scheduling and recovery.
+
+Running within the {svirt-long} cluster, Velero interacts with Kubernetes resources and persistent volumes to capture and recover virtual machine data and metadata.
+
+The solution supports S3-compatible repositories for backup storage and helps organizations improve business continuity and cyber resilience through secure and reliable data protection.
+
+{storware-long} {storware-version1} was used in the development of this guide.
+
+== Deployment
+
+This section describes how to deploy and configure {svirt-long} and {storware-long} to protect virtual machine workloads.
+
+=== Installing {svirt-long}
+
+Deploy a {svirt-long} cluster before installing {storware-long}.
+
+. Install {svirt-long} by following the {svirt-docs}[{svirt-long} documentation].
+. Verify that the cluster is healthy and accessible.
+. Ensure that `kubectl` is configured with cluster administrator privileges.
+. Confirm that virtual machines can be created successfully.
+
+=== Installing {storware-long}
+
+Deploy the {storware-long} server and configure the backup destination.
+
+. Download the {storware-long} installation image and create a virtual machine for the SBR server by following the {storware-docs-install}[Storware installation guide].
+
+. Configure the SBR Node and perform the initial configuration, including applying the license, by following the {storware-docs-initial-config}[Storware initial configuration guide].
+
+. Configure a backup destination according to the {storware-docs-backup-destinations}[Storware backup destination documentation].
+
+. Verify that the {storware-long} services are running and that the Web interface is accessible.
+
+
+== Preparation
+
+Log in to a {svirt-long} node using SSH and obtain root privileges.
+The remaining procedures in this section are performed from the cluster node.
+
+=== Enable the snapshot feature gate
+
+Enable the Snapshot feature gate by running the following command:
+
+[source, console]
+----
+kubectl -n harvester-system patch kubevirt kubevirt --type=json -p='[{"op":"add","path":"/spec/configuration/developerConfiguration/featureGates/-",
+"value":"Snapshot"}]'
+----
+
+=== Configure the default VolumeSnapshotClass
+
+Configure Longhorn snapshots as the default CSI snapshot class.
+
+. Configure `longhorn-snapshot` as the default `VolumeSnapshotClass`.
++
+[source, console]
+----
+kubectl annotate volumesnapshotclass longhorn-snapshot \
+snapshot.storage.kubernetes.io/is-default-class="true" \
+--overwrite
+----
+
+. Verify the configuration.
++
+[source, console]
+----
+kubectl get volumesnapshotclass
+----
+
+=== Install Velero
+
+Install Velero on the {svirt-long} Kubernetes cluster to enable Kubernetes-native backup and restore orchestration for virtual machines and persistent volumes.
+
+. Create the `velero.yml` configuration file.
++
+[source, yaml]
+----
+snapshotsEnabled: false
+
+credentials:
+  useSecret: true
+  secretContents:
+    cloud: |
+      [default]
+      aws_access_key_id = minio
+      aws_secret_access_key = minio123
+
+initContainers:
+- name: velero-plugin-for-aws
+  image: velero/velero-plugin-for-aws:v1.7.0
+  volumeMounts:
+  - mountPath: /target
+    name: plugins
+
+configuration:
+  features: EnableCSI
+  backupStorageLocation:
+  - name: default
+    provider: aws
+    bucket: velero
+    config:
+      region: minio
+      s3ForcePathStyle: true
+      s3Url: http://minio.velero.svc:9000
+----
+
+. Add the Helm repository.
++
+[source, console]
+----
+helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
+helm repo update
+----
+
+. Install Velero.
++
+[source, console]
+----
+helm install velero vmware-tanzu/velero \
+  --namespace velero \
+  --create-namespace \
+  -f velero.yml
+----
+
+. Verify that the Velero pods are running.
++
+[source, console]
+----
+kubectl get pods -n velero
+----
+
+=== Generate access credentials
+
+Generate credentials that allow {storware-long} to access the cluster.
+
+. Create a service account.
++
+[source, console]
+----
+kubectl create serviceaccount storware -n default
+----
+
+. Create a cluster role binding.
++
+[source, console]
+----
+kubectl create clusterrolebinding storware-admin \
+--clusterrole=cluster-admin \
+--serviceaccount=default:storware
+----
+
+. Generate an access token.
++
+[source, console]
+----
+kubectl create token storware -n default --duration=87600h
+----
+
+. Save the generated token for use during cluster registration.
+
+
+=== Configuring {svirt-long}
+
+Register the cluster in {storware-long}.
+
+. Log in to the {storware-long} Web interface.
+
+. Navigate to __Virtual Environments__ > __Virtualization Providers__.
+
+. Click __Create__.
+
+. Select __Kubernetes__ as the virtualization provider.
+
+. Enter the cluster URL, for example:
++
+[listing]
+----
+https://harvester.local:6443
+----
++
+[NOTE]
+====
+Be sure to use the URL or IP address of your SUSE Virtualization cluster.
+====
+
+. Enable __Use token__.
+
+. Enable __Trust certificates__ if required.
+
+. Paste the access token generated previously into the __Access key__ field.
+
+. Click __Save__.
++
+image::storware-sbr_add-provider.png[title="Registering the SUSE Virtualization cluster in Storware Backup and Recovery", Registering the SUSE Virtualization cluster in Storware Backup and Recovery, scaledwidth="90%", align="center"]
+
+. Click __Yes, Continue__ when asked to confirm inventory synchronization.
++
+image::storware-sbr_confirm-sync.png[title="Confirm inventory synchronization dialog", Confirm inventory synchronization dialog, scaledwidth="90%", align="center"]
+
+. Wait for the synchronization job to complete successfully in the __Workflow Executions__ console.
+
+. Navigate to __Virtual Environments__ > __Instances__ and verify that the {svirt-long} virtual machines and pods are discovered and listed successfully.
++
+image::storware-sbr_discovered-instances.png[title="Discovered virtual environment instances", Discovered virtual environment instances, scaledwidth="90%", align="center"]
+
+== Validating the solution
+
+This section validates the integration.
+
+[NOTE]
+====
+Log in to the {storware-long} Web interface to perform the remaining procedures.
+====
+
+=== Create backup policy
+
+. Go to __Virtual Environments__ > __Backup Policies__.
+
+. Click __Create__.
+
+
+. Configure the policy settings.
+
+.. On the __General__ tab, enter a name in the __Name__ field.
+
+.. On the __Project visibility__ tab, limit visibility if needed, or leave the default __Visibility for all projects__.
+
+.. On the __Auto-assignment__ tab, choose __Assign only__ or __Assign and remove__.
+Enter a regex rule in __Create Regex based rule__, for example `.*`.
++
+image::storware-sbr_policy-assignment.png[title="Create policy auto-assignment settings", Create policy auto-assignment settings, scaledwidth="90%", align="center"]
+
+.. On the __Virtual Environments__ tab, select existing virtual machines manually.
+
+
+. Configure the backup schedule.
+
+.. Go to the __Rules__ tab.
+
+.. Change the __Default name__ if needed.
+
+.. Select the backup destination created during the initial setup, or leave the default destination if only one is configured.
+
+.. Click __Create Schedule__ and configure the schedules.
++
+image::storware-sbr_policy-rules.png[title="Create policy rules and schedules settings", Create policy rules and schedules settings, scaledwidth="90%", align="center"]
+
+
+. Click __Save__.
+
+. Verify that __VM Count__ includes the selected virtual machines.
+
+=== Back up a virtual machine
+
+. Go to __Virtual Environments__ > __Instances__.
+
+. Select a virtual machine and click the __Backup__ icon in the __Action__ column.
++
+image::storware-sbr_instances-backup.png[title="Starting a manual virtual machine backup", Starting a manual virtual machine backup, scaledwidth="90%", align="center"]
+
+. In the __Backup__ window, select __Full__ or __Incremental__ for the backup type
+
+. Click __Backup__ to start the operation.
+
+. Monitor the progress in the __Workflow Executions__ console.
++
+image::storware-sbr_backup-progress.png[title="Monitoring the backup task in the Workflow Executions console", Monitoring the backup task in the Workflow Executions console, scaledwidth="90%", align="center"]
+
+
+=== Restore a virtual machine
+
+. Go to __Virtual Environments__ > __Instances__.
+
+. Select a virtual machine and click the __Restore__ icon in the __Action__ column.
++
+image::storware-sbr_instances-restore.png[title="Restore action icon in the Instances list", Restore action icon in the Instances list, scaledwidth="90%", align="center"]
+
+. Select __Restore to virtualization provider__ to restore the virtual machine.
+
+. In the __Restore to virtualization provider__ wizard, configure the restore settings.
+
+. On the __General__ tab, select the backup version from the __Backup location__ field.
+
+. Optionally enable __Change name of the restored virtual environment__.
+
+. Leave the __Storage__ and __Networking__ tabs with the default settings.
+
+. On the __Advanced__ tab:
+
+.. Enable __Delete original virtual environment if it exists__ if required.
+
+.. Enable __Power on virtual machine after restore__ if desired.
+
+
+. Click __Summary__ and review the configuration.
+
+. Click __Restore__ to start the operation.
++
+image::storware-sbr_restore-summary.png[title="Reviewing the restore configuration summary", Reviewing the restore configuration summary, scaledwidth="90%", align="center"]
+
+. Monitor the progress in the __Workflow Executions__ console.
+
+. Verify that the restore completes and the virtual machine is operational in __Virtual Environments__ > __Instances__.
+
+
+=== Verify the restored virtual machine
+
+. Log in to the {svirt-long} Web interface.
+
+. Navigate to __Virtual Machines__.
+
+. Verify that the restored virtual machine is present in the list.
+
+. Confirm that the restored virtual machine is in the __Running__ state.
++
+image::storware-sbr_harvester-vms.png[title="Restored virtual machine running in the SUSE Virtualization console", Restored virtual machine running in the SUSE Virtualization console, scaledwidth="90%", align="center"]
+
+
+== Summary
+
+
+This guide describes the deployment and configuration of {storware-long} to extend policy-driven data protection for virtual machine and container workloads managed by {svirt-long}.
+
+== Frequently Asked Questions (FAQ)
+
+. **Which {svirt-long} storage classes are supported for snapshot-based backups?**
++
+--
+{storware-long} uses Velero with the Container Storage Interface (CSI) framework for backup and restore operations.
+
+Any storage class that supports CSI with a corresponding `VolumeSnapshotClass` is compatible with snapshot-based backups.
+
+The default storage class for {svirt-long} is {longhorn}. {svirt-long} supports a broad ecosystem of storage providers through the Container Storage Interface (CSI), which you can designate for the default storage class.
+--
+
+. **Can {storware-long} protect virtual machines with multiple disks?**
++
+--
+Yes. {storware-long} captures all persistent volumes attached to a virtual machine during the backup operation.
+
+During the restore process, the persistent volumes are recreated and automatically reattached to the virtual machine, restoring the complete virtual machine configuration and associated storage.
+--
+
+. **What are the sizing recommendations for the {storware-long} server?**
++
+--
+The recommended sizing for the {storware-long} server depends on the number of protected virtual machines and the backup frequency.
+
+For a small environment with up to 25 virtual machines and daily backups, the following minimum configuration is recommended:
+
+* CPU: 4 vCPUs
+* Memory: 8 GiB RAM
+* OS disk: 100 GiB
+* Backup repository disk: Sized according to the total protected data and the required retention period. As a baseline, allocate at least 1.5 times the total uncompressed data size.
+
+For larger environments, consult Storware sizing guidance or your SUSE representative for environment-specific recommendations.
+--
+
+. **Is Velero required for protecting {svirt-long} workloads?**
++
+--
+Yes. {storware-long} leverages Velero to orchestrate Kubernetes-native backup and restore operations.
+
+Velero integrates with the CSI snapshot framework to protect virtual machine metadata and persistent volumes, ensuring that both virtual machine configuration and associated storage are included during backup and restore operations.
+--
+
+. **How does the solution protect against ransomware?**
++
+--
+{storware-long} supports immutable backup repositories when used with object storage platforms that provide object lock capabilities, such as S3 Object Lock.
+
+When immutability is enabled, backup data cannot be modified or deleted during the configured retention period, even if the primary {svirt-long} environment is compromised.
+
+Additionally, storing backup data in an isolated network segment separate from the production {svirt-long} cluster reduces the risk that a ransomware event affecting the cluster can propagate to the backup repository.
+
+For configuration details, refer to the {storware-ransomware-docs}[Storware ransomware protection documentation].
+--
+
+
+
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+// Do not modify below this break.
+// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+++++
+<?pdfpagebreak?>
+++++
+
+
+:leveloffset: 0
+
+== Legal notice
+include::common_trd_legal_notice.adoc[]
+
+++++
+<?pdfpagebreak?>
+++++
+
+
+:leveloffset: 0
+include::common_gfdl1.2_i.adoc[]
+
+//end
