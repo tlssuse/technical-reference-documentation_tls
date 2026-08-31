@@ -168,11 +168,138 @@ This allows you to get product updates and technical support.
 
 == Installing {mariadb}
 
+Perform the following steps on both primary and secondary hosts to install and secure MariaDB.
 
-== Configuring the primary
+. Enable server module extension.
++
+[source, console]
+----
+suseconnect -l sle-module-server-applications/16/886_64
+----
+
+. Install MariaDB.
++
+[source, console]
+----
+sudo zypper install mariadb mariadb-client
+----
++
+[source, console]
+----
+sudo zypper install mariadb
+----
++
+[NOTE]
+====
+During installation, you may see messages stating that an empty database will be created at first start and that you should set a password for the MariaDB root user.
+====
+
+. Enable and start MariaDB.
++
+[source, console]
+----
+systemctl enable --now mariadb
+----
++
+[source, console]
+----
+systemctl status mariadb
+----
+
+. Secure MariaDB with a good root user password by using one of the following options.
++
+* Set the password with the command:
++
+[source, console]
+----
+/usr/bin/mariadb-admin -u root password 'my-secure-PASS-123'
+----
++
+Be sure to replace 'my-secure-PASS-123' with your own secure password.
+
+* Alternatively, execute use the secure installation script:
++
+[source, console]
+----
+/usr/bin/mariadb-secure-installation
+----
++
+This interactive script provides prompts you to select security configuration options, including:
++
+--
+* seting a password for the MariaDB root accounts
+* removing MariaDB root accounts that are accessible outside the local host
+* removing anonymous user accounts
+* removing the test database
+--
++
+[NOTE]
+====
+The `mariadb-secure-installation` script is also symlinked as `mysql-secure-installation` to maintain compatibility.
+====
 
 
-== Configuring the secondary
+== Configuring the primary database
+
+Log into the primary server and perform the steps below.
+
+
+. Edit the global MariaDB configuration file, `/etc/my.cnf.d/server.cnf`, with the following options:
++
+[listing]
+----
+[mysqld]
+server-id=1
+log_bin=mysql-bin
+binlog_format=ROW
+binlog_row_image=FULL
+sync_binlog=1
+innodb_flush_log_at_trx_commit=1
+bind-address=0.0.0.0
+----
+
+. Restart the MariaDB service for the changes to take effect.
++
+[source, console]
+----
+sudo systemctl restart mariadb
+----
+
+. Grant access to the 'replica' user.
+
+.. Log into the MariaDB server.
++
+[source, console]
+----
+mariadb -u root -p
+----
++
+Provide your secure, root password when prompted.
+
+.. At the MariaDB command prompt (`MariaDB [(none)]>`), enter:
++
+[source, console]
+----
+GRANT replication slave ON *.* to replica@'%' IDENTIFIED BY 'my-replica-password';
+----
+
+.. Flush privileges for this change to take effect.
++
+[source, console]
+----
+flush privileges;
+----
+
+.. Log out of the MariaDB server.
++
+[source, console]
+----
+quit
+----
+
+
+
+== Configuring the secondary database
 
 
 == Setting up replication
