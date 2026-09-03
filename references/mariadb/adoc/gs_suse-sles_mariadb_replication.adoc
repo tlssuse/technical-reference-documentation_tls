@@ -323,7 +323,8 @@ Log into the primary server and perform the steps below.
 On the secondary (replica) node
 edit the /etc/my.cnf.d/server.cnf file.
 
-# sudo vi /etc/my.cnf.d/server.cnf
+[listing]
+----
 [mysqld]
 server-id=2
 relay-log=relay-bin
@@ -331,6 +332,7 @@ relay-log-recovery=ON
 read_only=ON
 skip-slave-start=ON
 bind-address=0.0.0.0
+----
 
 Restart the MariaDB service on the replica for changes to apply.
 
