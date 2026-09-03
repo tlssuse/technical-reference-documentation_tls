@@ -180,25 +180,20 @@ For example:
 
 == Installing {mariadb}
 
-Perform the following steps on both primary and secondary hosts to install and secure MariaDB.
+Perform the following steps on each host to install and secure MariaDB.
 
-. Enable server module extension.
+. Enable the server application module.
 +
 [source, console]
 ----
 suseconnect -l sle-module-server-applications/16/886_64
 ----
 
-. Install MariaDB.
+. Install the {mariadb} server and client packages from the {sles-provider} repositories.
 +
 [source, console]
 ----
 sudo zypper install mariadb mariadb-client
-----
-+
-[source, console]
-----
-sudo zypper install mariadb
 ----
 +
 [NOTE]
@@ -217,8 +212,16 @@ systemctl enable --now mariadb
 ----
 systemctl status mariadb
 ----
++
+[listing]
+----
+mariadb.service - MariaDB database server
+     Loaded: loaded (/usr/lib/systemd/system/mariadb.service; enabled; preset: >
+     Active: active (running)
+...
+----
 
-. Secure MariaDB with a good root user password by using one of the following options.
+. Secure MariaDB with a good root user password by using one of the following options:
 +
 * Set the password with the command:
 +
@@ -236,7 +239,7 @@ Be sure to replace 'my-secure-PASS-123' with your own secure password.
 /usr/bin/mariadb-secure-installation
 ----
 +
-This interactive script prompts you to select security configuration options, including:
+This interactive script prompts you to select security configuration options. including:
 +
 --
 * setting a password for the MariaDB root accounts
@@ -314,6 +317,26 @@ quit
 
 
 == Configuring the secondary database
+
+Log into the primary server and perform the steps below.
+
+On the secondary (replica) node
+edit the /etc/my.cnf.d/server.cnf file.
+
+# sudo vi /etc/my.cnf.d/server.cnf
+[mysqld]
+server-id=2
+relay-log=relay-bin
+relay-log-recovery=ON
+read_only=ON
+skip-slave-start=ON
+bind-address=0.0.0.0
+
+Restart the MariaDB service on the replica for changes to apply.
+
+sudo systemctl restart mariadb
+
+
 
 
 == Setting up replication
