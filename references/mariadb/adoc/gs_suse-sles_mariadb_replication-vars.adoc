@@ -89,6 +89,7 @@
 //            in the Vars file, the Docinfo file, and your Main content file.
 // -
 :sles-provider: SUSE
+:sles-provider-website: https://www.suse.com/
 :sles: SUSE Linux
 :sles-long: SUSE Linux Enterprise Server
 :sles-brand: SUSE® Linux Enterprise Server
