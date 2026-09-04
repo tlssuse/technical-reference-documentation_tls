@@ -152,7 +152,7 @@ Set up your primary and replica host systems.
 . Install {sles-long} on each host. +
 Detailed installation guidance is available in the {sles-docs}[{sles-long} Documentation].
 
-. Configure each host with an appropriate hostname and IP address. +
+. Configure each host with an appropriate hostname and IP address for your environment. +
 For example:
 +
 [cols="1,1,1",options="header"]
@@ -174,20 +174,24 @@ For example:
 
 . Apply available patches and updates.
 
-. Ensure port 3306 (MariaDB default port) and port 22 (SSH for file transfer) are open in the firewall (see {sles-docs-firewalld}[Introduction to firewalld]).
+. Ensure TCP ports 3306 (MariaDB) and 22 (SSH) are open in the firewall (see {sles-docs-firewalld}[Introduction to firewalld]).
 
 
 
 == Installing {mariadb}
 
-Perform the following steps on each host to install and secure MariaDB.
+Perform the following steps on both the primary and replica hosts.
+
+////
+// The `mariadb` packages are in the standard `SLE-Product-SLES-16.0` repository, there is no need to add this module.
 
 . Enable the server application module.
 +
 [source, console]
 ----
-suseconnect -l sle-module-server-applications/16/886_64
+suseconnect -l sle-module-server-applications/16/x86_64
 ----
+////
 
 . Install the {mariadb} server and client packages from the {sles-provider} repositories.
 +
@@ -227,10 +231,13 @@ mariadb.service - MariaDB database server
 +
 [source, console]
 ----
-/usr/bin/mariadb-admin -u root password 'my-secure-PASS-123'
+/usr/bin/mariadb-admin -u root password 'password123'
 ----
 +
-Be sure to replace 'my-secure-PASS-123' with your own secure password.
+[IMPORTANT]
+====
+Be sure to replace 'password123' with your own secure password.
+====
 
 * Alternatively, execute the secure installation script:
 +
@@ -256,22 +263,56 @@ The `mariadb-secure-installation` script is also symlinked as `mysql-secure-inst
 
 == Configuring the primary database
 
-Log into the primary server and perform the steps below.
+Log into the primary host and perform the steps below.
 
 
 . Edit the global MariaDB configuration file, `/etc/my.cnf.d/server.cnf`, with the following options:
 +
 [listing]
 ----
-[mysqld]
-server-id=1
-log_bin=mysql-bin
-binlog_format=ROW
-binlog_row_image=FULL
-sync_binlog=1
-innodb_flush_log_at_trx_commit=1
-bind-address=0.0.0.0
+[mariadb]
+
+# --- Basic Server Settings ---
+# Unique ID for this primary server in the topology (1 to 4294967295)
+server-id = 1
+
+# --- Binary Logging & Replication Settings ---
+# Enables binary logging and defines the base filename
+log-bin = mysql-bin
+
+# Enforces row-based logging, required for data integrity across replicas
+binlog-format = ROW
+
+# Sets the primary replication domain ID for Global Transaction Identifiers (GTID)
+gtid-domain-id = 1
+
+# Ensures changes received from any up-stream hosts are logged to this binlog
+# (Uses modern "log-replica-updates" syntax applicable to MariaDB 11.8+)
+log-replica-updates = 1
+
+# --- Log Maintenance & Sizing ---
+# Automatically purges logs older than 7 days (defined in seconds)
+binlog-expire-logs-seconds = 604800
+
+# Limits the maximum size of a single binlog before rotating
+max-binlog-size = 100M
+
+# --- Data Integrity & Crash Safety (ACID) ---
+# Synchronizes the binary log to disk after every single commit
+sync-binlog = 1
+
+# Flushes InnoDB transactions directly to disk at commit for crash-safety
+innodb-flush-log-at-trx-commit = 1
+
+# --- Security & Networking ---
+# Binds MariaDB to listen only on your chosen internal network IP address
+bind-address = 192.168.12.159
 ----
++
+[TIP]
+====
+You can set `bind-address = 0.0.0.0` to enable MariaDB to listen on all configured IP addresses of the host.
+====
 
 . Restart the MariaDB service for changes to take effect.
 +
@@ -290,15 +331,33 @@ mariadb -u root -p
 ----
 +
 Provide your secure, root password when prompted.
++
+When you are successfully logged in, you should see the MariaDB command prompt (`MariaDB [(none)]>`).
 
-.. At the MariaDB command prompt (`MariaDB [(none)]>`), enter:
+.. Create the 'replica' user.
 +
 [source, console]
 ----
-GRANT replication slave ON *.* to replica@'%' IDENTIFIED BY 'my-replica-password';
+CREATE USER 'replica'@'%' IDENTIFIED BY 'replica-password';
 ----
 +
-Be sure to replace 'my-replica-password' with a secure password.
+Be sure to replace 'replica-password' with a secure password.
++
+[TIP]
+====
+User accounts take the form 'username'@'hostname'.
+Using quotes around user and host names is good practice, though they are only required when using special characters or wildcard characters.
+The `%` wildcard is often used to match multiple hosts.
+In the example command, `'replica'@'%'` means that the 'replica' user and connect to the database from any host.
+For better security, you can limit the host to the host name or IP address of the replica host or to a range of addresses.
+====
+
+.. Grant replication privileges to the 'replica' user.
++
+[source, console]
+----
+GRANT replication slave ON *.* to 'replica'@'%';
+----
 
 .. Flush privileges for this change to take effect.
 +
@@ -318,30 +377,90 @@ quit
 
 == Configuring the secondary database
 
-Log into the primary server and perform the steps below.
+Log into the replica server and perform the steps below.
 
-On the secondary (replica) node
-edit the /etc/my.cnf.d/server.cnf file.
+. Edit the global MariaDB configuration file, `/etc/my.cnf.d/server.cnf`, with the following options:
 
 [listing]
 ----
-[mysqld]
-server-id=2
-relay-log=relay-bin
-relay-log-recovery=ON
-read_only=ON
-skip-slave-start=ON
-bind-address=0.0.0.0
+[mariadb]
+# --- Basic Server Settings ---
+# A completely unique server ID distinct from the primary node
+server-id = 2
+
+# Protects the replica data from accidental writes by applications/users
+read-only = 1
+
+# --- Binary Logging & Replication Settings ---
+# Keeps binary logging active on the replica for flexible failovers/backups
+log-bin = mysql-bin
+binlog-format = ROW
+
+# Tracks the exact matching replication group domain ID from the primary
+gtid-domain-id = 1
+
+# Logs replica updates so it can quickly transition to a primary node if needed
+log-replica-updates = 1
+
+# --- Log Maintenance & Sizing ---
+binlog-expire-logs-seconds = 604800
+max-binlog-size = 100M
+
+# --- Data Integrity & Crash Safety (ACID) ---
+sync-binlog = 1
+innodb-flush-log-at-trx-commit = 1
+
+# --- Security & Networking ---
+# Binds to the replica's specific internal IP address
+bind-address = 192.168.12.160
 ----
 
-Restart the MariaDB service on the replica for changes to apply.
-
+. Restart the MariaDB service on the replica for changes to apply.
++
+[source, console]
+----
 sudo systemctl restart mariadb
+----
 
 
 
+== Linking the replica to the primary and starting replication
 
-== Setting up replication
+
+----
+The next step in the process is to link the replica to the primary server and start replication.
+Since you are using MariaDB 11.8.8, this is done using modern Global Transaction Identifiers (GTID), which makes management much easier than old-style log file positions.
+Run the following commands on the Replica server:
+
+-- Step 1: Tell the replica to use GTID for tracking transactionsSET GLOBAL gtid_slave_pos = '';
+-- Step 2: Configure the connection details to the Primary server-- Replace the parameters below with your actual primary IP and replication user password
+CHANGE MASTER TO
+  MASTER_HOST='10.0.0.10',
+  MASTER_USER='repl_user',
+  MASTER_PASSWORD='your_secure_password_here',
+  MASTER_PORT=3306,
+  MASTER_USE_GTID=current_pos;
+-- Step 3: Start the replication worker threadsSTART SLAVE;
+
+(Note: In MariaDB 11.8.8, CHANGE REPLICA TO and START REPLICA are also accepted aliases for these commands).
+Now that replication is started, would you like to:
+Get the SQL command to verify that replication is running successfully without errorsLearn how to test data synchronization by creating a test database on the primary
+
+
+----
+
+
+
+In earlier versions of {mariadb}, an important step i the linking process is to pass the exact
+
+, you can use Global Transaction Identifiers (GTIDs)
+
+
+Initial Data Synchronization and Replication Setup.
+To ensure the replica starts with a consistent copy of the primary's data and knows where to begin replication.
+On the Primary Node (dbnodea).
+Log into MariaDB as root and lock all tables to ensure data consistency during the dump.
+
 
 
 == Verifying replication

@@ -109,7 +109,9 @@
 :mariadb-brand: {mariadb-long}
 :mariadb-version1: 11.8.8
 :mariadb-website: https://mariadb.org
-:mariadb-docs: https://mariadb.org/documentation/
+:mariadb-docs-getting-started: https://mariadb.org/documentation/
+:mariadb-docs: https://mariadb.com/docs/server/
+:mariadb-docs-bin-log: {mariadb-docs}server-management/server-monitoring-logs/binary-log
 
 :mep-long: MariaDB Enterprise Platform
 :mep: {mep-long}
