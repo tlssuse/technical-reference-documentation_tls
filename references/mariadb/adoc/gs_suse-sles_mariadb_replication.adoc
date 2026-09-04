@@ -263,8 +263,9 @@ The `mariadb-secure-installation` script is also symlinked as `mysql-secure-inst
 
 == Configuring the primary database
 
-Log into the primary host and perform the steps below.
+Perform the following steps on the primary host.
 
+. Log into the primary host.
 
 . Edit the global MariaDB configuration file, `/etc/my.cnf.d/server.cnf`, with the following options:
 +
@@ -311,7 +312,8 @@ bind-address = 192.168.12.159
 +
 [TIP]
 ====
-You can set `bind-address = 0.0.0.0` to enable MariaDB to listen on all configured IP addresses of the host.
+Be sure to set `bind-address` to the IP address of your primary host.
+Alternatively, you can set `bind-address = 0.0.0.0` to enable MariaDB to listen on all configured IP addresses of the host.
 ====
 
 . Restart the MariaDB service for changes to take effect.
@@ -380,7 +382,7 @@ quit
 Log into the replica server and perform the steps below.
 
 . Edit the global MariaDB configuration file, `/etc/my.cnf.d/server.cnf`, with the following options:
-
++
 [listing]
 ----
 [mariadb]
@@ -414,6 +416,7 @@ innodb-flush-log-at-trx-commit = 1
 # Binds to the replica's specific internal IP address
 bind-address = 192.168.12.160
 ----
+
 
 . Restart the MariaDB service on the replica for changes to apply.
 +
