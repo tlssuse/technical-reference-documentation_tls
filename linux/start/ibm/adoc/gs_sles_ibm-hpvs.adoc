@@ -1,24 +1,11 @@
 :docinfo:
 include::./common_docinfo_vars.adoc[]
+:article-id: gs-sles-ibm-hpvs
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 // General comments
 // Keep in mind that this is a "getting started" guide and the
 //   audience that you are trying to reach.
-// Leverage ASCIIDoc features to make this document readable and usable:
-//   - Text highlights (follow SUSE style guides)
-//   - Admonitions (i.e., NOTE, TIP, IMPORTANT, CAUTION, WARNING)
-//   - Code blocks
-//   - Lists (ordered and unordered, as appropriate)
-//   - Links (to other resources)
-//   - Images
-//     - Place image files under the ./media directory tree
-//       (e.g., ./media/src/svg, ./media/src/png)
-//     - Format preference: svg > png > jpg
-//     - Consolidate images wherever possible
-//       (i.e., don't use two images when one conveys the message)
-//   - Use sections and subsections to organize and group related
-//     steps.
 // 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -26,25 +13,23 @@ include::./common_docinfo_vars.adoc[]
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 // Variables & Attributes
 //
-// NOTES:
-// 1. Update variables below and adjust docbook file accordingly.
-// 2. Comment out any variables/attributes not used.
-// 3. Follow the pattern to include additional variables.
-//
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // organization - do NOT modify
 // -
 :trd: Technical Reference Documentation
-:type: Getting Started
+:trdtype: Getting Started
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // DOCUMENT REVISION DATE
 //-
-:revision-date: 2025-07-10
-:docdate: {revision-date}
+:rev2-date: 2026-11-02
+:rev2-description: Updated external link
+:rev1-date: 2025-07-10
+:rev1-description: Initial version
+:docdate: {rev2-date}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -103,7 +88,7 @@ include::./common_docinfo_vars.adoc[]
 :contributor2_orgname: IBM
 :editor1_firstname: Terry
 :editor1_surname: Smith
-:editor1_jobtitle: Director of Global Partner Solutions
+:editor1_jobtitle: Director of Partner Ecosystem Solution Innovation
 :editor1_orgname: SUSE
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 :ibm-crypto-url: https://www.ibm.com/docs/en/linux-on-systems?topic=execution-crypto-express-adapters#lxse_ap_pass__title__2
@@ -210,6 +195,7 @@ Contributions to the development of this guide by the following individuals is a
 
 === Revision history
 
+* 2026-11-02: Updated external reference link
 * 2025-07-10: Add how to use with hardware accelerated crypto devices
 * 2025-05-05: Remove deprecated IBM Log Analysis and replace with IBM Cloud Logs
 * 2025-02-12: Remove spaces in command to define and start the slebci-paynow-website VM
@@ -1091,7 +1077,7 @@ echo 0x0 > /sys/bus/ap/aqmask
 [NOTE]
 ====
 This releases all domains from host control. For information about handling domains more selectively, 
-see https://www.ibm.com/docs/en/linuxonibm/com.ibm.linux.z.lkdd/lkdd_t_crypto_wrk_mask.html[Freeing AP queues for KVM guests].
+see https://www.ibm.com/docs/en/linux-on-systems?topic=devices-freeing-ap-queues[Freeing AP queues for KVM guests].
 ====
 
 . Load the virtual function IO adapater ap kernel module.

@@ -21,7 +21,7 @@
      <orgname>Technical Reference Documentation</orgname>
 -->
 <meta name="series">{trd}</meta>
-<meta name="type">{type}</meta>
+<meta name="type">{trdtype}</meta>
 
 
 <!-- document title and subtitle -->
@@ -29,7 +29,7 @@
 <subtitle>{subtitle}</subtitle>
 
 <!-- document revision date -->
-<meta name="updated">{revision-date}</meta>
+<meta name="updated">{docdate}</meta>
 
 <!-- descriptions -->
 <meta name="description" xmlns:its="https://www.w3.org/2005/11/its" its:translate="yes">{description}</meta>
@@ -95,6 +95,30 @@
     <textobject><phrase>SUSE logo</phrase></textobject>
   </mediaobject>
 </cover>
+
+
+<!-- revision history
+     Provide a complete revision history in reverse chronological order
+     (most recent first).
+     - Replicate the `revision` group for each revision.
+     - Each revision must include the date and description.
+     NOTE: You must define revision variables in your vars file.
+-->
+<revhistory xml:id="rh-art-{article-id}">
+  <revision>
+    <date>{rev2-date}</date>
+    <revdescription>
+      <para>{rev2-description}</para>
+    </revdescription>
+  </revision>
+  <revision>
+    <date>{rev1-date}</date>
+    <revdescription>
+      <para>{rev1-description}</para>
+    </revdescription>
+  </revision>
+</revhistory>
+
 
 <!-- brief abstract for document
      Update with an enticing summary.
